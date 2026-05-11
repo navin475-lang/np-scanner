@@ -60,8 +60,6 @@ stocks = [
     "CCL.NS",
     "TDPOWERSYS.NS",
     "GVT&D.NS"
-
-
 ]
 
 # ====================================
@@ -98,20 +96,12 @@ def scan_market():
                 progress=False
             )
 
+            # =========================
+            # EMPTY DATA CHECK
+            # =========================
+
             if df.empty:
                 continue
-
-            df["EMA20"] = df["Close"].ewm(span=20).mean()
-
-            df["EMA50"] = df["Close"].ewm(span=50).mean()
-
-            latest = df.iloc[-1]
-
-            close = float(latest["Close"])
-
-            ema20 = float(latest["EMA20"])
-
-            ema50 = float(latest["EMA50"])
 
             # =========================
             # INDICATORS
@@ -121,19 +111,27 @@ def scan_market():
 
             df["EMA50"] = df["Close"].ewm(span=50).mean()
 
-            latest = df.iloc[-1]
+            # =========================
+            # LATEST VALUES
+            # =========================
 
-            close = float(data['Close'].iloc[-1])
+            close = float(df["Close"].iloc[-1])
 
-            ema20 = float(data['EMA20'].iloc[-1])
+            ema20 = float(df["EMA20"].iloc[-1])
 
-            ema50 = float(data['EMA50'].iloc[-1])
+            ema50 = float(df["EMA50"].iloc[-1])
 
             # =========================
             # BUY CONDITION
             # =========================
 
             buy_signal = True
+
+            # Example real condition:
+            # buy_signal = (
+            #     close > ema20
+            #     and ema20 > ema50
+            # )
 
             # =========================
             # SELL CONDITION
@@ -145,7 +143,7 @@ def scan_market():
             )
 
             # =========================
-            # TELEGRAM ALERT
+            # BUY ALERT
             # =========================
 
             if buy_signal and stock not in sent_alerts:
@@ -157,6 +155,10 @@ Stock : {stock}
 
 Price : {round(close, 2)}
 
+EMA20 : {round(ema20, 2)}
+
+EMA50 : {round(ema50, 2)}
+
 Time : {datetime.now()}
 """
 
@@ -165,6 +167,10 @@ Time : {datetime.now()}
                 send_telegram(message)
 
                 sent_alerts.add(stock)
+
+            # =========================
+            # SELL ALERT
+            # =========================
 
             if sell_signal:
 
@@ -175,6 +181,10 @@ Stock : {stock}
 
 Price : {round(close, 2)}
 
+EMA20 : {round(ema20, 2)}
+
+EMA50 : {round(ema50, 2)}
+
 Time : {datetime.now()}
 """
 
@@ -182,12 +192,9 @@ Time : {datetime.now()}
 
                 send_telegram(message)
 
-                sent_alerts.add(stock)
-
         except Exception as e:
 
             print(stock, e)
-
 # ====================================
 # RUN FIRST TIME
 # ====================================
