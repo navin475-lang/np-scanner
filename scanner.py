@@ -123,11 +123,11 @@ def scan_market():
 
             latest = df.iloc[-1]
 
-            close = float(latest["Close"])
+            close = float(data['Close'].iloc[-1])
 
-            ema20 = float(latest["EMA20"])
+            ema20 = float(data['EMA20'].iloc[-1])
 
-            ema50 = float(latest["EMA50"])
+            ema50 = float(data['EMA50'].iloc[-1])
 
             # =========================
             # BUY CONDITION
