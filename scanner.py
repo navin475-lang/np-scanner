@@ -133,10 +133,7 @@ def scan_market():
             # BUY CONDITION
             # =========================
 
-            buy_signal = (
-                close > ema20
-                and ema20 > ema50
-            )
+            buy_signal = True
 
             # =========================
             # SELL CONDITION
