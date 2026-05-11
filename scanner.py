@@ -210,11 +210,15 @@ schedule.every(15).minutes.do(scan_market)
 print("Scanner Running 🚀")
 
 def run_scanner():
+
     while True:
+
         scan_market()
+
+        time.sleep(900)
 
 Thread(target=run_scanner).start()
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=10000)
 
+    app.run(host="0.0.0.0", port=10000)
