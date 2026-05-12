@@ -346,8 +346,7 @@ def scan_market():
             df["TR"] = df[["H-L", "H-PC", "L-PC"]].max(axis=1)
 
             df["ATR"] = df["TR"].rolling(14).mean()
-
-            atr = latest["ATR"]
+            
             # ====================================
             # ATR STOP
             # ====================================
@@ -486,29 +485,30 @@ def scan_market():
             # ====================================
 
             add_signal = (
-            
+
                 close > weekly_high
                 and close > ema20
                 and rsi > 60
                 and volume_confirmation
-            
+
             )
-        except Exception as e:            
+
             # ====================================
             # SELL SIGNAL
             # ====================================
 
-           sell_signal = (
-            
+            sell_signal = (
+
                 close < ema20
                 and ema20 < ema50
                 and rsi < 45
                 and volume_confirmation
-                    
-           )
-# ====================================
-# BUY ALERT
-# ====================================
+
+            )
+
+            # ====================================
+            # BUY ALERT
+            # ====================================
 
             if buy_signal and f"{stock}_BUY" not in sent_alerts:
 
@@ -540,12 +540,13 @@ Time : {datetime.now()}
                 )
 
                 sent_alerts.add(f"{stock}_BUY")
-# ====================================
-# ADD ALERT
-# ====================================
 
-           if add_signal:
-            
+            # ====================================
+            # ADD ALERT
+            # ====================================
+
+            if add_signal:
+
                 message = f"""
 ➕ ADD SIGNAL
 
@@ -561,9 +562,9 @@ Time : {datetime.now()}
 """
 
                 print(message)
-            
+
                 send_telegram(message)
-            
+
                 save_signal(
                     stock,
                     "ADD",
@@ -572,13 +573,13 @@ Time : {datetime.now()}
                     score,
                     "15m"
                 )
-                            
+
             # ====================================
             # SELL ALERT
             # ====================================
-            
+
             if sell_signal and f"{stock}_SELL" not in sent_alerts:
-            
+
                 message = f"""
 🔻 SELL SIGNAL
 
@@ -592,11 +593,11 @@ Score : {score}
 
 Time : {datetime.now()}
 """
-            
+
                 print(message)
-        
+
                 send_telegram(message)
-            
+
                 save_signal(
                     stock,
                     "SELL",
@@ -605,8 +606,9 @@ Time : {datetime.now()}
                     score,
                     "15m"
                 )
-            
+
                 sent_alerts.add(f"{stock}_SELL")
+
         except Exception as e:
 
             print(stock, e) 
