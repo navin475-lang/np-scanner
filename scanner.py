@@ -115,6 +115,8 @@ def scan_market():
 
         return
 
+    momentum_rankings = []
+
     for stock in stocks:
 
         try:
@@ -268,6 +270,40 @@ def scan_market():
             )
 
             # ====================================
+            # MOMENTUM SCORE
+            # ====================================
+
+            score = 0
+
+            if close > ema20:
+                score += 20
+
+            if ema20 > ema50:
+                score += 20
+
+            if rsi > 60:
+                score += 15
+
+            if rsi > 70:
+                score += 10
+
+            if volume > vol_ma:
+                score += 15
+
+            if daily_bullish:
+                score += 10
+
+            if weekly_bullish:
+                score += 10
+
+            momentum_rankings.append({
+                "stock": stock,
+                "score": score,
+                "price": close,
+                "rsi": rsi
+            })
+
+            # ====================================
             # ADD SIGNAL
             # ====================================
 
@@ -373,6 +409,31 @@ Time : {datetime.now()}
         except Exception as e:
 
             print(stock, e)
+
+    # ====================================
+    # TOP MOMENTUM RANKING
+    # ====================================
+
+    top_stocks = sorted(
+        momentum_rankings,
+        key=lambda x: x["score"],
+        reverse=True
+    )[:10]
+
+    ranking_message = "🔥 TOP MOMENTUM STOCKS 🔥\n\n"
+
+    for i, stock_data in enumerate(top_stocks, start=1):
+
+        ranking_message += (
+            f"{i}. "
+            f"{stock_data['stock']} "
+            f"| Score: {stock_data['score']} "
+            f"| RSI: {round(stock_data['rsi'], 2)}\n"
+        )
+
+    print(ranking_message)
+
+    send_telegram(ranking_message)
 
 # ====================================
 # RUN SCANNER LOOP
