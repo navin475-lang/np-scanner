@@ -183,6 +183,10 @@ def scan_market():
 
         try:
 
+            # =========================
+            # DOWNLOAD DATA
+            # =========================
+
             df = yf.download(
                 stock,
                 period="6mo",
@@ -191,21 +195,41 @@ def scan_market():
                 auto_adjust=True
             )
 
-            if df.empty or len(df) < 50:
+            if df.empty or len(df) < 100:
                 continue
 
             # =========================
             # EMA
             # =========================
 
-            df["EMA20"] = ta.trend.ema_indicator(df["Close"], window=20)
-            df["EMA50"] = ta.trend.ema_indicator(df["Close"], window=50)
+            df["EMA20"] = df["Close"].ewm(span=20).mean()
+            df["EMA50"] = df["Close"].ewm(span=50).mean()
 
             # =========================
             # RSI
             # =========================
 
-            df["RSI"] = ta.momentum.rsi(df["Close"], window=14)
+            delta = df["Close"].diff()
+
+            gain = delta.clip(lower=0)
+            loss = -delta.clip(upper=0)
+
+            avg_gain = gain.rolling(14).mean()
+            avg_loss = loss.rolling(14).mean()
+
+            rs = avg_gain / avg_loss
+
+            df["RSI"] = 100 - (100 / (1 + rs))
+
+            # =========================
+            # VOLUME
+            # =========================
+
+            df["VOL_MA"] = df["Volume"].rolling(20).mean()
+
+            # =========================
+            # LATEST VALUES
+            # =========================
 
             latest = df.iloc[-1]
 
@@ -213,12 +237,19 @@ def scan_market():
             ema20 = float(latest["EMA20"])
             ema50 = float(latest["EMA50"])
             rsi = float(latest["RSI"])
+            volume = float(latest["Volume"])
+            vol_ma = float(latest["VOL_MA"])
 
             # =========================
             # BUY CONDITION
             # =========================
 
-            buy_signal = True
+            buy_signal = (
+                close > ema20
+                and ema20 > ema50
+                and rsi > 60
+                and volume > vol_ma
+            )
 
             # =========================
             # SELL CONDITION
@@ -227,7 +258,7 @@ def scan_market():
             sell_signal = (
                 close < ema20
                 and ema20 < ema50
-                and rsi < 40
+                and rsi < 45
             )
 
             # =========================
@@ -237,11 +268,6 @@ def scan_market():
             if buy_signal and stock not in sent_alerts:
 
                 message = f"""
-if buy_signal and stock not in sent_alerts:
-
-    print(f"BUY SIGNAL FOUND : {stock}")
-
-    message = f"""
 🚀 BUY SIGNAL
 
 Stock : {stock}
@@ -253,11 +279,12 @@ RSI : {round(rsi, 2)}
 Time : {datetime.now()}
 """
 
-    print(message)
+                print(message)
 
-    send_telegram(message)
+                send_telegram(message)
 
-    sent_alerts.add(stock)
+                sent_alerts.add(stock)
+
             # =========================
             # SELL ALERT
             # =========================
@@ -265,11 +292,6 @@ Time : {datetime.now()}
             if sell_signal:
 
                 message = f"""
-if sell_signal and stock not in sent_alerts:
-
-    print(f"SELL SIGNAL FOUND : {stock}")
-
-    message = f"""
 🔻 SELL SIGNAL
 
 Stock : {stock}
@@ -281,126 +303,13 @@ RSI : {round(rsi, 2)}
 Time : {datetime.now()}
 """
 
-    print(message)
-
-    send_telegram(message)
-
-    sent_alerts.add(stock)
-            # ====================================
-            # MOMENTUM SCORE
-            # ====================================
-
-            score = 0
-
-            if is_stage2:
-                score += 20
-
-            if is_rs_positive:
-                score += 20
-
-            if c_ema5:
-                score += 15
-
-            if c_ema50:
-                score += 15
-
-            if c_rsi:
-                score += 15
-
-            if c_vol:
-                score += 15
-
-            # ====================================
-            # BUY ALERT
-            # ====================================
-
-            if (
-                buy_signal
-                and not already_sent(stock, "BUY")
-            ):
-
-                message = f"""
-🚀 BUY SIGNAL
-
-Stock : {stock}
-
-Price : {round(close, 2)}
-
-RSI : {round(rsi, 2)}
-
-RS Score : {round(rs_ratio, 2)}
-
-Momentum Score : {score}/100
-
-Stage : 2
-
-Time : {datetime.now()}
-"""
-
                 print(message)
 
                 send_telegram(message)
-
-                save_signal(stock, "BUY")
-
-            # ====================================
-            # ADD ALERT
-            # ====================================
-
-            if (
-                add_signal
-                and not already_sent(stock, "ADD")
-            ):
-
-                message = f"""
-➕ ADD SIGNAL
-
-Stock : {stock}
-
-Price : {round(close, 2)}
-
-Donchian Breakout Confirmed
-
-Time : {datetime.now()}
-"""
-
-                print(message)
-
-                send_telegram(message)
-
-                save_signal(stock, "ADD")
-
-            # ====================================
-            # SELL ALERT
-            # ====================================
-
-            if (
-                sell_signal
-                and not already_sent(stock, "SELL")
-            ):
-
-                message = f"""
-🔻 SELL SIGNAL
-
-Stock : {stock}
-
-Price : {round(close, 2)}
-
-Weakness Detected
-
-Time : {datetime.now()}
-"""
-
-                print(message)
-
-                send_telegram(message)
-
-                save_signal(stock, "SELL")
 
         except Exception as e:
 
             print(stock, e)
-
 # ====================================
 # BACKGROUND LOOP
 # ====================================
