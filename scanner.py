@@ -27,37 +27,7 @@ CHAT_ID = "1190014186"
 # ====================================
 # NIFTY STOCKS
 # ====================================
-
-stocks = [
-    "HBLENGINE.NS",
-    "NEULANDLAB.NS",
-    "POWERGRID.NS",
-    "POWERINDIA.NS",
-    "SYRMA.NS",
-    "TATAPOWER.NS",
-    "BAJAJ-AUTO.NS",
-    "TIPSMUSIC.NS",
-    "KSB.NS",
-    "OFSS.NS",
-    "APARINDS.NS",
-    "ESABINDIA.NS",
-    "KRISHANA.NS",
-    "NH.NS",
-    "SIEMENS.NS",
-    "SBCL.NS",
-    "TIMKEN.NS",
-    "TITAN.NS",
-    "DATAPATTNS.NS",
-    "SOLARINDS.NS",
-    "DMART.NS",
-    "NESCO.NS",
-    "NESTLEIND.NS",
-    "KOVAI.NS",
-    "CCL.NS",
-    "TDPOWERSYS.NS",
-    "GVT&D.NS"
-]
-
+from nifty500 import stocks
 # ====================================
 # ALERT MEMORY
 # ====================================
