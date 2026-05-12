@@ -347,6 +347,13 @@ def scan_market():
 
             df["ATR"] = df["TR"].rolling(14).mean()
 
+            atr = latest["ATR"]
+            # ====================================
+            # ATR STOP
+            # ====================================
+
+            
+
             # ====================================
             # DAILY TREND
             # ====================================
@@ -401,6 +408,8 @@ def scan_market():
                 and weekly_ema20 > weekly_ema50
             )
 
+            weekly_high = weekly["High"].rolling(20).max().iloc[-1]
+
             # ====================================
             # LATEST VALUES
             # ====================================
@@ -418,6 +427,8 @@ def scan_market():
             volume = float(latest["Volume"])
 
             vol_ma = float(latest["VOL_MA"])
+
+            volume_confirmation = volume > vol_ma
 
             atr = float(latest["ATR"])
 
@@ -472,20 +483,25 @@ def scan_market():
             # ====================================
 
             add_signal = (
-                close > ema20
-                and ema20 > ema50
-                and rsi > 55
-                and volume > vol_ma
-                and daily_bullish
+            
+                close > weekly_high
+                and close > ema20
+                and rsi > 60
+                and volume_confirmation
+            
             )        
             # ====================================
             # SELL SIGNAL
             # ====================================
 
-            sell_signal = (
+           sell_signal = (
+            
                 close < ema20
+                and ema20 < ema50
                 and rsi < 45
-            )            
+                and volume_confirmation
+            
+            )
 # ====================================
 # BUY ALERT
 # ====================================
@@ -524,7 +540,7 @@ Time : {datetime.now()}
 # ADD ALERT
 # ====================================
 
-            if add_signal and f"{stock}_ADD" not in sent_alerts:
+           if add_signal:
             
                 message = f"""
 ➕ ADD SIGNAL
@@ -552,8 +568,7 @@ Time : {datetime.now()}
                     score,
                     "15m"
                 )
-            
-                sent_alerts.add(f"{stock}_ADD")
+                            
             # ====================================
             # SELL ALERT
             # ====================================
