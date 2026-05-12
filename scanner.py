@@ -66,21 +66,6 @@ stocks = [
 # TELEGRAM FUNCTION
 # ====================================
 
-def send_telegram(message):
-
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
-
-    payload = {
-        "chat_id": CHAT_ID,
-        "text": message
-    }
-
-    requests.post(url, json=payload)
-
-# ====================================
-# SCANNER FUNCTION
-# ====================================
-
 def scan_market():
 
     print(f"\nScanning Started : {datetime.now()}")
@@ -93,60 +78,142 @@ def scan_market():
                 stock,
                 period="60d",
                 interval="15m",
-                progress=False
+                progress=False,
+                auto_adjust=True
             )
 
-            # =========================
-            # EMPTY DATA CHECK
-            # =========================
-
-            if df.empty:
+            if df.empty or len(df) < 60:
                 continue
 
-            # =========================
+            # ====================================
+            # CLEAN DATA
+            # ====================================
+
+            df = df.dropna()
+
+            # ====================================
             # INDICATORS
-            # =========================
+            # ====================================
 
-            df["EMA20"] = df["Close"].ewm(span=20).mean()
-
-            df["EMA50"] = df["Close"].ewm(span=50).mean()
-
-            # =========================
-            # LATEST VALUES
-            # =========================
-
-            close = float(df["Close"].iloc[-1])
-
-            ema20 = float(df["EMA20"].iloc[-1])
-
-            ema50 = float(df["EMA50"].iloc[-1])
-
-            # =========================
-            # BUY CONDITION
-            # =========================
-
-            buy_signal = True
-
-            # Example real condition:
-            # buy_signal = (
-            #     close > ema20
-            #     and ema20 > ema50
-            # )
-
-            # =========================
-            # SELL CONDITION
-            # =========================
-
-            sell_signal = (
-                close < ema20
-                and ema20 < ema50
+            df["EMA5"] = ta.trend.ema_indicator(
+                df["Close"],
+                window=emaFast
             )
 
-            # =========================
-            # BUY ALERT
-            # =========================
+            df["EMA50"] = ta.trend.ema_indicator(
+                df["Close"],
+                window=emaSlow
+            )
 
-            if buy_signal and stock not in sent_alerts:
+            df["RSI"] = ta.momentum.rsi(
+                df["Close"],
+                window=rsiLen
+            )
+
+            df["VOL_MA"] = df["Volume"].rolling(volPeriod).mean()
+
+            df["ATR"] = ta.volatility.average_true_range(
+                df["High"],
+                df["Low"],
+                df["Close"],
+                window=atrLen
+            )
+
+            df["DC_UPPER"] = (
+                df["High"]
+                .shift(1)
+                .rolling(dcUpperLen)
+                .max()
+            )
+
+            # ====================================
+            # LATEST VALUES
+            # ====================================
+
+            latest = df.iloc[-1]
+
+            close = float(latest["Close"])
+
+            ema5 = float(latest["EMA5"])
+            ema50 = float(latest["EMA50"])
+
+            rsi = float(latest["RSI"])
+
+            volume = float(latest["Volume"])
+            vol_ma = float(latest["VOL_MA"])
+
+            atr = float(latest["ATR"])
+
+            dc_upper = float(latest["DC_UPPER"])
+
+            high = float(latest["High"])
+            low = float(latest["Low"])
+            open_price = float(latest["Open"])
+
+            # ====================================
+            # UPPER WICK %
+            # ====================================
+
+            candle_range = max(high - low, 0.01)
+
+            upper_wick = high - max(open_price, close)
+
+            upper_wick_pct = (
+                upper_wick / candle_range
+            ) * 100
+
+            # ====================================
+            # CONDITIONS
+            # ====================================
+
+            c_ema5 = close > ema5
+
+            c_ema50 = close > ema50
+
+            c_rsi = rsi > rsiLevel
+
+            c_vol = volume > vol_ma
+
+            c_dc = close > dc_upper * (1 + addPct / 100)
+
+            c_buy_wick_ok = upper_wick_pct <= 25
+
+            # ====================================
+            # BUY SIGNAL
+            # ====================================
+
+            buy_signal = (
+                c_ema5
+                and c_ema50
+                and c_rsi
+                and c_vol
+                and c_buy_wick_ok
+            )
+
+            # ====================================
+            # ADD SIGNAL
+            # ====================================
+
+            add_signal = (
+                c_dc
+                and c_ema50
+                and c_vol
+            )
+
+            # ====================================
+            # SELL SIGNAL
+            # ====================================
+
+            sell_signal = (
+                close < ema5
+                or close < ema50
+            )
+
+            # ====================================
+            # BUY ALERT
+            # ====================================
+
+            if buy_signal:
 
                 message = f"""
 🚀 BUY SIGNAL
@@ -155,9 +222,9 @@ Stock : {stock}
 
 Price : {round(close, 2)}
 
-EMA20 : {round(ema20, 2)}
+RSI : {round(rsi, 2)}
 
-EMA50 : {round(ema50, 2)}
+Volume Boost : YES
 
 Time : {datetime.now()}
 """
@@ -166,11 +233,31 @@ Time : {datetime.now()}
 
                 send_telegram(message)
 
-                sent_alerts.add(stock)
+            # ====================================
+            # ADD ALERT
+            # ====================================
 
-            # =========================
+            if add_signal:
+
+                message = f"""
+➕ ADD SIGNAL
+
+Stock : {stock}
+
+Price : {round(close, 2)}
+
+Breakout Above Donchian
+
+Time : {datetime.now()}
+"""
+
+                print(message)
+
+                send_telegram(message)
+
+            # ====================================
             # SELL ALERT
-            # =========================
+            # ====================================
 
             if sell_signal:
 
@@ -181,9 +268,7 @@ Stock : {stock}
 
 Price : {round(close, 2)}
 
-EMA20 : {round(ema20, 2)}
-
-EMA50 : {round(ema50, 2)}
+Weakness Detected
 
 Time : {datetime.now()}
 """
