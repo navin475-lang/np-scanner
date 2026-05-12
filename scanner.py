@@ -407,9 +407,12 @@ def scan_market():
                 weekly_close > weekly_ema20
                 and weekly_ema20 > weekly_ema50
             )
-
-            weekly_high = weekly["High"].rolling(20).max().iloc[-1]
-
+            weekly_high = float(
+                weekly["High"]
+                .rolling(20)
+                .max()
+                .iloc[-1]
+            )
             # ====================================
             # LATEST VALUES
             # ====================================
@@ -489,7 +492,8 @@ def scan_market():
                 and rsi > 60
                 and volume_confirmation
             
-            )        
+            )
+        except Exception as e:            
             # ====================================
             # SELL SIGNAL
             # ====================================
@@ -500,8 +504,8 @@ def scan_market():
                 and ema20 < ema50
                 and rsi < 45
                 and volume_confirmation
-            
-            )
+                    
+           )
 # ====================================
 # BUY ALERT
 # ====================================
