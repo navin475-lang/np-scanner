@@ -1,1 +1,57 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+
+    <title>Open Signals</title>
+
+    <meta http-equiv="refresh" content="30">
+
+</head>
+
+<body>
+
+    <h1>📈 Open Signals</h1>
+
+    <table border="1" cellpadding="10">
+
+        <tr>
+            <th>ID</th>
+            <th>Stock</th>
+            <th>Signal</th>
+            <th>Price</th>
+            <th>RSI</th>
+            <th>Score</th>
+            <th>Timeframe</th>
+            <th>Time</th>
+        </tr>
+
+        {% for row in data %}
+
+        <tr>
+
+            <td>{{ row[0] }}</td>
+
+            <td>{{ row[1] }}</td>
+
+            <td>{{ row[2] }}</td>
+
+            <td>{{ row[3] }}</td>
+
+            <td>{{ row[4] }}</td>
+
+            <td>{{ row[5] }}</td>
+
+            <td>{{ row[6] }}</td>
+
+            <td>{{ row[7] }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </table>
+
+</body>
+
+</html>
