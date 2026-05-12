@@ -8,6 +8,87 @@ import sqlite3
 from datetime import datetime
 
 # ====================================
+# SQLITE DATABASE
+# ====================================
+
+conn = sqlite3.connect(
+    "signals.db",
+    check_same_thread=False
+)
+
+cursor = conn.cursor()
+# ====================================
+# CREATE TABLE
+# ====================================
+
+cursor.execute("""
+CREATE TABLE IF NOT EXISTS signals (
+
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+
+    stock TEXT,
+
+    signal_type TEXT,
+
+    price REAL,
+
+    rsi REAL,
+
+    score REAL,
+
+    timeframe TEXT,
+
+    created_at TEXT
+
+)
+""")
+
+conn.commit()
+# ====================================
+# SAVE SIGNAL
+# ====================================
+
+def save_signal(
+    stock,
+    signal_type,
+    price,
+    rsi,
+    score,
+    timeframe
+):
+
+    cursor.execute(
+        """
+        INSERT INTO signals (
+
+            stock,
+            signal_type,
+            price,
+            rsi,
+            score,
+            timeframe,
+            created_at
+
+        )
+
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+        """,
+
+        (
+            stock,
+            signal_type,
+            price,
+            rsi,
+            score,
+            timeframe,
+            datetime.now().strftime(
+                "%Y-%m-%d %H:%M:%S"
+            )
+        )
+    )
+
+    conn.commit()
+# ====================================
 # FLASK APP
 # ====================================
 
@@ -268,7 +349,14 @@ def scan_market():
                 and daily_bullish
                 and weekly_bullish
             )
-
+            save_signal(
+                stock,
+                "BUY",
+                close,
+                rsi,
+                score,
+                "Daily"
+            )
             # ====================================
             # MOMENTUM SCORE
             # ====================================
@@ -314,7 +402,14 @@ def scan_market():
                 and volume > vol_ma
                 and daily_bullish
             )
-
+            save_signal(
+                stock,
+                "ADD",
+                close,
+                rsi,
+                score,
+                "Daily"
+            )
             # ====================================
             # SELL SIGNAL
             # ====================================
@@ -323,7 +418,14 @@ def scan_market():
                 close < ema20
                 and rsi < 45
             )
-
+            save_signal(
+                stock,
+                "SELL",
+                close,
+                rsi,
+                score,
+                "Daily"
+            )
             # ====================================
             # BUY ALERT
             # ====================================
