@@ -50,7 +50,48 @@ conn.commit()
 # ====================================
 # SAVE SIGNAL
 # ====================================
+def save_signal(
+    stock,
+    signal_type,
+    price,
+    rsi,
+    score,
+    timeframe
+):
 
+    with db_lock:
+
+        cursor.execute(
+            """
+            INSERT INTO signals (
+
+                stock,
+                signal_type,
+                price,
+                rsi,
+                score,
+                timeframe,
+                created_at
+
+            )
+
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+
+            (
+                stock,
+                signal_type,
+                price,
+                rsi,
+                score,
+                timeframe,
+                datetime.now().strftime(
+                    "%Y-%m-%d %H:%M:%S"
+                )
+            )
+        )
+
+        conn.commit()
 
 # ====================================
 # FLASK APP
@@ -58,9 +99,6 @@ conn.commit()
 
 app = Flask(__name__)
 
-@app.route("/")
-def home():
-    return "NP Momentum Scanner Running 🚀"
 # ===========================================
 # SCANNER STATUS
 # ===========================================
@@ -177,27 +215,6 @@ from nifty500 import stocks
 # ====================================
 
 sent_alerts = set()
-
-# ====================================
-# SQLITE DATABASE
-# ====================================
-
-conn = sqlite3.connect("scanner.db", check_same_thread=False)
-
-cursor = conn.cursor()
-
-cursor.execute("""
-CREATE TABLE IF NOT EXISTS alerts (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    stock TEXT,
-    signal TEXT,
-    price REAL,
-    rsi REAL,
-    time TEXT
-)
-""")
-
-conn.commit()
 
 # ====================================
 # TELEGRAM FUNCTION
@@ -571,7 +588,9 @@ Time : {datetime.now()}
                 )
             
                 sent_alerts.add(f"{stock}_SELL")
-        
+        except Exception as e:
+
+            print(stock, e) 
     # ====================================
     # FILTER STRONG MOMENTUM STOCKS
     # ====================================
@@ -640,7 +659,10 @@ def run_scanner():
 # START THREAD
 # ====================================
 
-Thread(target=run_scanner).start()
+Thread(
+    target=run_scanner,
+    daemon=True
+).start()
 
 # ====================================
 # RUN FLASK
