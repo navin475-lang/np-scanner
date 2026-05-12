@@ -7,14 +7,13 @@ sent_alerts = set()
 import yfinance as yf
 import pandas as pd
 import requests
+import schedule
 import time
 import ta
-import sqlite3
 
 from datetime import datetime
 from flask import Flask
 from threading import Thread
-
 # ====================================
 # FLASK APP
 # ====================================
