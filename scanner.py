@@ -1,20 +1,12 @@
-sent_alerts = set()
-# ====================================
-# NP MOMENTUM SCANNER PRO
-# DAILY + WEEKLY VERSION
-# ====================================
-
+from flask import Flask
+from threading import Thread
 import yfinance as yf
 import pandas as pd
 import requests
-import schedule
 import time
-import ta
 import sqlite3
-
 from datetime import datetime
-from flask import Flask
-from threading import Thread
+
 # ====================================
 # FLASK APP
 # ====================================
@@ -26,19 +18,17 @@ def home():
     return "NP Momentum Scanner Running 🚀"
 
 # ====================================
-# TELEGRAM CONFIG
+# TELEGRAM SETTINGS
 # ====================================
 
 BOT_TOKEN = "8657217148:AAHicOlpVqUqmu4olHwGnnFvhkQqNvxGPKs"
-
 CHAT_ID = "1190014186"
 
 # ====================================
-# STOCK LIST
+# NIFTY STOCKS
 # ====================================
 
 stocks = [
-
     "HBLENGINE.NS",
     "NEULANDLAB.NS",
     "POWERGRID.NS",
@@ -66,43 +56,30 @@ stocks = [
     "CCL.NS",
     "TDPOWERSYS.NS",
     "GVT&D.NS"
-
 ]
 
 # ====================================
-# SETTINGS
+# ALERT MEMORY
 # ====================================
 
-rsiLen = 14
-rsiLevel = 65
-
-emaFast = 5
-emaSlow = 50
-
-volPeriod = 10
-
-atrLen = 14
-atrMult = 1.2
-
-addPct = 1.0
-dcUpperLen = 20
+sent_alerts = set()
 
 # ====================================
-# DATABASE
+# SQLITE DATABASE
 # ====================================
 
-conn = sqlite3.connect(
-    "signals.db",
-    check_same_thread=False
-)
+conn = sqlite3.connect("scanner.db", check_same_thread=False)
 
 cursor = conn.cursor()
 
 cursor.execute("""
-CREATE TABLE IF NOT EXISTS signals (
+CREATE TABLE IF NOT EXISTS alerts (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     stock TEXT,
     signal TEXT,
-    signal_time TEXT
+    price REAL,
+    rsi REAL,
+    time TEXT
 )
 """)
 
@@ -124,52 +101,35 @@ def send_telegram(message):
     requests.post(url, json=payload)
 
 # ====================================
-# DUPLICATE CHECK
+# SAVE ALERT
 # ====================================
 
-def already_sent(stock, signal):
-
-    today = datetime.now().strftime("%Y-%m-%d")
+def save_alert(stock, signal, price, rsi):
 
     cursor.execute("""
-    SELECT * FROM signals
-    WHERE stock=? AND signal=? AND signal_time LIKE ?
+    INSERT INTO alerts(stock, signal, price, rsi, time)
+    VALUES (?, ?, ?, ?, ?)
     """, (
         stock,
         signal,
-        f"{today}%"
-    ))
-
-    return cursor.fetchone()
-
-# ====================================
-# SAVE SIGNAL
-# ====================================
-
-def save_signal(stock, signal):
-
-    cursor.execute("""
-    INSERT INTO signals VALUES (?, ?, ?)
-    """, (
-        stock,
-        signal,
+        price,
+        rsi,
         str(datetime.now())
     ))
 
     conn.commit()
 
 # ====================================
-# SCAN TIME FILTER
-# RUN AFTER MARKET CLOSE
+# MARKET HOURS FILTER
 # ====================================
 
-def scan_time_ok():
+def market_open():
 
     now = datetime.now()
 
-    return (
-        now.hour == 16
-    )
+    current_time = now.strftime("%H:%M")
+
+    return current_time >= "09:15" and current_time <= "15:30"
 
 # ====================================
 # SCANNER FUNCTION
@@ -179,18 +139,24 @@ def scan_market():
 
     print(f"\nScanning Started : {datetime.now()}")
 
+    if not market_open():
+
+        print("Market Closed ❌")
+
+        return
+
     for stock in stocks:
 
         try:
 
-            # =========================
-            # DOWNLOAD DATA
-            # =========================
+            # ====================================
+            # INTRADAY DATA
+            # ====================================
 
             df = yf.download(
                 stock,
-                period="6mo",
-                interval="1d",
+                period="60d",
+                interval="15m",
                 progress=False,
                 auto_adjust=True
             )
@@ -198,62 +164,155 @@ def scan_market():
             if df.empty or len(df) < 100:
                 continue
 
-            # =========================
+            # ====================================
             # EMA
-            # =========================
+            # ====================================
 
             df["EMA20"] = df["Close"].ewm(span=20).mean()
+
             df["EMA50"] = df["Close"].ewm(span=50).mean()
 
-            # =========================
+            # ====================================
             # RSI
-            # =========================
+            # ====================================
 
             delta = df["Close"].diff()
 
             gain = delta.clip(lower=0)
+
             loss = -delta.clip(upper=0)
 
             avg_gain = gain.rolling(14).mean()
+
             avg_loss = loss.rolling(14).mean()
 
             rs = avg_gain / avg_loss
 
             df["RSI"] = 100 - (100 / (1 + rs))
 
-            # =========================
+            # ====================================
             # VOLUME
-            # =========================
+            # ====================================
 
             df["VOL_MA"] = df["Volume"].rolling(20).mean()
 
-            # =========================
+            # ====================================
+            # ATR
+            # ====================================
+
+            df["H-L"] = df["High"] - df["Low"]
+
+            df["H-PC"] = abs(df["High"] - df["Close"].shift(1))
+
+            df["L-PC"] = abs(df["Low"] - df["Close"].shift(1))
+
+            df["TR"] = df[["H-L", "H-PC", "L-PC"]].max(axis=1)
+
+            df["ATR"] = df["TR"].rolling(14).mean()
+
+            # ====================================
+            # DAILY TREND
+            # ====================================
+
+            daily = yf.download(
+                stock,
+                period="1y",
+                interval="1d",
+                progress=False,
+                auto_adjust=True
+            )
+
+            daily["EMA20"] = daily["Close"].ewm(span=20).mean()
+
+            daily["EMA50"] = daily["Close"].ewm(span=50).mean()
+
+            daily_close = float(daily["Close"].iloc[-1])
+
+            daily_ema20 = float(daily["EMA20"].iloc[-1])
+
+            daily_ema50 = float(daily["EMA50"].iloc[-1])
+
+            daily_bullish = (
+                daily_close > daily_ema20
+                and daily_ema20 > daily_ema50
+            )
+
+            # ====================================
+            # WEEKLY TREND
+            # ====================================
+
+            weekly = yf.download(
+                stock,
+                period="5y",
+                interval="1wk",
+                progress=False,
+                auto_adjust=True
+            )
+
+            weekly["EMA20"] = weekly["Close"].ewm(span=20).mean()
+
+            weekly["EMA50"] = weekly["Close"].ewm(span=50).mean()
+
+            weekly_close = float(weekly["Close"].iloc[-1])
+
+            weekly_ema20 = float(weekly["EMA20"].iloc[-1])
+
+            weekly_ema50 = float(weekly["EMA50"].iloc[-1])
+
+            weekly_bullish = (
+                weekly_close > weekly_ema20
+                and weekly_ema20 > weekly_ema50
+            )
+
+            # ====================================
             # LATEST VALUES
-            # =========================
+            # ====================================
 
             latest = df.iloc[-1]
 
             close = float(latest["Close"])
+
             ema20 = float(latest["EMA20"])
+
             ema50 = float(latest["EMA50"])
+
             rsi = float(latest["RSI"])
+
             volume = float(latest["Volume"])
+
             vol_ma = float(latest["VOL_MA"])
 
-            # =========================
-            # BUY CONDITION
-            # =========================
+            atr = float(latest["ATR"])
+
+            # ====================================
+            # BUY SIGNAL
+            # ====================================
 
             buy_signal = (
                 close > ema20
                 and ema20 > ema50
                 and rsi > 60
                 and volume > vol_ma
+                and daily_bullish
+                and weekly_bullish
             )
 
-            # =========================
-            # SELL CONDITION
-            # =========================
+            # ====================================
+            # ADD SIGNAL
+            # ====================================
+
+            add_signal = (
+                close > ema20
+                and ema20 > ema50
+                and rsi > 55
+                and close <= (ema20 + atr * 0.5)
+                and volume > vol_ma
+                and daily_bullish
+            )
+
+            # ====================================
+            # SELL SIGNAL
+            # ====================================
 
             sell_signal = (
                 close < ema20
@@ -261,11 +320,11 @@ def scan_market():
                 and rsi < 45
             )
 
-            # =========================
+            # ====================================
             # BUY ALERT
-            # =========================
+            # ====================================
 
-            if buy_signal and stock not in sent_alerts:
+            if buy_signal and f"{stock}_BUY" not in sent_alerts:
 
                 message = f"""
 🚀 BUY SIGNAL
@@ -283,13 +342,43 @@ Time : {datetime.now()}
 
                 send_telegram(message)
 
-                sent_alerts.add(stock)
+                save_alert(stock, "BUY", close, rsi)
 
-            # =========================
+                sent_alerts.add(f"{stock}_BUY")
+
+            # ====================================
+            # ADD ALERT
+            # ====================================
+
+            if add_signal and f"{stock}_ADD" not in sent_alerts:
+
+                message = f"""
+➕ ADD SIGNAL
+
+Stock : {stock}
+
+Price : {round(close, 2)}
+
+RSI : {round(rsi, 2)}
+
+ATR : {round(atr, 2)}
+
+Time : {datetime.now()}
+"""
+
+                print(message)
+
+                send_telegram(message)
+
+                save_alert(stock, "ADD", close, rsi)
+
+                sent_alerts.add(f"{stock}_ADD")
+
+            # ====================================
             # SELL ALERT
-            # =========================
+            # ====================================
 
-            if sell_signal:
+            if sell_signal and f"{stock}_SELL" not in sent_alerts:
 
                 message = f"""
 🔻 SELL SIGNAL
@@ -307,11 +396,16 @@ Time : {datetime.now()}
 
                 send_telegram(message)
 
+                save_alert(stock, "SELL", close, rsi)
+
+                sent_alerts.add(f"{stock}_SELL")
+
         except Exception as e:
 
             print(stock, e)
+
 # ====================================
-# BACKGROUND LOOP
+# RUN SCANNER LOOP
 # ====================================
 
 def run_scanner():
@@ -320,8 +414,9 @@ def run_scanner():
 
         scan_market()
 
-        # CHECK EVERY HOUR
-        time.sleep(3600)
+        print("Next Scan After 15 Minutes ⏳")
+
+        time.sleep(900)
 
 # ====================================
 # START THREAD
@@ -330,7 +425,7 @@ def run_scanner():
 Thread(target=run_scanner).start()
 
 # ====================================
-# RUN FLASK APP
+# RUN FLASK
 # ====================================
 
 if __name__ == "__main__":
