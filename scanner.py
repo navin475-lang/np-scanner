@@ -414,27 +414,48 @@ Time : {datetime.now()}
     # TOP MOMENTUM RANKING
     # ====================================
 
+    # ====================================
+    # TOP MOMENTUM RANKING
+    # ====================================
+    
     top_stocks = sorted(
         momentum_rankings,
         key=lambda x: x["score"],
         reverse=True
     )[:10]
-
+    
+    # ====================================
+    # CREATE MESSAGE
+    # ====================================
+    
     ranking_message = "🔥 TOP MOMENTUM STOCKS 🔥\n\n"
-
-    for i, stock_data in enumerate(top_stocks, start=1):
-
-        ranking_message += (
-            f"{i}. "
-            f"{stock_data['stock']} "
-            f"| Score: {stock_data['score']} "
-            f"| RSI: {round(stock_data['rsi'], 2)}\n"
-        )
-
+    
+    # ====================================
+    # CHECK STOCKS FOUND
+    # ====================================
+    
+    if len(top_stocks) == 0:
+    
+        ranking_message += "No strong momentum stocks found."
+    
+    else:
+    
+        for i, stock_data in enumerate(top_stocks, start=1):
+    
+            ranking_message += (
+                f"{i}. "
+                f"{stock_data['stock']} "
+                f"| Score: {stock_data['score']} "
+                f"| RSI: {round(stock_data['rsi'], 2)}\n"
+            )
+    
+    # ====================================
+    # PRINT + TELEGRAM
+    # ====================================
+    
     print(ranking_message)
-
+    
     send_telegram(ranking_message)
-
 # ====================================
 # RUN SCANNER LOOP
 # ====================================
