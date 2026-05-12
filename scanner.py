@@ -177,280 +177,112 @@ def scan_time_ok():
 
 def scan_market():
 
-    if not scan_time_ok():
-
-        print("Waiting For Market Close")
-
-        return
-
     print(f"\nScanning Started : {datetime.now()}")
-
-    # ====================================
-    # NIFTY DATA
-    # ====================================
-
-    nifty = yf.download(
-        "^NSEI",
-        period="1y",
-        interval="1d",
-        progress=False,
-        auto_adjust=True
-    )
-
-    nifty = nifty.dropna()
-
-    nifty_return = (
-        float(nifty["Close"].iloc[-1])
-        /
-        float(nifty["Close"].iloc[-50])
-    )
-
-    # ====================================
-    # STOCK LOOP
-    # ====================================
 
     for stock in stocks:
 
         try:
 
-            # ====================================
-            # DAILY DATA
-            # ====================================
-
             df = yf.download(
                 stock,
-                period="1y",
+                period="6mo",
                 interval="1d",
                 progress=False,
                 auto_adjust=True
             )
 
-            if df.empty or len(df) < 60:
+            if df.empty or len(df) < 50:
                 continue
 
-            df = df.dropna()
+            # =========================
+            # EMA
+            # =========================
 
-            # ====================================
-            # WEEKLY DATA
-            # ====================================
+            df["EMA20"] = ta.trend.ema_indicator(df["Close"], window=20)
+            df["EMA50"] = ta.trend.ema_indicator(df["Close"], window=50)
 
-            df_weekly = yf.download(
-                stock,
-                period="3y",
-                interval="1wk",
-                progress=False,
-                auto_adjust=True
-            )
+            # =========================
+            # RSI
+            # =========================
 
-            if df_weekly.empty:
-                continue
-
-            # ====================================
-            # DAILY INDICATORS
-            # ====================================
-
-            df["EMA5"] = ta.trend.ema_indicator(
-                df["Close"],
-                window=emaFast
-            )
-
-            df["EMA50"] = ta.trend.ema_indicator(
-                df["Close"],
-                window=emaSlow
-            )
-
-            df["RSI"] = ta.momentum.rsi(
-                df["Close"],
-                window=rsiLen
-            )
-
-            df["VOL_MA"] = (
-                df["Volume"]
-                .rolling(volPeriod)
-                .mean()
-            )
-
-            df["ATR"] = ta.volatility.average_true_range(
-                df["High"],
-                df["Low"],
-                df["Close"],
-                window=atrLen
-            )
-
-            df["DC_UPPER"] = (
-                df["High"]
-                .shift(1)
-                .rolling(dcUpperLen)
-                .max()
-            )
-
-            # ====================================
-            # WEEKLY EMA
-            # ====================================
-
-            df_weekly["W_EMA"] = ta.trend.ema_indicator(
-                df_weekly["Close"],
-                window=21
-            )
-
-            # ====================================
-            # LATEST VALUES
-            # ====================================
+            df["RSI"] = ta.momentum.rsi(df["Close"], window=14)
 
             latest = df.iloc[-1]
 
             close = float(latest["Close"])
-
-            ema5 = float(latest["EMA5"])
-
+            ema20 = float(latest["EMA20"])
             ema50 = float(latest["EMA50"])
-
             rsi = float(latest["RSI"])
 
-            volume = float(latest["Volume"])
-
-            vol_ma = float(latest["VOL_MA"])
-
-            atr = float(latest["ATR"])
-
-            dc_upper = float(latest["DC_UPPER"])
-
-            high = float(latest["High"])
-
-            low = float(latest["Low"])
-
-            open_price = float(latest["Open"])
-
-            # ====================================
-            # UPPER WICK %
-            # ====================================
-
-            candle_range = max(high - low, 0.01)
-
-            upper_wick = high - max(open_price, close)
-
-            upper_wick_pct = (
-                upper_wick / candle_range
-            ) * 100
-
-            # ====================================
-            # WEEKLY STAGE 2
-            # ====================================
-
-            w_close = float(
-                df_weekly["Close"].iloc[-1]
-            )
-
-            w_ema = float(
-                df_weekly["W_EMA"].iloc[-1]
-            )
-
-            old_ema = float(
-                df_weekly["W_EMA"].iloc[-6]
-            )
-
-            ema_slope = (
-                (w_ema - old_ema)
-                /
-                old_ema
-            )
-
-            is_stage2 = (
-                w_close > w_ema
-                and ema_slope > 0.0005
-            )
-
-            # ====================================
-            # RELATIVE STRENGTH
-            # ====================================
-
-            stock_return = (
-                float(df["Close"].iloc[-1])
-                /
-                float(df["Close"].iloc[-50])
-            )
-
-            rs_ratio = (
-                stock_return
-                /
-                nifty_return
-            )
-
-            is_rs_positive = rs_ratio > 1
-
-            # ====================================
-            # CONDITIONS
-            # ====================================
-
-            c_ema5 = close > ema5
-
-            c_ema50 = close > ema50
-
-            c_rsi = rsi > rsiLevel
-
-            c_vol = volume > vol_ma
-
-            c_dc = close > dc_upper * (
-                1 + addPct / 100
-            )
-
-            c_buy_wick_ok = (
-                upper_wick_pct <= 25
-            )
-
-            # ====================================
-            # BUY SIGNAL
-            # ====================================
+            # =========================
+            # BUY CONDITION
+            # =========================
 
             buy_signal = (
-
-                is_stage2
-
-                and is_rs_positive
-
-                and c_ema5
-
-                and c_ema50
-
-                and c_rsi
-
-                and c_vol
-
-                and c_buy_wick_ok
-
+                close > ema20
+                and ema20 > ema50
+                and rsi > 60
             )
 
-            # ====================================
-            # ADD SIGNAL
-            # ====================================
-
-            add_signal = (
-
-                c_dc
-
-                and c_ema50
-
-                and c_vol
-
-            )
-
-            # ====================================
-            # SELL SIGNAL
-            # ====================================
-
-            trailing_stop = close - (
-                atr * atrMult
-            )
+            # =========================
+            # SELL CONDITION
+            # =========================
 
             sell_signal = (
-
-                close < ema5
-
-                or close < ema50
-
-                or close < trailing_stop
-
+                close < ema20
+                and ema20 < ema50
+                and rsi < 40
             )
+
+            # =========================
+            # BUY ALERT
+            # =========================
+
+            if buy_signal and stock not in sent_alerts:
+
+                message = f"""
+🚀 BUY SIGNAL
+
+Stock : {stock}
+
+Price : {round(close, 2)}
+
+RSI : {round(rsi, 2)}
+
+Time : {datetime.now()}
+"""
+
+                print(message)
+
+                send_telegram(message)
+
+                sent_alerts.add(stock)
+
+            # =========================
+            # SELL ALERT
+            # =========================
+
+            if sell_signal:
+
+                message = f"""
+🔻 SELL SIGNAL
+
+Stock : {stock}
+
+Price : {round(close, 2)}
+
+RSI : {round(rsi, 2)}
+
+Time : {datetime.now()}
+"""
+
+                print(message)
+
+                send_telegram(message)
+
+        except Exception as e:
+
+            print(stock, e)
 
             # ====================================
             # MOMENTUM SCORE
