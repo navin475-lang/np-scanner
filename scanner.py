@@ -311,7 +311,6 @@ def scan_market():
                 close > ema20
                 and ema20 > ema50
                 and rsi > 55
-                and close <= (ema20 + atr * 0.5)
                 and volume > vol_ma
                 and daily_bullish
             )
@@ -322,7 +321,6 @@ def scan_market():
 
             sell_signal = (
                 close < ema20
-                and ema20 < ema50
                 and rsi < 45
             )
 
@@ -411,15 +409,23 @@ Time : {datetime.now()}
             print(stock, e)
 
     # ====================================
+    # FILTER STRONG MOMENTUM STOCKS
+    # ====================================
+    
+    strong_stocks = [
+        stock for stock in momentum_rankings
+        if stock["score"] >= 50
+    ]
+    
+    # ====================================
     # TOP MOMENTUM RANKING
     # ====================================
     
     top_stocks = sorted(
-        momentum_rankings,
+        strong_stocks,
         key=lambda x: x["score"],
         reverse=True
-    )[:10]
-    
+    )[:10]    
     # ====================================
     # CREATE MESSAGE
     # ====================================
@@ -462,7 +468,7 @@ def run_scanner():
 
         scan_market()
 
-        print("Next Scan After 15 Minutes ⏳")
+        print("Next Scan After 1 Hour ⏳")
 
         time.sleep(3600)
 
