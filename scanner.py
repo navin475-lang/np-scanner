@@ -237,6 +237,11 @@ def scan_market():
             if buy_signal and stock not in sent_alerts:
 
                 message = f"""
+if buy_signal and stock not in sent_alerts:
+
+    print(f"BUY SIGNAL FOUND : {stock}")
+
+    message = f"""
 🚀 BUY SIGNAL
 
 Stock : {stock}
@@ -248,12 +253,11 @@ RSI : {round(rsi, 2)}
 Time : {datetime.now()}
 """
 
-                print(message)
+    print(message)
 
-                send_telegram(message)
+    send_telegram(message)
 
-                sent_alerts.add(stock)
-
+    sent_alerts.add(stock)
             # =========================
             # SELL ALERT
             # =========================
@@ -261,6 +265,11 @@ Time : {datetime.now()}
             if sell_signal:
 
                 message = f"""
+if sell_signal and stock not in sent_alerts:
+
+    print(f"SELL SIGNAL FOUND : {stock}")
+
+    message = f"""
 🔻 SELL SIGNAL
 
 Stock : {stock}
@@ -272,14 +281,11 @@ RSI : {round(rsi, 2)}
 Time : {datetime.now()}
 """
 
-                print(message)
+    print(message)
 
-                send_telegram(message)
+    send_telegram(message)
 
-        except Exception as e:
-
-            print(stock, e)
-
+    sent_alerts.add(stock)
             # ====================================
             # MOMENTUM SCORE
             # ====================================
