@@ -167,6 +167,6 @@ stocks = [
 "VOLTAS.NS",
 "WIPRO.NS",
 "ZYDUSLIFE.NS",
-"IDEAFORGE"
+"IDEAFORGE",
 
 ]
