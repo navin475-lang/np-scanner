@@ -447,7 +447,7 @@ def run_scanner():
 
         print("Next Scan After 15 Minutes ⏳")
 
-        time.sleep(900)
+        time.sleep(3600)
 
 # ====================================
 # START THREAD
