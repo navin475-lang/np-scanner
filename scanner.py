@@ -413,10 +413,6 @@ Time : {datetime.now()}
     # ====================================
     # TOP MOMENTUM RANKING
     # ====================================
-
-    # ====================================
-    # TOP MOMENTUM RANKING
-    # ====================================
     
     top_stocks = sorted(
         momentum_rankings,
