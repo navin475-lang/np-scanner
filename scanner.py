@@ -6,6 +6,7 @@ import requests
 import time
 import sqlite3
 from datetime import datetime
+import threading
 
 # ====================================
 # SQLITE DATABASE
@@ -13,10 +14,12 @@ from datetime import datetime
 
 conn = sqlite3.connect(
     "signals.db",
-    check_same_thread=False
+    check_same_thread=False,
+    timeout=30
 )
 
 cursor = conn.cursor()
+db_lock = threading.Lock()
 # ====================================
 # CREATE TABLE
 # ====================================
@@ -48,46 +51,7 @@ conn.commit()
 # SAVE SIGNAL
 # ====================================
 
-def save_signal(
-    stock,
-    signal_type,
-    price,
-    rsi,
-    score,
-    timeframe
-):
 
-    cursor.execute(
-        """
-        INSERT INTO signals (
-
-            stock,
-            signal_type,
-            price,
-            rsi,
-            score,
-            timeframe,
-            created_at
-
-        )
-
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-        """,
-
-        (
-            stock,
-            signal_type,
-            price,
-            rsi,
-            score,
-            timeframe,
-            datetime.now().strftime(
-                "%Y-%m-%d %H:%M:%S"
-            )
-        )
-    )
-
-    conn.commit()
 # ====================================
 # FLASK APP
 # ====================================
@@ -348,15 +312,7 @@ def scan_market():
                 and volume > vol_ma
                 and daily_bullish
                 and weekly_bullish
-            )
-            save_signal(
-                stock,
-                "BUY",
-                close,
-                rsi,
-                score,
-                "Daily"
-            )
+            )           
             # ====================================
             # MOMENTUM SCORE
             # ====================================
@@ -401,15 +357,7 @@ def scan_market():
                 and rsi > 55
                 and volume > vol_ma
                 and daily_bullish
-            )
-            save_signal(
-                stock,
-                "ADD",
-                close,
-                rsi,
-                score,
-                "Daily"
-            )
+            )        
             # ====================================
             # SELL SIGNAL
             # ====================================
@@ -417,18 +365,10 @@ def scan_market():
             sell_signal = (
                 close < ema20
                 and rsi < 45
-            )
-            save_signal(
-                stock,
-                "SELL",
-                close,
-                rsi,
-                score,
-                "Daily"
-            )
-            # ====================================
-            # BUY ALERT
-            # ====================================
+            )            
+# ====================================
+# BUY ALERT
+# ====================================
 
             if buy_signal and f"{stock}_BUY" not in sent_alerts:
 
@@ -441,6 +381,8 @@ Price : {round(close, 2)}
 
 RSI : {round(rsi, 2)}
 
+Score : {score}
+
 Time : {datetime.now()}
 """
 
@@ -448,16 +390,22 @@ Time : {datetime.now()}
 
                 send_telegram(message)
 
-                save_alert(stock, "BUY", close, rsi)
+                save_signal(
+                    stock,
+                    "BUY",
+                    close,
+                    rsi,
+                    score,
+                    "15m"
+                )
 
                 sent_alerts.add(f"{stock}_BUY")
-
-            # ====================================
-            # ADD ALERT
-            # ====================================
+# ====================================
+# ADD ALERT
+# ====================================
 
             if add_signal and f"{stock}_ADD" not in sent_alerts:
-
+            
                 message = f"""
 ➕ ADD SIGNAL
 
@@ -467,25 +415,31 @@ Price : {round(close, 2)}
 
 RSI : {round(rsi, 2)}
 
-ATR : {round(atr, 2)}
+Score : {score}
 
 Time : {datetime.now()}
 """
 
                 print(message)
-
+            
                 send_telegram(message)
-
-                save_alert(stock, "ADD", close, rsi)
-
+            
+                save_signal(
+                    stock,
+                    "ADD",
+                    close,
+                    rsi,
+                    score,
+                    "15m"
+                )
+            
                 sent_alerts.add(f"{stock}_ADD")
-
             # ====================================
             # SELL ALERT
             # ====================================
-
+            
             if sell_signal and f"{stock}_SELL" not in sent_alerts:
-
+            
                 message = f"""
 🔻 SELL SIGNAL
 
@@ -495,21 +449,26 @@ Price : {round(close, 2)}
 
 RSI : {round(rsi, 2)}
 
+Score : {score}
+
 Time : {datetime.now()}
 """
-
+            
                 print(message)
-
+        
                 send_telegram(message)
-
-                save_alert(stock, "SELL", close, rsi)
-
+            
+                save_signal(
+                    stock,
+                    "SELL",
+                    close,
+                    rsi,
+                    score,
+                    "15m"
+                )
+            
                 sent_alerts.add(f"{stock}_SELL")
-
-        except Exception as e:
-
-            print(stock, e)
-
+        
     # ====================================
     # FILTER STRONG MOMENTUM STOCKS
     # ====================================
