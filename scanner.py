@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, render_template
 from threading import Thread
 import yfinance as yf
 import pandas as pd
@@ -61,6 +61,105 @@ app = Flask(__name__)
 @app.route("/")
 def home():
     return "NP Momentum Scanner Running 🚀"
+# ===========================================
+# SCANNER STATUS
+# ===========================================
+
+scanner_status = {
+    "running": True,
+    "last_scan": None,
+    "stocks_scanned": 0,
+    "active_signals": 0
+}
+
+# ===========================================
+# HOME PAGE
+# ===========================================
+
+@app.route("/")
+def home():
+
+    return render_template(
+        "dashboard.html"
+    )
+
+# ===========================================
+# LIVE ALERTS PAGE
+# ===========================================
+
+@app.route("/live-alerts")
+def live_alerts():
+
+    cursor.execute(
+        """
+        SELECT * FROM signals
+        ORDER BY id DESC
+        LIMIT 50
+        """
+    )
+
+    alerts = cursor.fetchall()
+
+    return render_template(
+        "live_alerts.html",
+        alerts=alerts
+    )
+
+# ===========================================
+# OPEN SIGNALS PAGE
+# ===========================================
+
+@app.route("/open-signals")
+def open_signals():
+
+    cursor.execute(
+        """
+        SELECT * FROM signals
+        WHERE signal_type IN ('BUY', 'ADD')
+        ORDER BY id DESC
+        """
+    )
+
+    data = cursor.fetchall()
+
+    return render_template(
+        "open_signals.html",
+        data=data
+    )
+
+# ===========================================
+# SIGNAL HISTORY PAGE
+# ===========================================
+
+@app.route("/signal-history")
+def signal_history():
+
+    cursor.execute(
+        """
+        SELECT * FROM signals
+        ORDER BY id DESC
+        LIMIT 500
+        """
+    )
+
+    history = cursor.fetchall()
+
+    return render_template(
+        "signal_history.html",
+        history=history
+    )
+
+# ===========================================
+# STATUS PAGE
+# ===========================================
+
+@app.route("/status")
+def status():
+
+    return render_template(
+        "status.html",
+        status=scanner_status
+    )
 
 # ====================================
 # TELEGRAM SETTINGS
@@ -153,6 +252,10 @@ def market_open():
 def scan_market():
 
     print(f"\nScanning Started : {datetime.now()}")
+    
+    scanner_status["last_scan"] = datetime.now()
+    
+    scanner_status["stocks_scanned"] = len(stocks)
 
     if not market_open():
 
