@@ -1,1 +1,48 @@
+<!DOCTYPE html>
+<html>
 
+<head>
+
+    <title>Scanner Status</title>
+
+    <meta http-equiv="refresh" content="30">
+
+</head>
+
+<body>
+
+    <h1>🚀 NP Momentum Scanner Status</h1>
+
+    <table border="1" cellpadding="10">
+
+        <tr>
+            <th>Status</th>
+            <td>
+                {% if status.running %}
+                    ✅ Running
+                {% else %}
+                    ❌ Stopped
+                {% endif %}
+            </td>
+        </tr>
+
+        <tr>
+            <th>Last Scan</th>
+            <td>{{ status.last_scan }}</td>
+        </tr>
+
+        <tr>
+            <th>Stocks Scanned</th>
+            <td>{{ status.stocks_scanned }}</td>
+        </tr>
+
+        <tr>
+            <th>Active Signals</th>
+            <td>{{ status.active_signals }}</td>
+        </tr>
+
+    </table>
+
+</body>
+
+</html>
