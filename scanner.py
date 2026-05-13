@@ -305,7 +305,7 @@ def scan_market():
             # EMA
             # ====================================
 
-            df["EMA20"] = df["Close"].ewm(span=20).mean()
+            df["EMA10"] = df["Close"].ewm(span=10).mean()
 
             df["EMA50"] = df["Close"].ewm(span=50).mean()
 
@@ -365,19 +365,19 @@ def scan_market():
                 auto_adjust=True
             )
 
-            daily["EMA20"] = daily["Close"].ewm(span=20).mean()
+            daily["EMA10"] = daily["Close"].ewm(span=10).mean()
 
             daily["EMA50"] = daily["Close"].ewm(span=50).mean()
 
             daily_close = float(daily["Close"].iloc[-1])
 
-            daily_ema20 = float(daily["EMA20"].iloc[-1])
+            daily_ema10 = float(daily["EMA10"].iloc[-1])
 
             daily_ema50 = float(daily["EMA50"].iloc[-1])
 
             daily_bullish = (
-                daily_close > daily_ema20
-                and daily_ema20 > daily_ema50
+                daily_close > daily_ema10
+                and daily_ema10 > daily_ema50
             )
 
             # ====================================
@@ -392,19 +392,19 @@ def scan_market():
                 auto_adjust=True
             )
 
-            weekly["EMA20"] = weekly["Close"].ewm(span=20).mean()
+            weekly["EMA10"] = weekly["Close"].ewm(span=10).mean()
 
             weekly["EMA50"] = weekly["Close"].ewm(span=50).mean()
 
             weekly_close = float(weekly["Close"].iloc[-1])
 
-            weekly_ema20 = float(weekly["EMA20"].iloc[-1])
+            weekly_ema10 = float(weekly["EMA10"].iloc[-1])
 
             weekly_ema50 = float(weekly["EMA50"].iloc[-1])
 
             weekly_bullish = (
-                weekly_close > weekly_ema20
-                and weekly_ema20 > weekly_ema50
+                weekly_close > weekly_ema10
+                and weekly_ema10 > weekly_ema50
             )
             weekly_high = float(
                 weekly["High"]
@@ -420,7 +420,7 @@ def scan_market():
 
             close = float(latest["Close"])
 
-            ema20 = float(latest["EMA20"])
+            ema10 = float(latest["EMA10"])
 
             ema50 = float(latest["EMA50"])
 
@@ -439,8 +439,8 @@ def scan_market():
             # ====================================
 
             buy_signal = (
-                close > ema20
-                and ema20 > ema50
+                close > ema10
+                and ema10 > ema50
                 and rsi > 60
                 and volume > vol_ma
                 and daily_bullish
@@ -452,10 +452,10 @@ def scan_market():
 
             score = 0
 
-            if close > ema20:
+            if close > ema10:
                 score += 20
 
-            if ema20 > ema50:
+            if ema10 > ema50:
                 score += 20
 
             if rsi > 60:
@@ -487,7 +487,7 @@ def scan_market():
             add_signal = (
 
                 close > weekly_high
-                and close > ema20
+                and close > ema10
                 and rsi > 60
                 and volume_confirmation
 
@@ -499,8 +499,8 @@ def scan_market():
 
             sell_signal = (
 
-                close < ema20
-                and ema20 < ema50
+                close < ema10
+                and ema10 < ema50
                 and rsi < 45
                 and volume_confirmation
 
