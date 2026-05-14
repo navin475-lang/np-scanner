@@ -284,41 +284,39 @@ def scan_market():
 
     for stock in stocks:
 
-        print(f"Scanning {stock}")
-        
-        time.sleep(2)
-        
-        try:
-        
-            ticker = yf.Ticker(stock)
-        
-            df = ticker.history(
-                interval="90m",
-                period="60d",
-                auto_adjust=True
-            )
-        
-            print(f"{stock} data downloaded ✅")
-        
-        except Exception as e:
-        
-            print(f"{stock} failed ❌ {e}")
-        
-            continue
-        
-        
+    print(f"Scanning {stock}")
+
+    time.sleep(2)
+
+    try:
+
+        ticker = yf.Ticker(stock)
+
+        df = ticker.history(
+            interval="90m",
+            period="60d",
+            auto_adjust=True
+        )
+
+        print(f"{stock} data downloaded ✅")
+
         if df.empty:
-        
+
             print(f"{stock} empty data ❌")
-        
+
             continue
-        
-        
+
         if len(df) < 50:
-        
+
             print(f"{stock} insufficient candles ❌")
-        
+
             continue
+
+    except Exception as e:
+
+        print(f"{stock} failed ❌ {e}")
+
+        continue
             # ====================================
             # EMA
             # ====================================
@@ -628,7 +626,7 @@ Time : {datetime.now()}
 
                 sent_alerts.add(f"{stock}_SELL")
 
-        except Exception as e:
+    except Exception as e:
 
             print(stock, e) 
     # ====================================
