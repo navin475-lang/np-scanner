@@ -286,7 +286,7 @@ def scan_market():
 
         print(f"Scanning {stock}")
 
-        time.sleep(1)
+        time.sleep(2)
 
         try:
 
@@ -447,13 +447,8 @@ def scan_market():
             # BUY SIGNAL
             # ====================================
 
-            buy_signal = (
+            buy_signal = close > ema10
             
-                close > ema10
-                and ema10 > ema50
-                and rsi > 55
-            
-            )
             print(
                 stock,
                 "Close:", close,
