@@ -371,8 +371,9 @@ def scan_market():
             # ====================================
             # ATR STOP
             # ====================================
+            stop_loss = ema10 - (atr * 1.2)
 
-            
+            sell_signal = close < stop_loss            
 
             # ====================================
             # DAILY TREND
@@ -426,11 +427,11 @@ def scan_market():
             weekly_bullish = (
                 weekly_close > weekly_ema10
                 and weekly_ema10 > weekly_ema40
-            )
             weekly_high = float(
                 weekly["High"]
                 .rolling(20)
                 .max()
+                .shift(1)
                 .iloc[-1]
             )
             # ====================================
@@ -460,12 +461,15 @@ def scan_market():
             # ====================================
 
             buy_signal = (
+            
                 close > ema10
                 and ema10 > ema50
-                and rsi > 60
-                and volume > vol_ma
-                and daily_bullish
+            
                 and weekly_bullish
+            
+                and rsi > 55
+            
+                and volume > vol_ma
             )           
             # ====================================
             # MOMENTUM SCORE
@@ -506,12 +510,10 @@ def scan_market():
             # ====================================
 
             add_signal = (
-
+            
                 close > weekly_high
-                and close > ema10
+                and volume > vol_ma
                 and rsi > 60
-                and volume_confirmation
-
             )
 
             # ====================================
@@ -693,9 +695,9 @@ def run_scanner():
 
         scan_market()
 
-        print("Next Scan After 1 Hour ⏳")
+        print("Next Scan After 15 Minute ⏳")
 
-        time.sleep(3600)
+        time.sleep(900)
 
 # ====================================
 # START THREAD
