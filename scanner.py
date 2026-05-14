@@ -266,27 +266,27 @@ def scan_market():
 
     print("Checking market hours...")
 
-try:
+    try:
 
-    india = pytz.timezone("Asia/Kolkata")
+        india = pytz.timezone("Asia/Kolkata")
 
-    india_time = datetime.now(india)
+        india_time = datetime.now(india)
 
-    print(f"Scanning Started : {india_time}")
+        print(f"Scanning Started : {india_time}")
 
-except Exception as e:
+    except Exception as e:
 
-    print(f"TIMEZONE ERROR: {e}")
+        print(f"TIMEZONE ERROR: {e}")
 
-    return
+        return
 
-scanner_status["last_scan"] = india_time.strftime(
-    "%d-%m-%Y %I:%M:%S %p"
-)
+    scanner_status["last_scan"] = india_time.strftime(
+        "%d-%m-%Y %I:%M:%S %p"
+    )
 
-scanner_status["stocks_scanned"] = len(stocks)
+    scanner_status["stocks_scanned"] = len(stocks)
 
-print("Market Timing Disabled ✅")
+    print("Market Timing Disabled ✅")
 
     momentum_rankings = []
 
