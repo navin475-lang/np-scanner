@@ -294,26 +294,35 @@ def market_open():
 def scan_market():
 
     print("Inside scan_market() ✅")
+
     try:
-    
+
         print(f"Total Stocks: {len(stocks)}")
-    
+
     except Exception as e:
-    
+
         print(f"STOCK LIST ERROR: {e}")
 
     print("Checking market hours...")
 
-    india = pytz.timezone("Asia/Kolkata")
+    try:
 
-    india_time = datetime.now(india)
+        india = pytz.timezone("Asia/Kolkata")
 
-    print(f"\nScanning Started : {india_time}")
+        india_time = datetime.now(india)
+
+        print(f"\nScanning Started : {india_time}")
+
+    except Exception as e:
+
+        print(f"TIME ERROR: {e}")
+
+        return
 
     scanner_status["last_scan"] = india_time.strftime(
-    "%d-%m-%Y %I:%M:%S %p"
+        "%d-%m-%Y %I:%M:%S %p"
     )
-    
+
     scanner_status["stocks_scanned"] = len(stocks)
 
     if not market_open():
