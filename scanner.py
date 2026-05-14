@@ -289,26 +289,28 @@ def scan_market():
         time.sleep(2)
 
         try:
-
-            # ====================================
-            # INTRADAY DATA
-            # ====================================
-
+        
             df = yf.download(
-                stock,                
+                stock,
                 interval="90m",
                 period="60d",
                 progress=False,
                 threads=False,
                 auto_adjust=True
             )
-
+        
             if df.empty or len(df) < 100:
-                
+        
                 print(f"{stock} insufficient data ❌")
-
+        
                 continue
-
+        
+        except Exception as e:
+        
+            print(f"{stock} download error: {e}")
+        
+            continue
+        
             # ====================================
             # EMA
             # ====================================
