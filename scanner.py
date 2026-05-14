@@ -254,13 +254,27 @@ def save_alert(stock, signal, price, rsi):
 # MARKET HOURS FILTER
 # ====================================
 
+# ====================================
+# NSE MARKET TIME
+# ====================================
+
 def market_open():
 
-    now = datetime.now()
+    india = pytz.timezone("Asia/Kolkata")
+
+    now = datetime.now(india)
 
     current_time = now.strftime("%H:%M")
 
-    return current_time >= "09:15" and current_time <= "15:30"
+    current_day = now.weekday()
+
+    # Monday = 0
+    # Friday = 4
+
+    if current_day > 4:
+        return False
+
+    return "09:15" <= current_time <= "15:30"
 
 # ====================================
 # SCANNER FUNCTION
