@@ -691,6 +691,21 @@ Time : {datetime.now()}
     
         print("No strong momentum stocks found.")
 # ====================================
+# SCANNER FUNCTION
+# ====================================
+
+def scan_market():
+
+    print("Inside scan_market() ✅")
+
+    for stock in stocks:
+
+        print(f"Scanning {stock}")
+
+        # your scanner logic here
+
+
+# ====================================
 # RUN SCANNER LOOP
 # ====================================
 
@@ -698,11 +713,22 @@ def run_scanner():
 
     while True:
 
-        scan_market()
+        try:
 
-        print("Next Scan After 15 Minute ⏳")
+            print("SCANNER STARTED 🚀")
+
+            scan_market()
+
+            print("SCAN COMPLETED ✅")
+
+        except Exception as e:
+
+            print(f"SCANNER ERROR: {e}")
+
+        print("Next Scan After 15 Min ⏳")
 
         time.sleep(900)
+
 
 # ====================================
 # START THREAD
