@@ -324,9 +324,9 @@ def scan_market():
             # ====================================
 
             df = yf.download(
-                stock,
-                period="60d",
+                stock,                
                 interval="15m",
+                period="2y",
                 progress=False,
                 auto_adjust=True
             )
@@ -393,9 +393,9 @@ def scan_market():
             # ====================================
 
             weekly = yf.download(
-                stock,
-                period="2y"
+                stock,                
                 interval="1wk",
+                period="2y",
                 progress=False,
                 auto_adjust=True
             )
