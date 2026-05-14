@@ -128,17 +128,17 @@ def home():
 
 @app.route("/live-alerts")
 def live_alerts():
-
-    cursor.execute(
-        """
-        SELECT * FROM signals
-        ORDER BY id DESC
-        LIMIT 50
-        """
-    )
-
-    alerts = cursor.fetchall()
-
+    with db_lock:
+        cursor.execute(
+            """
+            SELECT * FROM signals
+            ORDER BY id DESC
+            LIMIT 50
+            """
+        )
+    
+        alerts = cursor.fetchall()
+    
     return render_template(
         "live_alerts.html",
         alerts=alerts
@@ -150,16 +150,16 @@ def live_alerts():
 
 @app.route("/open-signals")
 def open_signals():
-
-    cursor.execute(
-        """
-        SELECT * FROM signals
-        WHERE signal_type IN ('BUY', 'ADD')
-        ORDER BY id DESC
-        """
-    )
-
-    data = cursor.fetchall()
+    with db_lock:
+        cursor.execute(
+            """
+            SELECT * FROM signals
+            WHERE signal_type IN ('BUY', 'ADD')
+            ORDER BY id DESC
+            """
+        )
+    
+        data = cursor.fetchall()
 
     return render_template(
         "open_signals.html",
@@ -172,16 +172,16 @@ def open_signals():
 
 @app.route("/signal-history")
 def signal_history():
-
-    cursor.execute(
-        """
-        SELECT * FROM signals
-        ORDER BY id DESC
-        LIMIT 500
-        """
-    )
-
-    history = cursor.fetchall()
+    with db_lock:
+        cursor.execute(
+            """
+            SELECT * FROM signals
+            ORDER BY id DESC
+            LIMIT 500
+            """
+        )
+    
+        history = cursor.fetchall()
 
     return render_template(
         "signal_history.html",
@@ -223,14 +223,24 @@ sent_alerts = set()
 
 def send_telegram(message):
 
-    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+    try:
 
-    payload = {
-        "chat_id": CHAT_ID,
-        "text": message
-    }
+        url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
 
-    requests.post(url, json=payload)
+        payload = {
+            "chat_id": CHAT_ID,
+            "text": message
+        }
+
+        requests.post(
+            url,
+            json=payload,
+            timeout=10
+        )
+
+    except Exception as e:
+
+        print("Telegram Error:", e)   
 
 # ====================================
 # SAVE ALERT
@@ -370,20 +380,13 @@ def scan_market():
 
             df["ATR"] = df["TR"].rolling(14).mean()
             #==============================
-            #     Daily bulish
-            #==============================
-            daily_close = close
+            latest = df.iloc[-1]
 
-            daily_ema10 = ema10
+            close = float(latest["Close"])
             
-            daily_ema50 = ema50
+            ema10 = float(latest["EMA10"])
             
-            daily_bullish = (
-            
-                daily_close > daily_ema10
-                and daily_ema10 > daily_ema50
-            
-            )
+            ema50 = float(latest["EMA50"])
 
             # ====================================
             # WEEKLY TREND
@@ -500,11 +503,11 @@ def scan_market():
 
             add_signal = (
             
-                close > weekly_high
-                and volume > vol_ma
-                and rsi > 60
+                close > ema10
+                and rsi > 65
+                and volume > vol_ma * 1.5
             )
-
+            
             # ====================================
             # SELL SIGNAL
             # ====================================
