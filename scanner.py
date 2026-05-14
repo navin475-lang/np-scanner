@@ -293,6 +293,8 @@ def market_open():
 
 def scan_market():
 
+    print("Inside scan_market() ✅")
+
     india = pytz.timezone("Asia/Kolkata")
 
     india_time = datetime.now(india)
