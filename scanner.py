@@ -285,7 +285,7 @@ def scan_market():
     for stock in stocks:
 
         print(f"Scanning {stock}")
-        
+
         time.sleep(2)
         
         try:
@@ -302,23 +302,21 @@ def scan_market():
         
             print(f"{stock} data downloaded ✅")
         
+            if df.empty:
+        
+                print(f"{stock} empty dataframe ❌")
+        
+                continue
+        
+            if len(df) < 50:
+        
+                print(f"{stock} insufficient candles ❌")
+        
+                continue
+        
         except Exception as e:
         
             print(f"{stock} download failed ❌ {e}")
-        
-            continue
-        
-        
-        if df.empty:
-        
-            print(f"{stock} empty dataframe ❌")
-        
-            continue
-        
-        
-        if len(df) < 50:
-        
-            print(f"{stock} insufficient candles ❌")
         
             continue
             # ====================================
