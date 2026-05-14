@@ -460,15 +460,16 @@ def scan_market():
 
             buy_signal = (
             
-                close > ema10
-                and ema10 > ema50
-            
-                and weekly_bullish
-            
-                and rsi > 50
-            
-                and volume > vol_ma * 0.8
-            )           
+                close > ema10                
+            )
+            print(
+                stock,
+                "Close:", close,
+                "EMA10:", ema10,
+                "EMA50:", ema50,
+                "RSI:", rsi,
+                "BUY:", buy_signal
+            )
             # ====================================
             # MOMENTUM SCORE
             # ====================================
