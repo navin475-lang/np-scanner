@@ -283,67 +283,70 @@ def scan_market():
     # ====================================
 
     for stock in stocks:
-
-    print(f"Scanning {stock}")
-
-    time.sleep(2)
-
-    try:
-
-        ticker = yf.Ticker(stock)
-
-        df = ticker.history(
-            interval="90m",
-            period="60d",
-            auto_adjust=True
-        )
-
-        print(f"{stock} data downloaded ✅")
-
-        if df.empty:
-
-            print(f"{stock} empty data ❌")
-
-            continue
-
-        if len(df) < 50:
-
-            print(f"{stock} insufficient candles ❌")
-
-            continue
-
-    except Exception as e:
-
-        print(f"{stock} failed ❌ {e}")
-
-        continue
+    
+        print(f"Scanning {stock}")
+    
+        time.sleep(2)
+    
+        try:
+    
+            ticker = yf.Ticker(stock)
+    
+            df = ticker.history(
+                interval="90m",
+                period="60d",
+                auto_adjust=True
+            )
+    
+            print(f"{stock} data downloaded ✅")
+    
+            if df.empty:
+    
+                print(f"{stock} empty data ❌")
+    
+                continue
+    
+            if len(df) < 50:
+    
+                print(f"{stock} insufficient candles ❌")
+    
+                continue
+    
             # ====================================
             # EMA
             # ====================================
-
+    
             df["EMA10"] = df["Close"].ewm(span=10).mean()
-
+    
             df["EMA50"] = df["Close"].ewm(span=50).mean()
-
+    
             # ====================================
             # RSI
             # ====================================
-
+    
             delta = df["Close"].diff()
-
+    
             gain = delta.clip(lower=0)
-
+    
             loss = -delta.clip(upper=0)
-
+    
             avg_gain = gain.rolling(14).mean()
-
+    
             avg_loss = loss.rolling(14).mean()
-
+    
             rs = avg_gain / avg_loss
-
+    
             df["RSI"] = 100 - (100 / (1 + rs))
-
+    
             df.dropna(inplace=True)
+    
+            print(f"{stock} indicators calculated ✅")
+    
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
+    
+            continue
 
             # ====================================
             # VOLUME
