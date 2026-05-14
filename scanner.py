@@ -684,9 +684,21 @@ Time : {datetime.now()}
     
     send_telegram(ranking_message)
 # ====================================
+# RUN SCANNER LOOP
+# ====================================
+
+def run_scanner():
+
+    while True:
+
+        scan_market()
+
+        print("Next Scan After 1 Hour ⏳")
+
+        time.sleep(3600)
 
 # ====================================
-# START SCANNER THREAD
+# START THREAD
 # ====================================
 
 scanner_thread = Thread(target=run_scanner)
@@ -694,12 +706,6 @@ scanner_thread = Thread(target=run_scanner)
 scanner_thread.daemon = True
 
 scanner_thread.start()
-
-# ====================================
-# START THREAD
-# ====================================
-
-
 
 # ====================================
 # RUN FLASK
