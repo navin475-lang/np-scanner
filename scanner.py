@@ -736,22 +736,18 @@ def run_scanner():
 
 
 # ====================================
-# START THREAD
-# ====================================
-
-scanner_thread = Thread(target=run_scanner)
-
-scanner_thread.daemon = True
-
-scanner_thread.start()
-
-# ====================================
 # RUN FLASK
 # ====================================
 
 if __name__ == "__main__":
-
+       
+    scanner_thread = Thread(target=run_scanner)
+    
+    scanner_thread.daemon = True
+    
+    scanner_thread.start()
+        
     app.run(
-        host="0.0.0.0",
-        port=10000
-    )
+            host="0.0.0.0",
+            port=10000
+     )
