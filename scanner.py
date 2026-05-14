@@ -273,11 +273,11 @@ def market_open():
 
     india = pytz.timezone("Asia/Kolkata")
 
-    now = datetime.now(india)
+    india_time = datetime.now(india)
 
-    current_time = now.strftime("%H:%M")
+    current_time = india_time.strftime("%H:%M")
 
-    current_day = now.weekday()
+    current_day = india_time.weekday()
 
     # Monday = 0
     # Friday = 4
@@ -381,20 +381,20 @@ def scan_market():
             df["ATR"] = df["TR"].rolling(14).mean()
             #==============================
             latest = df.iloc[-1]
-
+            
             close = float(latest["Close"])
             
             ema10 = float(latest["EMA10"])
             
             ema50 = float(latest["EMA50"])
-
+            
             # ====================================
             # WEEKLY TREND
             # ====================================
 
             weekly = yf.download(
                 stock,
-                period="5y",
+                period="2y"
                 interval="1wk",
                 progress=False,
                 auto_adjust=True
@@ -442,6 +442,12 @@ def scan_market():
             volume_confirmation = volume > vol_ma
 
             atr = float(latest["ATR"])
+
+            daily_bullish = (
+
+                close > ema10
+                and ema10 > ema50
+            )
             # ====================================
             # ATR STOP LOSS
             # ====================================
@@ -558,7 +564,7 @@ Time : {datetime.now()}
             # ADD ALERT
             # ====================================
 
-            if add_signal:
+            if add_signal and f"{stock}_ADD" not in sent_alerts:
 
                 message = f"""
 ➕ ADD SIGNAL
@@ -586,6 +592,8 @@ Time : {datetime.now()}
                     score,
                     "15m"
                 )
+
+                sent_alerts.add(f"{stock}_ADD")
 
             # ====================================
             # SELL ALERT
