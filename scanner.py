@@ -415,17 +415,17 @@ def scan_market():
 
             weekly["EMA10"] = weekly["Close"].ewm(span=10).mean()
 
-            weekly["EMA50"] = weekly["Close"].ewm(span=50).mean()
+            weekly["EMA40"] = weekly["Close"].ewm(span=40).mean()
 
             weekly_close = float(weekly["Close"].iloc[-1])
 
             weekly_ema10 = float(weekly["EMA10"].iloc[-1])
 
-            weekly_ema50 = float(weekly["EMA50"].iloc[-1])
+            weekly_ema40 = float(weekly["EMA40"].iloc[-1])
 
             weekly_bullish = (
                 weekly_close > weekly_ema10
-                and weekly_ema10 > weekly_ema50
+                and weekly_ema10 > weekly_ema40
             )
             weekly_high = float(
                 weekly["High"]
