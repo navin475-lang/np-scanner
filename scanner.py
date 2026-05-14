@@ -284,9 +284,9 @@ scanner_status["last_scan"] = india_time.strftime(
     "%d-%m-%Y %I:%M:%S %p"
 )
 
-    scanner_status["stocks_scanned"] = len(stocks)
+scanner_status["stocks_scanned"] = len(stocks)
 
-    print("Market Timing Disabled ✅")
+print("Market Timing Disabled ✅")
 
     momentum_rankings = []
 
