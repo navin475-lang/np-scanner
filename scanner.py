@@ -279,9 +279,10 @@ except Exception as e:
     print(f"TIMEZONE ERROR: {e}")
 
     return
-    scanner_status["last_scan"] = india_time.strftime(
-        "%d-%m-%Y %I:%M:%S %p"
-    )
+
+scanner_status["last_scan"] = india_time.strftime(
+    "%d-%m-%Y %I:%M:%S %p"
+)
 
     scanner_status["stocks_scanned"] = len(stocks)
 
