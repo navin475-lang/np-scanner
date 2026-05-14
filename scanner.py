@@ -304,7 +304,9 @@ def scan_market():
     momentum_rankings = []
 
     for stock in stocks:
-
+        
+        print(f"Scanning {stock}")
+        
         try:
 
             # ====================================
@@ -313,8 +315,8 @@ def scan_market():
 
             df = yf.download(
                 stock,
-                period="6mo",
-                interval="1d",
+                period="60d",
+                interval="15m",
                 progress=False,
                 auto_adjust=True
             )
@@ -367,39 +369,20 @@ def scan_market():
             df["TR"] = df[["H-L", "H-PC", "L-PC"]].max(axis=1)
 
             df["ATR"] = df["TR"].rolling(14).mean()
+            #==============================
+            #     Daily bulish
+            #==============================
+            daily_close = close
+
+            daily_ema10 = ema10
             
-            # ====================================
-            # ATR STOP
-            # ====================================
-            stop_loss = ema10 - (atr * 1.2)
-
-            sell_signal = close < stop_loss            
-
-            # ====================================
-            # DAILY TREND
-            # ====================================
-
-            daily = yf.download(
-                stock,
-                period="1y",
-                interval="1d",
-                progress=False,
-                auto_adjust=True
-            )
-
-            daily["EMA10"] = daily["Close"].ewm(span=10).mean()
-
-            daily["EMA50"] = daily["Close"].ewm(span=50).mean()
-
-            daily_close = float(daily["Close"].iloc[-1])
-
-            daily_ema10 = float(daily["EMA10"].iloc[-1])
-
-            daily_ema50 = float(daily["EMA50"].iloc[-1])
-
+            daily_ema50 = ema50
+            
             daily_bullish = (
+            
                 daily_close > daily_ema10
                 and daily_ema10 > daily_ema50
+            
             )
 
             # ====================================
@@ -427,6 +410,7 @@ def scan_market():
             weekly_bullish = (
                 weekly_close > weekly_ema10
                 and weekly_ema10 > weekly_ema40
+            )
             weekly_high = float(
                 weekly["High"]
                 .rolling(20)
@@ -455,7 +439,12 @@ def scan_market():
             volume_confirmation = volume > vol_ma
 
             atr = float(latest["ATR"])
-
+            # ====================================
+            # ATR STOP LOSS
+            # ====================================
+            
+            stop_loss = ema10 - (atr * 1.2)
+            
             # ====================================
             # BUY SIGNAL
             # ====================================
@@ -519,14 +508,12 @@ def scan_market():
             # ====================================
             # SELL SIGNAL
             # ====================================
-
+            
             sell_signal = (
-
-                close < ema10
-                and ema10 < ema50
+            
+                close < stop_loss
                 and rsi < 45
-                and volume_confirmation
-
+            
             )
 
             # ====================================
