@@ -9,6 +9,8 @@ import sqlite3
 from datetime import datetime
 import threading
 
+print("NEW CODE VERSION LOADED 🚀")
+
 # ====================================
 # SQLITE DATABASE
 # ====================================
