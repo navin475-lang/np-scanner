@@ -693,21 +693,6 @@ Time : {datetime.now()}
     
         print("No strong momentum stocks found.")
 # ====================================
-# SCANNER FUNCTION
-# ====================================
-
-def scan_market():
-
-    print("Inside scan_market() ✅")
-
-    for stock in stocks:
-
-        print(f"Scanning {stock}")
-
-        # your scanner logic here
-
-
-# ====================================
 # RUN SCANNER LOOP
 # ====================================
 
