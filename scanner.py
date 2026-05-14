@@ -332,11 +332,7 @@ def scan_market():
     
     print(f"MARKET STATUS: {market_status}")
     
-    if not market_status:
-    
-        print("Market Closed ❌")
-    
-        return
+    print("Market Timing Disabled ✅")
 
     momentum_rankings = []
 
