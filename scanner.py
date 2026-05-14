@@ -350,13 +350,17 @@ def scan_market():
 
             df = yf.download(
                 stock,                
-                interval="15m",
+                interval="2h",
                 period="2y",
                 progress=False,
+                threads=False,
                 auto_adjust=True
             )
 
             if df.empty or len(df) < 100:
+                
+                print(f"{stock} insufficient data ❌")
+
                 continue
 
             # ====================================
@@ -418,13 +422,13 @@ def scan_market():
             # ====================================
 
             weekly = yf.download(
-                stock,                
+                stock,
                 interval="1wk",
                 period="2y",
                 progress=False,
                 auto_adjust=True
             )
-
+            
             weekly["EMA10"] = weekly["Close"].ewm(span=10).mean()
 
             weekly["EMA20"] = weekly["Close"].ewm(span=20).mean()
@@ -581,7 +585,7 @@ Time : {datetime.now()}
                     close,
                     rsi,
                     score,
-                    "15m"
+                    "2h"
                 )
 
                 sent_alerts.add(f"{stock}_BUY")
@@ -616,7 +620,7 @@ Time : {datetime.now()}
                     close,
                     rsi,
                     score,
-                    "15m"
+                    "2h"
                 )
 
                 sent_alerts.add(f"{stock}_ADD")
@@ -651,7 +655,7 @@ Time : {datetime.now()}
                     close,
                     rsi,
                     score,
-                    "15m"
+                    "2h"
                 )
 
                 sent_alerts.add(f"{stock}_SELL")
