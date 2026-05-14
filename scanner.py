@@ -294,6 +294,15 @@ def market_open():
 def scan_market():
 
     print("Inside scan_market() ✅")
+    try:
+    
+        print(f"Total Stocks: {len(stocks)}")
+    
+    except Exception as e:
+    
+        print(f"STOCK LIST ERROR: {e}")
+
+    print("Checking market hours...")
 
     india = pytz.timezone("Asia/Kolkata")
 
