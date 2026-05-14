@@ -244,24 +244,7 @@ def send_telegram(message):
 
         print("Telegram Error:", e)   
 
-# ====================================
-# SAVE ALERT
-# ====================================
 
-def save_alert(stock, signal, price, rsi):
-
-    cursor.execute("""
-    INSERT INTO alerts(stock, signal, price, rsi, time)
-    VALUES (?, ?, ?, ?, ?)
-    """, (
-        stock,
-        signal,
-        price,
-        rsi,
-        str(datetime.now())
-    ))
-
-    conn.commit()
 
 # ====================================
 # NSE MARKET TIME
@@ -269,24 +252,7 @@ def save_alert(stock, signal, price, rsi):
 
 def market_open():
 
-    now = datetime.now()
-
-    current_day = now.weekday()
-
-    current_time = now.strftime("%H:%M")
-
-    print(f"DAY: {current_day}")
-
-    print(f"TIME: {current_time}")
-
-    # Monday = 0
-    # Friday = 4
-
-    if current_day > 4:
-
-        return False
-
-    return "09:15" <= current_time <= "15:30"
+    return True
 
 # ====================================
 # SCANNER FUNCTION
@@ -350,8 +316,8 @@ def scan_market():
 
             df = yf.download(
                 stock,                
-                interval="2h",
-                period="2y",
+                interval="90m",
+                period="60d",
                 progress=False,
                 threads=False,
                 auto_adjust=True
@@ -388,6 +354,8 @@ def scan_market():
             rs = avg_gain / avg_loss
 
             df["RSI"] = 100 - (100 / (1 + rs))
+
+            df.dropna(inplace=True)
 
             # ====================================
             # VOLUME
@@ -429,10 +397,16 @@ def scan_market():
                 auto_adjust=True
             )
             
+            if weekly.empty or len(weekly) < 20:
+            
+                print(f"{stock} weekly data failed ❌")
+            
+                continue
+            
             weekly["EMA10"] = weekly["Close"].ewm(span=10).mean()
-
+            
             weekly["EMA20"] = weekly["Close"].ewm(span=20).mean()
-
+            
             weekly_close = float(weekly["Close"].iloc[-1])
 
             weekly_ema10 = float(weekly["EMA10"].iloc[-1])
@@ -450,6 +424,12 @@ def scan_market():
                 .shift(1)
                 .iloc[-1]
             )
+
+            if weekly.empty or len(weekly) < 20:
+            
+                print(f"{stock} weekly data failed ❌")
+            
+                continue
             # ====================================
             # LATEST VALUES
             # ====================================
@@ -463,7 +443,7 @@ def scan_market():
             ema50 = float(latest["EMA50"])
 
             rsi = float(latest["RSI"])
-
+            
             volume = float(latest["Volume"])
 
             vol_ma = float(latest["VOL_MA"])
@@ -489,7 +469,10 @@ def scan_market():
 
             buy_signal = (
             
-                close > ema10                
+                close > ema10
+                and ema10 > ema50
+                and rsi > 55
+            
             )
             print(
                 stock,
@@ -585,7 +568,7 @@ Time : {datetime.now()}
                     close,
                     rsi,
                     score,
-                    "2h"
+                    "90m"
                 )
 
                 sent_alerts.add(f"{stock}_BUY")
@@ -620,7 +603,7 @@ Time : {datetime.now()}
                     close,
                     rsi,
                     score,
-                    "2h"
+                    "90m"
                 )
 
                 sent_alerts.add(f"{stock}_ADD")
@@ -655,7 +638,7 @@ Time : {datetime.now()}
                     close,
                     rsi,
                     score,
-                    "2h"
+                    "90m"
                 )
 
                 sent_alerts.add(f"{stock}_SELL")
