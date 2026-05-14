@@ -285,38 +285,38 @@ def scan_market():
     for stock in stocks:
 
         print(f"Scanning {stock}")
-
+        
         time.sleep(2)
         
         try:
         
-            df = yf.download(
-                stock,
+            ticker = yf.Ticker(stock)
+        
+            df = ticker.history(
                 interval="90m",
                 period="60d",
-                progress=False,
-                threads=False,
-                auto_adjust=True,
-                timeout=15
+                auto_adjust=True
             )
         
             print(f"{stock} data downloaded ✅")
         
-            if df.empty:
-        
-                print(f"{stock} empty dataframe ❌")
-        
-                continue
-        
-            if len(df) < 50:
-        
-                print(f"{stock} insufficient candles ❌")
-        
-                continue
-        
         except Exception as e:
         
-            print(f"{stock} download failed ❌ {e}")
+            print(f"{stock} failed ❌ {e}")
+        
+            continue
+        
+        
+        if df.empty:
+        
+            print(f"{stock} empty data ❌")
+        
+            continue
+        
+        
+        if len(df) < 50:
+        
+            print(f"{stock} insufficient candles ❌")
         
             continue
             # ====================================
