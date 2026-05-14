@@ -282,9 +282,15 @@ def market_open():
 
 def scan_market():
 
-    print(f"\nScanning Started : {datetime.now()}")
-    
-    scanner_status["last_scan"] = datetime.now()
+    india = pytz.timezone("Asia/Kolkata")
+
+    india_time = datetime.now(india)
+
+    print(f"\nScanning Started : {india_time}")
+
+    scanner_status["last_scan"] = india_time.strftime(
+    "%d-%m-%Y %I:%M:%S %p"
+    )
     
     scanner_status["stocks_scanned"] = len(stocks)
 
