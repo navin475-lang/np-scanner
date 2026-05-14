@@ -324,10 +324,16 @@ def scan_market():
 
     scanner_status["stocks_scanned"] = len(stocks)
 
-    if not market_open():
-
+    print("Calling market_open()...")
+    
+    market_status = market_open()
+    
+    print(f"MARKET STATUS: {market_status}")
+    
+    if not market_status:
+    
         print("Market Closed ❌")
-
+    
         return
 
     momentum_rankings = []
