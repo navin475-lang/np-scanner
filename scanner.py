@@ -339,6 +339,8 @@ def scan_market():
     for stock in stocks:
         
         print(f"Scanning {stock}")
+
+        time.sleep(1)
         
         try:
 
