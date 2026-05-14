@@ -699,10 +699,7 @@ scanner_thread.start()
 # START THREAD
 # ====================================
 
-Thread(
-    target=run_scanner,
-    daemon=True
-).start()
+
 
 # ====================================
 # RUN FLASK
