@@ -402,17 +402,17 @@ def scan_market():
 
             weekly["EMA10"] = weekly["Close"].ewm(span=10).mean()
 
-            weekly["EMA40"] = weekly["Close"].ewm(span=40).mean()
+            weekly["EMA20"] = weekly["Close"].ewm(span=20).mean()
 
             weekly_close = float(weekly["Close"].iloc[-1])
 
             weekly_ema10 = float(weekly["EMA10"].iloc[-1])
 
-            weekly_ema40 = float(weekly["EMA40"].iloc[-1])
+            weekly_ema20 = float(weekly["EMA20"].iloc[-1])
 
             weekly_bullish = (
                 weekly_close > weekly_ema10
-                and weekly_ema10 > weekly_ema40
+                and weekly_ema10 > weekly_ema20
             )
             weekly_high = float(
                 weekly["High"]
@@ -459,9 +459,9 @@ def scan_market():
             
                 and weekly_bullish
             
-                and rsi > 55
+                and rsi > 50
             
-                and volume > vol_ma
+                and volume > vol_ma * 0.8
             )           
             # ====================================
             # MOMENTUM SCORE
@@ -505,7 +505,7 @@ def scan_market():
             
                 close > ema10
                 and rsi > 65
-                and volume > vol_ma * 1.5
+                and volume > vol_ma
             )
             
             # ====================================
@@ -631,7 +631,7 @@ Time : {datetime.now()}
     
     strong_stocks = [
         stock for stock in momentum_rankings
-        if stock["score"] >= 50
+        if stock["score"] >= 35
     ]
     
     # ====================================
@@ -672,9 +672,15 @@ Time : {datetime.now()}
     # PRINT + TELEGRAM
     # ====================================
     
-    print(ranking_message)
+    if len(top_stocks) > 0:
     
-    send_telegram(ranking_message)
+        print(ranking_message)
+    
+        send_telegram(ranking_message)
+    
+    else:
+    
+        print("No strong momentum stocks found.")
 # ====================================
 # RUN SCANNER LOOP
 # ====================================
