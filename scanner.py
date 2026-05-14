@@ -262,29 +262,15 @@ def scan_market():
 
     print("Inside scan_market() ✅")
 
-    try:
-
-        print(f"Total Stocks: {len(stocks)}")
-
-    except Exception as e:
-
-        print(f"STOCK LIST ERROR: {e}")
+    print(f"Total Stocks: {len(stocks)}")
 
     print("Checking market hours...")
 
-    try:
+    india = pytz.timezone("Asia/Kolkata")
 
-        india = pytz.timezone("Asia/Kolkata")
+    india_time = datetime.now(india)
 
-        india_time = datetime.now(india)
-
-        print(f"\nScanning Started : {india_time}")
-
-    except Exception as e:
-
-        print(f"TIME ERROR: {e}")
-
-        return
+    print(f"Scanning Started : {india_time}")
 
     scanner_status["last_scan"] = india_time.strftime(
         "%d-%m-%Y %I:%M:%S %p"
@@ -292,22 +278,20 @@ def scan_market():
 
     scanner_status["stocks_scanned"] = len(stocks)
 
-    print("Calling market_open()...")
-    
-    market_status = market_open()
-    
-    print(f"MARKET STATUS: {market_status}")
-    
     print("Market Timing Disabled ✅")
 
     momentum_rankings = []
 
+    # ====================================
+    # STOCK LOOP
+    # ====================================
+
     for stock in stocks:
-        
+
         print(f"Scanning {stock}")
 
         time.sleep(1)
-        
+
         try:
 
             # ====================================
