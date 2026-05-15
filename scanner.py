@@ -12,6 +12,7 @@ import socket
 from nsepython import *
 import concurrent.futures
 
+
 IST = pytz.timezone("Asia/Kolkata")
 
 socket.setdefaulttimeout(20)
@@ -95,7 +96,7 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+                datetime.datetime.now(IST)).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
             )
@@ -275,7 +276,7 @@ def scan_market():
 
     print("Scanner Time Started ✅")
 
-    scanner_status["last_scan"] = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+    scanner_status["last_scan"] = datetime.datetime.now(IST)).strftime(
     "%d-%m-%Y %I:%M:%S %p"
     )
 
@@ -526,7 +527,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -561,7 +562,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -596,7 +597,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
