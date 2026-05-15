@@ -315,7 +315,7 @@ def scan_market():
             print(f"{stock} failed ❌ {e}")
             continue
         
-        print("STEP 3 ✅")
+            print("STEP 3 ✅")
     
             
     
