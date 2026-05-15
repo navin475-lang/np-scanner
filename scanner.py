@@ -9,6 +9,7 @@ import sqlite3
 from datetime import datetime
 import threading
 
+
 print("NEW CODE VERSION LOADED 🚀")
 
 # ====================================
@@ -723,14 +724,16 @@ def run_scanner():
 # ====================================
 
 if __name__ == "__main__":
-       
-    scanner_thread = Thread(target=run_scanner)
-    
-    scanner_thread.daemon = True
-    
+
+    scanner_thread = threading.Thread(
+        target=run_scanner,
+        daemon=True
+    )
+
     scanner_thread.start()
-        
+
     app.run(
-            host="0.0.0.0",
-            port=10000
+        host="0.0.0.0",
+        port=10000,
+        debug=False
     )
