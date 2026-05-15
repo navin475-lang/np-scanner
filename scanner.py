@@ -292,19 +292,33 @@ def scan_market():
         
         try:
         
-            ticker = yf.Ticker(stock)
+            clean_stock = stock.replace(".NS", "")
         
-            df = ticker.history(
-                period="60d",
-                interval="90m",
-                timeout=15
+            data = equity_history(
+                clean_stock,
+                "EQ",
+                "01-03-2026",
+                "15-05-2026"
             )
+        
+            df = pd.DataFrame(data)
         
             if df.empty:
         
                 print(f"{stock} EMPTY DATA ❌")
         
                 continue
+        
+            df.rename(columns={
+        
+                "CH_TIMESTAMP": "Datetime",
+                "CH_CLOSING_PRICE": "Close",
+                "CH_OPENING_PRICE": "Open",
+                "CH_TRADE_HIGH_PRICE": "High",
+                "CH_TRADE_LOW_PRICE": "Low",
+                "CH_TOT_TRADED_QTY": "Volume"
+        
+            }, inplace=True)
         
             print(df.tail())
         
