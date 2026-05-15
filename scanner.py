@@ -295,14 +295,20 @@ def scan_market():
         
         try:
         
-            ticker = yf.Ticker("BSE.NS")
+            ticker = yf.Ticker(stock)
         
             print("STEP 2 ✅")
         
+            print("Before history call 🚀")
+        
             df = ticker.history(
-                period="60d",
-                interval="1h"
+                period="7d",
+                interval="1h",
+                auto_adjust=False,
+                prepost=False
             )
+        
+            print("After history call 🚀")
         
             print("STEP 3 ✅")
         
