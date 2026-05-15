@@ -11,6 +11,7 @@ import threading
 import socket
 from nsepython import *
 import pandas as pd
+import concurrent.futures
 
 
 socket.setdefaulttimeout(20)
@@ -298,12 +299,19 @@ def scan_market():
     
             print("Before NSE call")
     
-            data = equity_history(
-                clean_stock,
-                "EQ",
-                "01-01-2025",
-                "14-05-2026"
-            )
+            import concurrent.futures
+            
+            with concurrent.futures.ThreadPoolExecutor() as executor:
+            
+                future = executor.submit(
+                    equity_history,
+                    clean_stock,
+                    "EQ",
+                    "01-01-2025",
+                    "14-05-2026"
+                )
+            
+                data = future.result(timeout=20)
     
             print("After NSE call")
     
