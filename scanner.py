@@ -293,21 +293,21 @@ def scan_market():
         
             df = yf.download(
                 stock,
-                interval="90m",
-                period="20d",
+                interval="1d",
+                period="3mo",
                 progress=False,
                 threads=False,
                 auto_adjust=True,
-                timeout=15
+                timeout=10
             )
         
-            print(f"{stock} download completed ✅")
+            print(df.tail())
+        
+            print(f"{stock} SUCCESS ✅")
         
         except Exception as e:
         
-            print(f"{stock} download failed ❌ {e}")
-        
-            continue
+            print(f"{stock} failed ❌ {e}")
         
             # ====================================
             # EMA
