@@ -10,7 +10,6 @@ import sqlite3
 import threading
 import socket
 from nsepython import *
-import pandas as pd
 import concurrent.futures
 
 IST = pytz.timezone("Asia/Kolkata")
