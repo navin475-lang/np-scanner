@@ -1,4 +1,5 @@
 import pytz
+from datetime import datetime
 from flask import Flask, render_template
 from threading import Thread
 import yfinance as yf
@@ -13,6 +14,7 @@ from nsepython import *
 import pandas as pd
 import concurrent.futures
 
+IST = pytz.timezone("Asia/Kolkata")
 
 socket.setdefaulttimeout(20)
 
@@ -95,7 +97,7 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.datetime.now().strftime(
+                datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
             )
@@ -275,7 +277,7 @@ def scan_market():
 
     print("Scanner Time Started ✅")
 
-    scanner_status["last_scan"] = datetime.datetime.now().strftime(
+    scanner_status["last_scan"] = datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
     "%d-%m-%Y %I:%M:%S %p"
     )
 
@@ -546,7 +548,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now()}
+Time : {datetime.now(pytz.timezone("Asia/Kolkata"))}
 """
 
                 print(message)
@@ -559,7 +561,10 @@ Time : {datetime.datetime.now()}
                     close,
                     rsi,
                     score,
-                    "90m"
+                    "90m",
+                    datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
                 )
 
                 sent_alerts.add(f"{stock}_BUY")
@@ -581,7 +586,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now()}
+Time : {datetime.now(pytz.timezone("Asia/Kolkata"))}
 """
 
                 print(message)
@@ -594,7 +599,10 @@ Time : {datetime.datetime.now()}
                     close,
                     rsi,
                     score,
-                    "90m"
+                    "90m",
+                    datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
                 )
 
                 sent_alerts.add(f"{stock}_ADD")
@@ -616,7 +624,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now()}
+Time : {datetime.now(pytz.timezone("Asia/Kolkata"))}
 """
 
                 print(message)
@@ -629,7 +637,10 @@ Time : {datetime.datetime.now()}
                     close,
                     rsi,
                     score,
-                    "90m"
+                    "90m",
+                    datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+                        "%Y-%m-%d %H:%M:%S"
+                    )
                 )
 
                 sent_alerts.add(f"{stock}_SELL")
