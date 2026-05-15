@@ -303,7 +303,8 @@ def scan_market():
                 threads=False,
                 timeout=20
             )
-        
+            print(df.tail())
+            
             print("STEP 2 ✅")
         
             if df.empty:
@@ -316,7 +317,7 @@ def scan_market():
         
         print("STEP 3 ✅")
     
-            print(df.tail())
+            
     
             # EMA
             df["EMA10"] = df["Close"].ewm(span=10).mean()
