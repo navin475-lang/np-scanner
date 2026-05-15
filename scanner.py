@@ -293,9 +293,12 @@ def scan_market():
         
         try:
         
+            print("STEP 1 ✅")
+        
             clean_stock = stock.replace(".NS", "")
         
             def fetch_data():
+        
                 return equity_history(
                     clean_stock,
                     "EQ",
@@ -303,38 +306,25 @@ def scan_market():
                     "15-05-2026"
                 )
         
+            print("STEP 2 ✅")
+        
             with ThreadPoolExecutor(max_workers=1) as executor:
         
                 future = executor.submit(fetch_data)
         
+                print("STEP 3 ✅")
+        
                 data = future.result(timeout=20)
+        
+                print("STEP 4 ✅")
         
             df = pd.DataFrame(data)
         
-            if df.empty:
-        
-                print(f"{stock} EMPTY DATA ❌")
-        
-                continue
-        
-            df.rename(columns={
-        
-                "CH_TIMESTAMP": "Datetime",
-                "CH_CLOSING_PRICE": "Close",
-                "CH_OPENING_PRICE": "Open",
-                "CH_TRADE_HIGH_PRICE": "High",
-                "CH_TRADE_LOW_PRICE": "Low",
-                "CH_TOT_TRADED_QTY": "Volume"
-        
-            }, inplace=True)
-        
             print(f"{stock} Download Success ✅")
-        
-            print(f"{stock} Indicators Started ✅")
         
         except Exception as e:
         
-            print(f"{stock} Download Failed ❌ {e}")
+            print(f"{stock} failed ❌ {e}")
         
             continue
 
