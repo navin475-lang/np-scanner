@@ -291,14 +291,12 @@ def scan_market():
         
         try:
         
-            df = yf.download(
-                stock,
+            ticker = yf.Ticker(stock)
+        
+            df = ticker.history(
                 interval="1d",
                 period="3mo",
-                progress=False,
-                threads=False,
-                auto_adjust=True,
-                timeout=10
+                auto_adjust=True
             )
         
             print(df.tail())
@@ -308,6 +306,8 @@ def scan_market():
         except Exception as e:
         
             print(f"{stock} failed ❌ {e}")
+        
+            continue
         
             # ====================================
             # EMA
