@@ -96,8 +96,8 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")               
-           
+                datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")
+            )
 
         conn.commit()
 
