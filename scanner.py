@@ -291,45 +291,30 @@ def scan_market():
 
     for stock in stocks:
         
-        print(f"Downloading {stock}")
-    
+        print("STEP 1 ✅")
+        
         try:
-    
-            print("STEP 1 ✅")
-            print("Before Yahoo Call")
-                        
-            end_time = int(time.time())
-            
-            start_time = end_time - (60 * 24 * 60 * 60)
-            
-            symbol = stock
-            
-            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=90m&period1={start_time}&period2={end_time}"
-            
-            response = requests.get(url, timeout=15)
-            
-            data = response.json()
-            
-            timestamps = data["chart"]["result"][0]["timestamp"]
-            
-            quotes = data["chart"]["result"][0]["indicators"]["quote"][0]
-            
-            df = pd.DataFrame({
-                "Datetime": timestamps,
-                "Open": quotes["open"],
-                "High": quotes["high"],
-                "Low": quotes["low"],
-                "Close": quotes["close"],
-                "Volume": quotes["volume"]
-            })            
-           
-            print("After Yahoo Call ✅")
-            print("STEP 4 ✅")
-            
-                
+        
+            df = yf.download(
+                stock,
+                period="60d",
+                interval="90m",
+                progress=False,
+                threads=False,
+                timeout=20
+            )
+        
+            print("STEP 2 ✅")
+        
             if df.empty:
                 print(f"{stock} EMPTY DATA ❌")
                 continue
+        
+        except Exception as e:
+            print(f"{stock} failed ❌ {e}")
+            continue
+        
+        print("STEP 3 ✅")
     
             print(df.tail())
     
