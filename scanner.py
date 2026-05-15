@@ -10,6 +10,7 @@ import sqlite3
 import threading
 import socket
 from nsepython import *
+session = requests.Session()
 
 from concurrent.futures import ThreadPoolExecutor
 
