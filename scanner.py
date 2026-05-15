@@ -341,13 +341,7 @@ def scan_market():
             df.dropna(inplace=True)
     
             print(f"{stock} indicators calculated ✅")
-    
-        except Exception as e:
-    
-            print(f"{stock} failed ❌ {e}")
-    
-            continue
-
+            
             # ====================================
             # VOLUME
             # ====================================
@@ -628,10 +622,13 @@ Time : {datetime.now()}
                 )
 
                 sent_alerts.add(f"{stock}_SELL")
+                
+        except Exception as e:
 
-    except Exception as e:
+            print(f"{stock} failed ❌ {e}")
 
-            print(stock, e) 
+            continue
+    
     # ====================================
     # FILTER STRONG MOMENTUM STOCKS
     # ====================================
