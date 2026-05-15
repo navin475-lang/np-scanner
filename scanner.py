@@ -548,7 +548,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now(pytz.timezone("Asia/Kolkata"))}
+Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -586,7 +586,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now(pytz.timezone("Asia/Kolkata"))}
+Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -624,7 +624,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now(pytz.timezone("Asia/Kolkata"))}
+Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
