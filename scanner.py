@@ -295,6 +295,8 @@ def scan_market():
         
         try:
         
+            start = time.time()
+        
             df = yf.download(
                 stock,
                 interval="90m",
@@ -302,10 +304,10 @@ def scan_market():
                 progress=False,
                 auto_adjust=True,
                 threads=False,
-                timeout=20
+                timeout=15
             )
         
-            print("After Yahoo Download")
+            print(f"Yahoo response time: {round(time.time()-start,2)} sec")
         
             if df.empty:
         
@@ -313,12 +315,14 @@ def scan_market():
         
                 continue
         
-            # EMA LINES
+            print("Download completed ✅")
+        
+            # EMA
             df["EMA10"] = df["Close"].ewm(span=10).mean()
         
             df["EMA20"] = df["Close"].ewm(span=20).mean()
         
-            print(df.tail(3))
+            print(df.tail(2))
         
             print(f"{stock} SUCCESS ✅")
         
