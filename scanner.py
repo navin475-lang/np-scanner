@@ -9,6 +9,8 @@ import sqlite3
 from datetime import datetime
 import threading
 import socket
+from nsepython import *
+import pandas as pd
 
 socket.setdefaulttimeout(20)
 
@@ -285,21 +287,22 @@ def scan_market():
     # STOCK LOOP
     # ====================================
 
-    for stock in stocks:
-    
+    for stock in stocks:    
+               
         print(f"Downloading {stock}")
         
         try:
         
-            ticker = yf.Ticker(stock)
+            clean_stock = stock.replace(".NS", "")
         
-            df = ticker.history(
-                interval="1d",
-                period="3mo",
-                auto_adjust=True
+            data = equity_history(
+                clean_stock,
+                "EQ",
+                "01-01-2025",
+                "14-05-2026"
             )
         
-            print(df.tail())
+            print(data[-3:])
         
             print(f"{stock} SUCCESS ✅")
         
