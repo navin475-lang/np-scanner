@@ -291,45 +291,41 @@ def scan_market():
 
     for stock in stocks:
     
-        print(f"LOOP STARTED : {stock}")
-    
+        print(f"Downloading {stock}")
+        
         try:
-    
-            clean_stock = stock.replace(".NS", "")
-    
-            print("Before NSE call")
-    
-            import concurrent.futures
-            
-            with concurrent.futures.ThreadPoolExecutor() as executor:
-            
-                future = executor.submit(
-                    equity_history,
-                    clean_stock,
-                    "EQ",
-                    "01-01-2025",
-                    "14-05-2026"
-                )
-            
-                data = future.result(timeout=20)
-    
-            print("After NSE call")
-    
-            df = pd.DataFrame(data)
-    
-            print(data[-3:])
-    
-            # EMA
-            df["EMA10"] = df["CH_CLOSING_PRICE"].ewm(span=10).mean()
-    
-            df["EMA20"] = df["CH_CLOSING_PRICE"].ewm(span=20).mean()
-    
+        
+            df = yf.download(
+                stock,
+                interval="90m",
+                period="6mo",
+                progress=False,
+                auto_adjust=True,
+                threads=False,
+                timeout=20
+            )
+        
+            print("After Yahoo Download")
+        
+            if df.empty:
+        
+                print(f"{stock} EMPTY DATA ❌")
+        
+                continue
+        
+            # EMA LINES
+            df["EMA10"] = df["Close"].ewm(span=10).mean()
+        
+            df["EMA20"] = df["Close"].ewm(span=20).mean()
+        
+            print(df.tail(3))
+        
             print(f"{stock} SUCCESS ✅")
-    
+        
         except Exception as e:
-    
+        
             print(f"{stock} failed ❌ {e}")
-    
+        
             continue
     
       
