@@ -6,7 +6,7 @@ import pandas as pd
 import requests
 import time
 import sqlite3
-from datetime import datetime
+import datetime
 import threading
 import socket
 from nsepython import *
@@ -94,7 +94,7 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.now().strftime(
+                datetime.datetime.now().strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
             )
@@ -274,7 +274,7 @@ def scan_market():
 
     print("Scanner Time Started ✅")
 
-    scanner_status["last_scan"] = datetime.now().strftime(
+    scanner_status["last_scan"] = datetime.datetime.now().strftime(
     "%d-%m-%Y %I:%M:%S %p"
     )
 
@@ -533,7 +533,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now()}
+Time : {datetime.datetime.now()}
 """
 
                 print(message)
@@ -568,7 +568,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now()}
+Time : {datetime.datetime.now()}
 """
 
                 print(message)
@@ -603,7 +603,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now()}
+Time : {datetime.datetime.now()}
 """
 
                 print(message)
