@@ -96,7 +96,7 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")
+                datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
             )
 
         conn.commit()
@@ -522,7 +522,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(IST)).strftime(
+Time : {datetime.datetime.now(IST).strftime(
         "%Y-%m-%d %H:%M:%S")}
 """
 
@@ -558,7 +558,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -593,7 +593,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(IST)).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
