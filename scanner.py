@@ -313,6 +313,8 @@ def scan_market():
             df["EMA20"] = df["Close"].ewm(span=20).mean()
 
             df["EMA50"] = df["Close"].ewm(span=50).mean()
+
+            print(f"{stock} indicators calculated ✅")
     
             # RSI
             delta = df["Close"].diff()
@@ -335,13 +337,8 @@ def scan_market():
     
             print(f"{stock} failed ❌ {e}")
     
-            continue    
-      
-               
-            df.dropna(inplace=True)
-    
-            print(f"{stock} indicators calculated ✅")
-            
+            continue  
+              
             # ====================================
             # VOLUME
             # ====================================
