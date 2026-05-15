@@ -290,55 +290,41 @@ def scan_market():
     for stock in stocks:
     
         print(f"Downloading {stock}")
-        
+    
         try:
-        
+    
             print("STEP 1 ✅")
-        
-            clean_stock = stock.replace(".NS", "")
-        
-            def fetch_data():
-        
-                return equity_history(
-                    clean_stock,
-                    "EQ",
-                    "01-03-2026",
-                    "15-05-2026"
-                )
-        
-            print("STEP 2 ✅")
-        
-            with ThreadPoolExecutor(max_workers=1) as executor:
-        
-                future = executor.submit(fetch_data)
-        
-                print("STEP 3 ✅")
-        
-                data = future.result(timeout=20)
-        
-                print("STEP 4 ✅")
-        
-            df = pd.DataFrame(data)
-        
-            print(f"{stock} Download Success ✅")
-        
-        except Exception as e:
-        
-            print(f"{stock} failed ❌ {e}")
-        
-            continue
-
-            print(f"{stock} Indicators Started ✅")
+    
+            df = yf.download(
+                tickers=stock,
+                period="60d",
+                interval="90m",
+                progress=False,
+                auto_adjust=True,
+                threads=False
+            )
+    
+            print("STEP 4 ✅")
+    
+            if df.empty:
+                print(f"{stock} EMPTY DATA ❌")
+                continue
+    
+            print(df.tail())
     
             # EMA
             df["EMA10"] = df["Close"].ewm(span=10).mean()
-    
             df["EMA20"] = df["Close"].ewm(span=20).mean()
-
             df["EMA50"] = df["Close"].ewm(span=50).mean()
-
+    
             print(f"{stock} indicators calculated ✅")
     
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
+            continue            
+
+               
             # RSI
             delta = df["Close"].diff()
     
