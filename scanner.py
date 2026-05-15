@@ -8,7 +8,9 @@ import time
 import sqlite3
 from datetime import datetime
 import threading
+import socket
 
+socket.setdefaulttimeout(20)
 
 print("NEW CODE VERSION LOADED 🚀")
 
@@ -285,41 +287,27 @@ def scan_market():
 
     for stock in stocks:
     
-        print(f"Scanning {stock}")
+        print(f"Downloading {stock}")
     
-        time.sleep(2)
+    try:
     
-        try:
+        df = yf.download(
+            stock,
+            interval="90m",
+            period="20d",
+            progress=False,
+            threads=False,
+            auto_adjust=True,
+            timeout=15
+        )
     
-            print("Before download")
+        print(f"{stock} download completed ✅")
     
-            df = yf.download(
-                stock,
-                interval="1h",
-                period="1mo",
-                progress=False,
-                threads=False,
-                auto_adjust=True,
-                timeout=10
-            )
+    except Exception as e:
     
-            print("After download ✅")
+        print(f"{stock} download failed ❌ {e}")
     
-            print(df.tail())
-    
-            if df.empty:
-    
-                print(f"{stock} empty ❌")
-    
-                continue
-    
-            print(f"{stock} candles = {len(df)}")
-    
-        except Exception as e:
-    
-            print(f"{stock} failed ❌ {e}")
-    
-            continue
+        continue
         
             # ====================================
             # EMA
