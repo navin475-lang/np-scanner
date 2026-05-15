@@ -9,6 +9,8 @@ import sqlite3
 import threading
 import socket
 from nsepython import *
+import requests
+import io
 
 
 from concurrent.futures import ThreadPoolExecutor
@@ -295,13 +297,32 @@ def scan_market():
     
             print("STEP 1 ✅")
             print("Before Yahoo Call")
-            ticker = yf.Ticker(stock)
+                        
+            end_time = int(time.time())
             
-            df = ticker.history(
-                period="60d",
-                interval="90m",
-                auto_adjust=True
-            )
+            start_time = end_time - (60 * 24 * 60 * 60)
+            
+            symbol = stock
+            
+            url = f"https://query1.finance.yahoo.com/v8/finance/chart/{symbol}?interval=90m&period1={start_time}&period2={end_time}"
+            
+            response = requests.get(url, timeout=15)
+            
+            data = response.json()
+            
+            timestamps = data["chart"]["result"][0]["timestamp"]
+            
+            quotes = data["chart"]["result"][0]["indicators"]["quote"][0]
+            
+            df = pd.DataFrame({
+                "Datetime": timestamps,
+                "Open": quotes["open"],
+                "High": quotes["high"],
+                "Low": quotes["low"],
+                "Close": quotes["close"],
+                "Volume": quotes["volume"]
+            })            
+           
             print("After Yahoo Call ✅")
             print("STEP 4 ✅")
             
