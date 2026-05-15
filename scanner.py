@@ -12,6 +12,7 @@ import socket
 from nsepython import *
 import pandas as pd
 
+
 socket.setdefaulttimeout(20)
 
 print("NEW CODE VERSION LOADED 🚀")
