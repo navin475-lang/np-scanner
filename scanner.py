@@ -98,6 +98,7 @@ def save_signal(
                 timeframe,
                 datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
             )
+            )
 
         conn.commit()
 
