@@ -295,18 +295,17 @@ def scan_market():
     
             print("STEP 1 ✅")
             
-            df = yf.download(
-                tickers=stock,
+            ticker = yf.Ticker(stock)
+            
+            df = ticker.history(
                 period="60d",
                 interval="90m",
-                progress=False,
-                auto_adjust=True,
-                threads=False,
-                timeout=15
+                auto_adjust=True
             )
             
             print("STEP 4 ✅")
-    
+            
+                
             if df.empty:
                 print(f"{stock} EMPTY DATA ❌")
                 continue
