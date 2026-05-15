@@ -287,38 +287,35 @@ def scan_market():
     # STOCK LOOP
     # ====================================
 
-    for stock in stocks:    
-               
-        print(f"Downloading {stock}")
-        
+    for stock in stocks:
+    
         try:
-        
+    
+            # NSE DATA
             clean_stock = stock.replace(".NS", "")
-        
+    
             data = equity_history(
                 clean_stock,
                 "EQ",
                 "01-01-2025",
                 "14-05-2026"
             )
-        
-            print(data[-3:])
-        
-            print(f"{stock} SUCCESS ✅")
-        
-        except Exception as e:
-        
-            print(f"{stock} failed ❌ {e}")
-        
-            continue
-        
-            # ====================================
+    
+            df = pd.DataFrame(data)
+    
+            if df.empty:
+                continue
+    
             # EMA
-            # ====================================
+            df["EMA10"] = df["CH_CLOSING_PRICE"].ewm(span=10).mean()
     
-            df["EMA10"] = df["Close"].ewm(span=10).mean()
+            df["EMA20"] = df["CH_CLOSING_PRICE"].ewm(span=20).mean()
     
-            df["EMA50"] = df["Close"].ewm(span=50).mean()
+            print(f"{stock} SUCCESS ✅")
+    
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
     
             # ====================================
             # RSI
