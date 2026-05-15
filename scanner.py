@@ -297,14 +297,12 @@ def scan_market():
         
             start = time.time()
         
-            df = yf.download(
-                stock,
+            ticker = yf.Ticker(stock)
+        
+            df = ticker.history(
                 interval="90m",
                 period="60d",
-                progress=False,
-                auto_adjust=True,
-                threads=False,
-                timeout=15
+                auto_adjust=True
             )
         
             print(f"Yahoo response time: {round(time.time()-start,2)} sec")
