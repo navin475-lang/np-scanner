@@ -1,5 +1,5 @@
 import pytz
-from datetime import datetime
+import datetime
 from flask import Flask, render_template
 from threading import Thread
 import yfinance as yf
@@ -95,7 +95,7 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+                datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
                     "%Y-%m-%d %H:%M:%S"
                 )
             )
@@ -275,7 +275,7 @@ def scan_market():
 
     print("Scanner Time Started ✅")
 
-    scanner_status["last_scan"] = datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
+    scanner_status["last_scan"] = datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
     "%d-%m-%Y %I:%M:%S %p"
     )
 
@@ -526,7 +526,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -561,7 +561,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -596,7 +596,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
