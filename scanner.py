@@ -288,20 +288,30 @@ def scan_market():
 
     for stock in stocks:
     
+        print(f"Downloading {stock}")
+        
         try:
-    
-            print(f"Downloading {stock}")
-    
-            ticker = yf.Ticker(stock)
-    
-            df = ticker.history(
+        
+            df = yf.download(
+                stock,
+                period="3mo",
                 interval="90m",
-                period="60d",
-                auto_adjust=True
+                progress=False,
+                timeout=20,
+                threads=False
             )
-    
+        
             if df.empty:
+                print(f"{stock} No Data ❌")
                 continue
+        
+            print(f"{stock} Download Success ✅")
+        
+        except Exception as e:
+        
+            print(f"{stock} Download Failed ❌ {e}")
+        
+            continue
     
             # EMA
             df["EMA10"] = df["Close"].ewm(span=10).mean()
