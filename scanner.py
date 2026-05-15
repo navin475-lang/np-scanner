@@ -288,13 +288,13 @@ def scan_market():
     # ====================================
 
     for stock in stocks:
-    
+        
         print(f"Downloading {stock}")
     
         try:
     
             print("STEP 1 ✅")
-            
+            print("Before Yahoo Call")
             ticker = yf.Ticker(stock)
             
             df = ticker.history(
@@ -302,7 +302,7 @@ def scan_market():
                 interval="90m",
                 auto_adjust=True
             )
-            
+            print("After Yahoo Call ✅")
             print("STEP 4 ✅")
             
                 
@@ -718,10 +718,17 @@ def run_scanner():
 
 if __name__ == "__main__":
 
-    run_scanner()
+    scanner_thread = threading.Thread(
+        target=run_scanner
+    )
+
+    scanner_thread.daemon = True
+
+    scanner_thread.start()
 
     app.run(
         host="0.0.0.0",
         port=10000,
-        debug=False
+        debug=False,
+        use_reloader=False
     )
