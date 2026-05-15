@@ -10,7 +10,7 @@ import sqlite3
 import threading
 import socket
 from nsepython import *
-import concurrent.futures
+
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -294,16 +294,17 @@ def scan_market():
         try:
     
             print("STEP 1 ✅")
-    
+            
             df = yf.download(
                 tickers=stock,
                 period="60d",
                 interval="90m",
                 progress=False,
                 auto_adjust=True,
-                threads=False
+                threads=False,
+                session=session
             )
-    
+            
             print("STEP 4 ✅")
     
             if df.empty:
