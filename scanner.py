@@ -11,6 +11,7 @@ import threading
 import socket
 from nsepython import *
 import concurrent.futures
+from concurrent.futures import ThreadPoolExecutor
 
 
 IST = pytz.timezone("Asia/Kolkata")
@@ -294,12 +295,19 @@ def scan_market():
         
             clean_stock = stock.replace(".NS", "")
         
-            data = equity_history(
-                clean_stock,
-                "EQ",
-                "01-03-2026",
-                "15-05-2026"
-            )
+            def fetch_data():
+                return equity_history(
+                    clean_stock,
+                    "EQ",
+                    "01-03-2026",
+                    "15-05-2026"
+                )
+        
+            with ThreadPoolExecutor(max_workers=1) as executor:
+        
+                future = executor.submit(fetch_data)
+        
+                data = future.result(timeout=20)
         
             df = pd.DataFrame(data)
         
@@ -320,9 +328,9 @@ def scan_market():
         
             }, inplace=True)
         
-            print(df.tail())
-        
             print(f"{stock} Download Success ✅")
+        
+            print(f"{stock} Indicators Started ✅")
         
         except Exception as e:
         
