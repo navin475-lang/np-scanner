@@ -290,10 +290,13 @@ def scan_market():
 
     for stock in stocks:
     
+        print(f"LOOP STARTED : {stock}")
+    
         try:
     
-            # NSE DATA
             clean_stock = stock.replace(".NS", "")
+    
+            print("Before NSE call")
     
             data = equity_history(
                 clean_stock,
@@ -302,10 +305,11 @@ def scan_market():
                 "14-05-2026"
             )
     
+            print("After NSE call")
+    
             df = pd.DataFrame(data)
     
-            if df.empty:
-                continue
+            print(data[-3:])
     
             # EMA
             df["EMA10"] = df["CH_CLOSING_PRICE"].ewm(span=10).mean()
@@ -318,6 +322,9 @@ def scan_market():
     
             print(f"{stock} failed ❌ {e}")
     
+            continue
+    
+      
             # ====================================
             # RSI
             # ====================================
