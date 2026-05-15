@@ -295,7 +295,7 @@ def scan_market():
         
         try:
         
-            ticker = yf.Ticker(stock)
+            ticker = yf.Ticker("BSE.NS")
         
             print("STEP 2 ✅")
         
