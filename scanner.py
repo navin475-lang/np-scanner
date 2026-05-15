@@ -298,18 +298,29 @@ def scan_market():
             period="60d",
             progress=False,
             threads=False,
-            auto_adjust=True
+            auto_adjust=True,
+            timeout=15
         )
 
-        print("Download completed ✅")
+        print("Download complete ✅")
 
         if df.empty:
 
-            print(f"{stock} empty ❌")
+            print(f"{stock} empty data ❌")
 
             continue
 
-        print(f"{stock} candles = {len(df)}")
+        if len(df) < 50:
+
+            print(f"{stock} insufficient candles ❌")
+
+            continue
+
+    except Exception as e:
+
+        print(f"{stock} failed ❌ {e}")
+
+        continue
     
             # ====================================
             # EMA
