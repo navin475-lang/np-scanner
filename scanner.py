@@ -293,17 +293,22 @@ def scan_market():
         try:
         
             df = yf.download(
-                stock,
+                tickers=stock,
                 period="60d",
-                interval="1h",
+                interval="90m",
                 progress=False,
-                timeout=20,
-                threads=False
+                auto_adjust=True,
+                threads=False,
+                timeout=15
             )
         
             if df.empty:
-                print(f"{stock} No Data ❌")
+        
+                print(f"{stock} EMPTY DATA ❌")
+        
                 continue
+        
+            print(df.tail())
         
             print(f"{stock} Download Success ✅")
         
