@@ -298,7 +298,7 @@ def scan_market():
             df = yf.download(
                 stock,
                 interval="90m",
-                period="6mo",
+                period="60d",
                 progress=False,
                 auto_adjust=True,
                 threads=False,
