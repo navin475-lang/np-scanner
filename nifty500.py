@@ -1,5 +1,1 @@
-stocks = [
-    "RELIANCE.NS",
-    "HDFCBANK.NS",
-    "ICICIBANK.NS"
-]
+stocks = ["RELIANCE.NS"]
