@@ -333,12 +333,7 @@ def scan_market():
     
             print(f"{stock} SUCCESS ✅")
     
-        except Exception as e:
-    
-            print(f"{stock} failed ❌ {e}")
-    
-            continue  
-              
+                      
             # ====================================
             # VOLUME
             # ====================================
