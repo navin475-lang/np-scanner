@@ -4,13 +4,12 @@ from flask import Flask, render_template
 from threading import Thread
 import yfinance as yf
 import pandas as pd
-import requests
 import time
 import sqlite3
 import threading
 import socket
 from nsepython import *
-session = requests.Session()
+
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -303,7 +302,7 @@ def scan_market():
                 progress=False,
                 auto_adjust=True,
                 threads=False,
-                session=session
+                timeout=15
             )
             
             print("STEP 4 ✅")
