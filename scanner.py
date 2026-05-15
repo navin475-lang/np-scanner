@@ -290,11 +290,12 @@ def scan_market():
     
         try:
     
-            ticker = yf.Ticker(stock)
-    
-            df = ticker.history(
+            df = yf.download(
+                stock,
                 interval="90m",
                 period="60d",
+                progress=False,
+                threads=False,
                 auto_adjust=True
             )
     
