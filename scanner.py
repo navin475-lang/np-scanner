@@ -298,12 +298,14 @@ def scan_market():
             df = yf.download(
                 stock,
                 period="60d",
-                interval="90m",
+                interval="1h",
                 progress=False,
-                threads=False,
-                timeout=20
+                threads=False
             )
+            
+            print("DOWNLOAD COMPLETED ✅")
             print(df.tail())
+           
             
             print("STEP 2 ✅")
         
