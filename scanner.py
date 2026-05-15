@@ -317,6 +317,8 @@ def scan_market():
             print(f"{stock} Download Failed ❌ {e}")
         
             continue
+
+            print(f"{stock} Indicators Started ✅")
     
             # EMA
             df["EMA10"] = df["Close"].ewm(span=10).mean()
