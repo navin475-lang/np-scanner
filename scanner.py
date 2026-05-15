@@ -7,7 +7,6 @@ import pandas as pd
 import requests
 import time
 import sqlite3
-import datetime
 import threading
 import socket
 from nsepython import *
@@ -293,50 +292,29 @@ def scan_market():
 
     for stock in stocks:
     
-        print(f"Downloading {stock}")
-        
         try:
-        
-            start = time.time()
-        
+    
+            print(f"Downloading {stock}")
+    
             ticker = yf.Ticker(stock)
-        
+    
             df = ticker.history(
                 interval="90m",
                 period="60d",
                 auto_adjust=True
             )
-        
-            print(f"Yahoo response time: {round(time.time()-start,2)} sec")
-        
+    
             if df.empty:
-        
-                print(f"{stock} EMPTY DATA ❌")
-        
                 continue
-        
-            print("Download completed ✅")
-        
+    
             # EMA
             df["EMA10"] = df["Close"].ewm(span=10).mean()
-        
+    
             df["EMA20"] = df["Close"].ewm(span=20).mean()
-        
-            print(df.tail(2))
-        
-            print(f"{stock} SUCCESS ✅")
-        
-        except Exception as e:
-        
-            print(f"{stock} failed ❌ {e}")
-        
-            continue
+
+            df["EMA50"] = df["Close"].ewm(span=50).mean()
     
-      
-            # ====================================
             # RSI
-            # ====================================
-    
             delta = df["Close"].diff()
     
             gain = delta.clip(lower=0)
@@ -351,6 +329,15 @@ def scan_market():
     
             df["RSI"] = 100 - (100 / (1 + rs))
     
+            print(f"{stock} SUCCESS ✅")
+    
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
+    
+            continue    
+      
+               
             df.dropna(inplace=True)
     
             print(f"{stock} indicators calculated ✅")
@@ -561,10 +548,7 @@ Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S"
                     close,
                     rsi,
                     score,
-                    "90m",
-                    datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
+                    "90m"
                 )
 
                 sent_alerts.add(f"{stock}_BUY")
@@ -599,10 +583,7 @@ Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S"
                     close,
                     rsi,
                     score,
-                    "90m",
-                    datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
+                    "90m"
                 )
 
                 sent_alerts.add(f"{stock}_ADD")
@@ -637,10 +618,7 @@ Time : {datetime.now(pytz.timezone("Asia/Kolkata")).strftime("%Y-%m-%d %H:%M:%S"
                     close,
                     rsi,
                     score,
-                    "90m",
-                    datetime.now(pytz.timezone("Asia/Kolkata")).strftime(
-                        "%Y-%m-%d %H:%M:%S"
-                    )
+                    "90m"
                 )
 
                 sent_alerts.add(f"{stock}_SELL")
