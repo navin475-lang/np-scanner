@@ -283,45 +283,43 @@ def scan_market():
     # ====================================
 
     for stock in stocks:
-
+    
         print(f"Scanning {stock}")
-
+    
         time.sleep(2)
-
+    
         try:
-
-            print("Starting download...")
-
+    
+            print("Before download")
+    
             df = yf.download(
                 stock,
                 interval="1h",
-                period="60d",
+                period="1mo",
                 progress=False,
                 threads=False,
                 auto_adjust=True,
-                timeout=15
+                timeout=10
             )
-
-            print("Download complete ✅")
-
-            if df.empty:
-
-                print(f"{stock} empty data ❌")
-
-                continue
-
-            if len(df) < 50:
-
-                print(f"{stock} insufficient candles ❌")
-
-                continue
-
-        except Exception as e:
-
-            print(f"{stock} failed ❌ {e}")
-
-            continue
     
+            print("After download ✅")
+    
+            print(df.tail())
+    
+            if df.empty:
+    
+                print(f"{stock} empty ❌")
+    
+                continue
+    
+            print(f"{stock} candles = {len(df)}")
+    
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
+    
+            continue
+        
             # ====================================
             # EMA
             # ====================================
