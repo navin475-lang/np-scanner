@@ -273,9 +273,7 @@ def scan_market():
 
     print("Scanner Time Started ✅")
 
-    scanner_status["last_scan"] = datetime.datetime.now(IST)).strftime(
-                                    "%d-%m-%Y %I:%M:%S %p"
-                                    )
+    scanner_status["last_scan"] = datetime.datetime.now(IST)).strftime("%d-%m-%Y %I:%M:%S %p")
 
     scanner_status["stocks_scanned"] = len(stocks)
 
