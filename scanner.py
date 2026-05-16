@@ -10,7 +10,6 @@ import socket
 import requests
 import io
 
-from datetime import datetime, timedelta
 from nsepython import *
 from concurrent.futures import ThreadPoolExecutor
 
@@ -294,9 +293,9 @@ def scan_market():
         
         try:
         
-            end_date = datetime.now()
-        
-            start_date = end_date - timedelta(days=60)
+            end_date = datetime.datetime.now(IST)
+
+            start_date = end_date - datetime.timedelta(days=60)
         
             start_date = start_date.strftime("%d-%m-%Y")
             end_date = end_date.strftime("%d-%m-%Y")
