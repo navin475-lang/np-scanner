@@ -295,18 +295,17 @@ def scan_market():
         
         try:
         
-            ticker = yf.Ticker(stock)
-        
-            print("STEP 2 ✅")
-        
-            print("Before history call 🚀")
-        
-            df = ticker.history(
-                period="7d",
-                interval="1h",
-                auto_adjust=False,
-                prepost=False
+            print("Using direct download 🚀")
+            
+            df = yf.download(
+                tickers="RELIANCE.NS",
+                period="5d",
+                interval="1d",
+                progress=False
             )
+            
+            print("Download finished 🚀")
+            print(df.tail())
         
             print("After history call 🚀")
         
