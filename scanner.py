@@ -11,7 +11,14 @@ import socket
 from nsepython import *
 import requests
 import io
+from datetime import datetime, timedelta
 
+data = equity_history(
+    symbol=stock.replace(".NS", ""),
+    series="EQ",
+    start_date=start_date,
+    end_date=end_date
+)
 
 from concurrent.futures import ThreadPoolExecutor
 
@@ -297,12 +304,18 @@ def scan_market():
         
             print("Using direct download 🚀")
             
-            df = yf.download(
-                tickers="RELIANCE.NS",
-                period="5d",
-                interval="1d",
-                progress=False
+            print("Fetching NSE data 🚀")
+            
+            data = equity_history(
+                symbol=stock.replace(".NS", ""),
+                series="EQ",
+                start_date="01-03-2026",
+                end_date="15-05-2026"
             )
+            
+            df = pd.DataFrame(data)
+            
+            print(df.tail())
             
             print("Download finished 🚀")
             print(df.tail())
