@@ -294,29 +294,78 @@ def scan_market():
     
     for stock in STOCKS:
     
-        print("STEP 1 ✅")
-        
-        import yfinance as yf
-        
         try:
-        
-            print("Before download 🚀")
-        
-            df = yf.download(
-                "RELIANCE.NS",
-                period="5d",
-                interval="1d",
-                progress=False,
-                threads=False
+    
+            print("STEP 1 ✅")
+            print("Fetching NSE data 🚀")
+    
+            end_date = datetime.datetime.now(IST)
+    
+            start_date = end_date - datetime.timedelta(days=90)
+    
+            data = equity_history(
+    
+                symbol=stock.replace(".NS", ""),
+                series="EQ",
+    
+                start_date=start_date.strftime("%d-%m-%Y"),
+    
+                end_date=end_date.strftime("%d-%m-%Y")
+    
             )
-        
-            print("After download ✅")
-        
-            print(df.tail())
-        
+    
+            print("STEP 2 ✅")
+    
+            df = pd.DataFrame(data)
+    
+            if df.empty:
+    
+                print(f"{stock} no data found ❌")
+    
+                continue
+    
+            print("STEP 3 ✅")
+    
+            # ====================================
+            # COLUMN CLEANING
+            # ====================================
+    
+            df.rename(columns={
+    
+                "CH_CLOSING_PRICE": "Close",
+                "CH_TRADE_HIGH_PRICE": "High",
+                "CH_TRADE_LOW_PRICE": "Low",
+                "CH_OPENING_PRICE": "Open",
+                "CH_TOT_TRADED_QTY": "Volume"
+    
+            }, inplace=True)
+    
+            # ====================================
+            # CONVERT TO NUMERIC
+            # ====================================
+    
+            df["Close"] = pd.to_numeric(df["Close"])
+            df["High"] = pd.to_numeric(df["High"])
+            df["Low"] = pd.to_numeric(df["Low"])
+            df["Open"] = pd.to_numeric(df["Open"])
+            df["Volume"] = pd.to_numeric(df["Volume"])
+    
+            print("Indicators calculated ✅")
+    
+            # ====================================
+            # YOUR INDICATOR CODE BELOW
+            # ====================================
+    
+            # Example:
+            close = df["Close"].iloc[-1]
+    
+            print(f"{stock} Close Price = {close}")
+    
+    
+    
         except Exception as e:
-        
-            print(f"DOWNLOAD FAILED ❌ {e}")
+    
+            print(f"{stock} failed ❌ {e}")
     
             continue
     
