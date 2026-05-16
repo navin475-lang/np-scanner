@@ -1,10 +1,12 @@
 import yfinance as yf
 import pandas as pd
-import datetime
 import sqlite3
 import time
 import pytz
+import socket
 
+from flask import Flask, render_template
+from datetime import datetime, timedelta
 
 
 
