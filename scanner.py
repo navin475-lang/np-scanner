@@ -295,7 +295,7 @@ def scan_market():
             print("STEP 1 ✅")
             print("Fetching Yahoo data 🚀")
     
-            ticker = yf.Ticker(stock)
+            ticker = yf.Ticker("BSE.NS")
     
             df = ticker.history(
                 period="3mo",
