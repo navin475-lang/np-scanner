@@ -288,26 +288,28 @@ def scan_market():
     # STOCK LOOP
     # ====================================
 
-    for stock in stocks:
-        
-        print("STEP 1 ✅")
-        print("Fetching Yahoo data 🚀")
-        
-        ticker = yf.Ticker(stock)
-        
-        df = ticker.history(
-            period="3mo",
-            interval="1d",
-            timeout=10
-        )
-        
-        print("STEP 2 ✅")
-        
-        if df.empty:
-            print(f"{stock} no data found ❌")
-            continue
-        
-        print("STEP 3 ✅")
+    for stock in STOCKS:
+    
+        try:
+    
+            print("STEP 1 ✅")
+            print("Fetching Yahoo data 🚀")
+    
+            ticker = yf.Ticker(stock)
+    
+            df = ticker.history(
+                period="3mo",
+                interval="1d",
+                timeout=10
+            )
+    
+            print("STEP 2 ✅")
+    
+            if df.empty:
+                print(f"{stock} no data found ❌")
+                continue
+    
+            print("STEP 3 ✅")
     
             
     
