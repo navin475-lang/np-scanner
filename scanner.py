@@ -1,15 +1,9 @@
-import pytz
-import datetime
 import yfinance as yf
-from flask import Flask, render_template
-from threading import Thread
 import pandas as pd
-import time
+import datetime
 import sqlite3
-import threading
-import socket
-import io
-
+import time
+import pytz
 
 
 
