@@ -290,63 +290,118 @@ def scan_market():
     # ====================================
 
     for stock in stocks:
+        
         print("STEP 1 ✅")
         
         try:
-            ticker = yf.Ticker(stock)  # ← Use the actual stock symbol
+        
+            ticker = yf.Ticker(stock)
+        
             print("STEP 2 ✅")
+        
+            print("Before history call 🚀")
+        
+            import signal
             
-            df = ticker.history(period="60d", interval="1h")
+            class TimeoutException(Exception):
+                pass
+            
+            def timeout_handler(signum, frame):
+                raise TimeoutException()
+            
+            signal.signal(signal.SIGALRM, timeout_handler)
+            
+            signal.alarm(15)
+            
+            try:
+            
+                df = ticker.history(
+                    period="7d",
+                    interval="1h"
+                )
+            
+                signal.alarm(0)
+            
+            except TimeoutException:
+                print(f"{stock} Yahoo timeout ❌")
+                continue
+        
+            print("After history call 🚀")
+        
             print("STEP 3 ✅")
-            
+        
+            print(df.tail())
+        
             if df.empty:
                 print(f"{stock} EMPTY DATA ❌")
                 continue
-    
-            # === EMA ===
-            df["EMA10"] = df["Close"].ewm(span=10).mean()
-            df["EMA20"] = df["Close"].ewm(span=20).mean()
-            df["EMA50"] = df["Close"].ewm(span=50).mean()
-            print(f"{stock} indicators calculated ✅")
-    
-            # === RSI ===
-            delta = df["Close"].diff()
-            gain = delta.clip(lower=0)
-            loss = -delta.clip(upper=0)
-            avg_gain = gain.rolling(14).mean()
-            avg_loss = loss.rolling(14).mean()
-            rs = avg_gain / avg_loss
-            df["RSI"] = 100 - (100 / (1 + rs))
-    
-            # === Volume ===
-            df["VOL_MA"] = df["Volume"].rolling(20).mean()
-    
-            # === ATR ===
-            df["H-L"] = df["High"] - df["Low"]
-            df["H-PC"] = abs(df["High"] - df["Close"].shift(1))
-            df["L-PC"] = abs(df["Low"] - df["Close"].shift(1))
-            df["TR"] = df[["H-L", "H-PC", "L-PC"]].max(axis=1)
-            df["ATR"] = df["TR"].rolling(14).mean()
-    
-            print(f"{stock} SUCCESS ✅")
-    
-            # === Latest values ===
-            latest = df.iloc[-1]
-            close = float(latest["Close"])
-            ema10 = float(latest["EMA10"])
-            ema50 = float(latest["EMA50"])
-            rsi = float(latest["RSI"])
-            volume = float(latest["Volume"])
-            vol_ma = float(latest["VOL_MA"])
-            atr = float(latest["ATR"])
-    
-            # ... rest of your weekly data fetch, signals, alerts, etc.
-            # (keep all that logic here, INSIDE the try block, BEFORE the except)
-    
+        
         except Exception as e:
             print(f"{stock} failed ❌ {e}")
             continue
+        
+            print("STEP 4 ✅")
+    
+            
+    
+            # EMA
+            df["EMA10"] = df["Close"].ewm(span=10).mean()
+            df["EMA20"] = df["Close"].ewm(span=20).mean()
+            df["EMA50"] = df["Close"].ewm(span=50).mean()
+    
+            print(f"{stock} indicators calculated ✅")
+    
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
+            continue            
 
+               
+            # RSI
+            delta = df["Close"].diff()
+    
+            gain = delta.clip(lower=0)
+    
+            loss = -delta.clip(upper=0)
+    
+            avg_gain = gain.rolling(14).mean()
+    
+            avg_loss = loss.rolling(14).mean()
+    
+            rs = avg_gain / avg_loss
+    
+            df["RSI"] = 100 - (100 / (1 + rs))
+    
+            print(f"{stock} SUCCESS ✅")
+    
+                      
+            # ====================================
+            # VOLUME
+            # ====================================
+
+            df["VOL_MA"] = df["Volume"].rolling(20).mean()
+
+            # ====================================
+            # ATR
+            # ====================================
+
+            df["H-L"] = df["High"] - df["Low"]
+
+            df["H-PC"] = abs(df["High"] - df["Close"].shift(1))
+
+            df["L-PC"] = abs(df["Low"] - df["Close"].shift(1))
+
+            df["TR"] = df[["H-L", "H-PC", "L-PC"]].max(axis=1)
+
+            df["ATR"] = df["TR"].rolling(14).mean()
+            #==============================
+            latest = df.iloc[-1]
+            
+            close = float(latest["Close"])
+            
+            ema10 = float(latest["EMA10"])
+            
+            ema50 = float(latest["EMA50"])
             
             # ====================================
             # WEEKLY TREND
@@ -690,22 +745,29 @@ def run_scanner():
 
 
 # ====================================
+# START SCANNER THREAD
+# ====================================
+
+def start_background_scanner():
+
+    scanner_thread = threading.Thread(
+        target=run_scanner,
+        daemon=True
+    )
+
+    scanner_thread.start()
+
+# ====================================
 # RUN FLASK
 # ====================================
 
 if __name__ == "__main__":
 
-    scanner_thread = threading.Thread(
-        target=run_scanner
-    )
-
-    scanner_thread.daemon = True
-
-    scanner_thread.start()
+    start_background_scanner()
 
     app.run(
         host="0.0.0.0",
         port=10000,
         debug=False,
-        use_reloader=False
+        threaded=True
     )
