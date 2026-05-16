@@ -1,9 +1,12 @@
+import socket
+socket.setdefaulttimeout(20)
+
+import threading
 import yfinance as yf
 import pandas as pd
 import sqlite3
 import time
 import pytz
-import socket
 
 from flask import Flask, render_template
 from datetime import datetime, timedelta
@@ -12,7 +15,7 @@ from datetime import datetime, timedelta
 
 IST = pytz.timezone("Asia/Kolkata")
 
-socket.setdefaulttimeout(20)
+
 
 print("NEW CODE VERSION LOADED 🚀")
 
