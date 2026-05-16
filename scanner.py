@@ -8,11 +8,10 @@ import time
 import sqlite3
 import threading
 import socket
-import requests
 import io
 
-from nsepython import *
-from concurrent.futures import ThreadPoolExecutor
+
+
 
 
 IST = pytz.timezone("Asia/Kolkata")
