@@ -303,16 +303,33 @@ def scan_market():
     
             start_date = end_date - datetime.timedelta(days=90)
     
-            data = equity_history(
-    
-                symbol=stock.replace(".NS", ""),
-                series="EQ",
-    
-                start_date=start_date.strftime("%d-%m-%Y"),
-    
-                end_date=end_date.strftime("%d-%m-%Y")
-    
+            import requests
+            
+            symbol = stock.replace(".NS", "")
+            
+            url = f"https://www.nseindia.com/api/quote-equity?symbol={symbol}"
+            
+            headers = {
+            
+                "User-Agent": "Mozilla/5.0",
+                "Accept-Language": "en-US,en;q=0.9",
+                "Accept-Encoding": "gzip, deflate, br"
+            
+            }
+            
+            session = requests.Session()
+            
+            session.get("https://www.nseindia.com", headers=headers)
+            
+            response = session.get(
+                url,
+                headers=headers,
+                timeout=10
             )
+            
+            data = response.json()
+            
+            print(data)
     
             print("STEP 2 ✅")
     
