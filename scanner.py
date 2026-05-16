@@ -291,21 +291,19 @@ def scan_market():
     for stock in stocks:
         
         print("STEP 1 ✅")
-
-        try:
-            
-            print("Fetching Yahoo data 🚀")
-            
-            df = yf.download(
-                stock,
-                period="3mo",
-                interval="1d",
-                progress=False,
-                auto_adjust=True,
-                threads=False
-            )
-            
-            print("STEP 2 ✅")
+        print("Fetching Yahoo data 🚀")
+        
+        df = yf.download(
+            stock,
+            period="3mo",
+            interval="1d",
+            progress=False,
+            auto_adjust=True,
+            threads=False,
+            timeout=10
+        )
+        
+        print("STEP 2 ✅")
         
             if df.empty:
                 print(f"{stock} EMPTY DATA ❌")
