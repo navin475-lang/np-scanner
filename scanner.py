@@ -288,14 +288,17 @@ def scan_market():
     # STOCK LOOP
     # ====================================
 
+    STOCKS = [
+        "RELIANCE.NS"
+    ]
+    
     for stock in STOCKS:
     
         try:
     
             print("STEP 1 ✅")
-            print("Fetching Yahoo data 🚀")
     
-            ticker = yf.Ticker("BSE.NS")
+            ticker = yf.Ticker(stock)
     
             df = ticker.history(
                 period="3mo",
@@ -310,6 +313,12 @@ def scan_market():
                 continue
     
             print("STEP 3 ✅")
+    
+        except Exception as e:
+    
+            print(f"{stock} failed ❌ {e}")
+    
+            continue
     
             
     
