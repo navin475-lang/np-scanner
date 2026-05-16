@@ -297,94 +297,26 @@ def scan_market():
         try:
     
             print("STEP 1 ✅")
-            print("Fetching NSE data 🚀")
     
-            end_date = datetime.datetime.now(IST)
-    
-            start_date = end_date - datetime.timedelta(days=90)
-    
-            import requests
+            ticker = yf.Ticker(stock)
             
-            symbol = stock.replace(".NS", "")
+            print("STEP 2 ✅")
             
-            url = f"https://www.nseindia.com/api/quote-equity?symbol={symbol}"
-            
-            headers = {
-            
-                "User-Agent": "Mozilla/5.0",
-                "Accept-Language": "en-US,en;q=0.9",
-                "Accept-Encoding": "gzip, deflate, br"
-            
-            }
-            
-            session = requests.Session()
-            
-            session.get("https://www.nseindia.com", headers=headers)
-            
-            response = session.get(
-                url,
-                headers=headers,
-                timeout=10
+            df = ticker.history(
+                period="5d",
+                interval="15m",
+                auto_adjust=True
             )
             
-            data = response.json()
-            
-            print(data)
-    
-            print("STEP 2 ✅")
-    
-            df = pd.DataFrame(data)
-    
-            if df.empty:
-    
-                print(f"{stock} no data found ❌")
-    
-                continue
-    
             print("STEP 3 ✅")
-    
-            # ====================================
-            # COLUMN CLEANING
-            # ====================================
-    
-            df.rename(columns={
-    
-                "CH_CLOSING_PRICE": "Close",
-                "CH_TRADE_HIGH_PRICE": "High",
-                "CH_TRADE_LOW_PRICE": "Low",
-                "CH_OPENING_PRICE": "Open",
-                "CH_TOT_TRADED_QTY": "Volume"
-    
-            }, inplace=True)
-    
-            # ====================================
-            # CONVERT TO NUMERIC
-            # ====================================
-    
-            df["Close"] = pd.to_numeric(df["Close"])
-            df["High"] = pd.to_numeric(df["High"])
-            df["Low"] = pd.to_numeric(df["Low"])
-            df["Open"] = pd.to_numeric(df["Open"])
-            df["Volume"] = pd.to_numeric(df["Volume"])
-    
-            print("Indicators calculated ✅")
-    
-            # ====================================
-            # YOUR INDICATOR CODE BELOW
-            # ====================================
-    
-            # Example:
-            close = df["Close"].iloc[-1]
-    
-            print(f"{stock} Close Price = {close}")
-    
-    
-    
-        except Exception as e:
-    
-            print(f"{stock} failed ❌ {e}")
-    
-            continue
+            
+            if df.empty:
+                print(f"{stock} empty data ❌")
+                return
+            
+            print(df.tail())
+            
+            
     
             
     
