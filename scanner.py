@@ -1,7 +1,6 @@
 import socket
 socket.setdefaulttimeout(20)
 
-import threading
 import yfinance as yf
 import pandas as pd
 import sqlite3
@@ -96,7 +95,7 @@ def save_signal(
                 rsi,
                 score,
                 timeframe,
-                datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
+                datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")
             )
             )
 
@@ -274,7 +273,7 @@ def scan_market():
 
     print("Scanner Time Started ✅")
 
-    scanner_status["last_scan"] = datetime.datetime.now(IST).strftime("%d-%m-%Y %I:%M:%S %p")
+    scanner_status["last_scan"] = datetime.now(IST).strftime("%d-%m-%Y %I:%M:%S %p")
 
     scanner_status["stocks_scanned"] = len(stocks)
 
@@ -542,7 +541,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(IST).strftime(
+Time : {datetime.now(IST).strftime(
         "%Y-%m-%d %H:%M:%S")}
 """
 
@@ -578,7 +577,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
@@ -613,7 +612,7 @@ RSI : {round(rsi, 2)}
 
 Score : {score}
 
-Time : {datetime.datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")}
+Time : {datetime.now(IST).strftime("%Y-%m-%d %H:%M:%S")}
 """
 
                 print(message)
