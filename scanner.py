@@ -293,36 +293,21 @@ def scan_market():
         print("STEP 1 ✅")
         print("Fetching Yahoo data 🚀")
         
-        df = yf.download(
-            stock,
+        ticker = yf.Ticker(stock)
+        
+        df = ticker.history(
             period="3mo",
             interval="1d",
-            progress=False,
-            auto_adjust=True,
-            threads=False,
             timeout=10
         )
         
-            print("STEP 2 ✅")
+        print("STEP 2 ✅")
         
-            if df.empty:
-                print(f"{stock} EMPTY DATA ❌")
-                continue
-        
-            df.rename(columns={
-                "CH_TIMESTAMP": "Datetime",
-                "CH_CLOSING_PRICE": "Close"
-            }, inplace=True)                                                                                                                                            
-        
-            print(df.tail())
-        
-        except Exception as e:
-        
-            print(f"{stock} failed ❌ {e}")
-        
+        if df.empty:
+            print(f"{stock} no data found ❌")
             continue
         
-            print("STEP 3 ✅")
+        print("STEP 3 ✅")
     
             
     
