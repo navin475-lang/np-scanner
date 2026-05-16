@@ -292,36 +292,36 @@ def scan_market():
     for stock in stocks:
         
         print("STEP 1 ✅")
-            
-            try:
-            
-                ticker = yf.Ticker(stock)
-            
-                print("STEP 2 ✅")
-            
-                print("Before history call 🚀")
-            
-                df = ticker.history(
-                    period="7d",
-                    interval="1h",
-                    auto_adjust=False,
-                    prepost=False
-                )
-            
-                print("After history call 🚀")
-            
-                if df.empty:
-                    print(f"{stock} EMPTY DATA ❌")
-                    continue
-            
-                print(df.tail())
-            
-                print("STEP 3 ✅")
-            
-            except Exception as e:
-                print(f"{stock} failed ❌ {e}")
+        
+        try:
+        
+            ticker = yf.Ticker(stock)
+        
+            print("STEP 2 ✅")
+        
+            print("Before history call 🚀")
+        
+            df = ticker.history(
+                period="7d",
+                interval="1h",
+                auto_adjust=False,
+                prepost=False
+            )
+        
+            print("After history call 🚀")
+        
+            if df.empty:
+                print(f"{stock} EMPTY DATA ❌")
                 continue
-            
+        
+            print(df.tail())
+        
+            print("STEP 3 ✅")
+        
+        except Exception as e:
+            print(f"{stock} failed ❌ {e}")
+            continue
+        
             print("STEP 4 ✅")
     
             
