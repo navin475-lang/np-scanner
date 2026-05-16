@@ -1,5 +1,6 @@
 import pytz
 import datetime
+import yfinance as yf
 from flask import Flask, render_template
 from threading import Thread
 import pandas as pd
@@ -290,27 +291,20 @@ def scan_market():
     for stock in stocks:
         
         print("STEP 1 ✅")
-        
-        try:
-        
-            end_date = datetime.datetime.now(IST)
 
-            start_date = end_date - datetime.timedelta(days=60)
-        
-            start_date = start_date.strftime("%d-%m-%Y")
-            end_date = end_date.strftime("%d-%m-%Y")
-        
-            print("Fetching NSE data 🚀")
-        
-            data = equity_history(
-                symbol=stock.replace(".NS", ""),
-                series="EQ",
-                start_date=start_date,
-                end_date=end_date
+        try:
+            
+            print("Fetching Yahoo data 🚀")
+            
+            df = yf.download(
+                stock,
+                period="3mo",
+                interval="1d",
+                progress=False,
+                auto_adjust=True,
+                threads=False
             )
-        
-            df = pd.DataFrame(data)
-        
+            
             print("STEP 2 ✅")
         
             if df.empty:
@@ -320,7 +314,7 @@ def scan_market():
             df.rename(columns={
                 "CH_TIMESTAMP": "Datetime",
                 "CH_CLOSING_PRICE": "Close"
-            }, inplace=True)
+            }, inplace=True)                                                                                                                                            
         
             print(df.tail())
         
