@@ -297,21 +297,21 @@ def scan_market():
         try:
     
             print("STEP 1 ✅")
-    
-            ticker = yf.Ticker(stock)
-    
-            df = ticker.history(
+            
+            df = yf.download(
+                stock,
                 period="3mo",
                 interval="1d",
-                timeout=10
+                progress=False,
+                threads=False
             )
-    
+            
             print("STEP 2 ✅")
-    
+            
             if df.empty:
                 print(f"{stock} no data found ❌")
                 continue
-    
+            
             print("STEP 3 ✅")
     
         except Exception as e:
