@@ -294,29 +294,29 @@ def scan_market():
     
     for stock in STOCKS:
     
+        print("STEP 1 ✅")
+        
+        import yfinance as yf
+        
         try:
-    
-            print("STEP 1 ✅")
-            
+        
+            print("Before download 🚀")
+        
             df = yf.download(
-                stock,
-                period="3mo",
+                "RELIANCE.NS",
+                period="5d",
                 interval="1d",
                 progress=False,
                 threads=False
             )
-            
-            print("STEP 2 ✅")
-            
-            if df.empty:
-                print(f"{stock} no data found ❌")
-                continue
-            
-            print("STEP 3 ✅")
-    
+        
+            print("After download ✅")
+        
+            print(df.tail())
+        
         except Exception as e:
-    
-            print(f"{stock} failed ❌ {e}")
+        
+            print(f"DOWNLOAD FAILED ❌ {e}")
     
             continue
     
