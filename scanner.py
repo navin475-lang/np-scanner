@@ -303,7 +303,7 @@ def scan_market():
             timeout=10
         )
         
-        print("STEP 2 ✅")
+            print("STEP 2 ✅")
         
             if df.empty:
                 print(f"{stock} EMPTY DATA ❌")
