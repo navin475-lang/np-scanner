@@ -1,25 +1,16 @@
-import pytz
 import datetime
 from flask import Flask, render_template
 from threading import Thread
-import yfinance as yf
 import pandas as pd
 import time
 import sqlite3
 import threading
 import socket
-from nsepython import *
 import requests
 import io
+
 from datetime import datetime, timedelta
-
-data = equity_history(
-    symbol=stock.replace(".NS", ""),
-    series="EQ",
-    start_date=start_date,
-    end_date=end_date
-)
-
+from nsepython import *
 from concurrent.futures import ThreadPoolExecutor
 
 
@@ -302,39 +293,44 @@ def scan_market():
         
         try:
         
-            print("Using direct download 🚀")
-            
+            end_date = datetime.now()
+        
+            start_date = end_date - timedelta(days=60)
+        
+            start_date = start_date.strftime("%d-%m-%Y")
+            end_date = end_date.strftime("%d-%m-%Y")
+        
             print("Fetching NSE data 🚀")
-            
+        
             data = equity_history(
                 symbol=stock.replace(".NS", ""),
                 series="EQ",
-                start_date="01-03-2026",
-                end_date="15-05-2026"
+                start_date=start_date,
+                end_date=end_date
             )
-            
-            df = pd.DataFrame(data)
-            
-            print(df.tail())
-            
-            print("Download finished 🚀")
-            print(df.tail())
         
-            print("After history call 🚀")
+            df = pd.DataFrame(data)
+        
+            print("STEP 2 ✅")
         
             if df.empty:
                 print(f"{stock} EMPTY DATA ❌")
                 continue
         
+            df.rename(columns={
+                "CH_TIMESTAMP": "Datetime",
+                "CH_CLOSING_PRICE": "Close"
+            }, inplace=True)
+        
             print(df.tail())
         
-            print("STEP 3 ✅")
-        
         except Exception as e:
+        
             print(f"{stock} failed ❌ {e}")
+        
             continue
         
-            print("STEP 4 ✅")
+            print("STEP 3 ✅")
     
             
     
