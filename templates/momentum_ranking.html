@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<style>
+.nav-bar{
+
+    margin-bottom:20px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:12px 18px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    display:inline-block;
+    transition:.3s;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}    
+
+.nav-bar{
+
+    margin-bottom:20px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:10px 15px;
+    margin-right:10px;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}
+
+</style>   
+<div class="nav-bar">
+
+    <a href="/">🏠 Dashboard</a>    
+
+</div> 
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Momentum Ranking</title>
+    
+    <style>
+
+    /* =========================
+    TABLE CONTAINER
+    ========================= */
+
+    .table-container{
+        width:100%;
+        max-height:85vh;
+        overflow:auto;
+        position:relative;
+        border-radius:14px;
+    }
+
+    /* =========================
+    TABLE
+    ========================= */
+
+    table{
+        border-collapse:collapse;
+        min-width:2400px;
+    }
+
+    /* =========================
+    HEADER STICKY
+    ========================= */
+
+    thead th{
+        position:sticky;
+        top:0;
+        z-index:50;
+        background:#0f172a;
+        color:#cbd5e1;
+        box-shadow:
+            0 2px 8px rgba(0,0,0,.35);
+    }
+
+    /* =========================
+    FROZEN RANK
+    ========================= */
+
+    thead th.freeze-rank,
+    tbody td.freeze-stock{
+        position:sticky;
+        left:80px;
+        z-index:25;
+        background:#0f172a;
+        min-width:210px;
+    }
+
+    /* =========================
+    FROZEN STOCK
+    ========================= */
+
+    thead th.freeze-stock,
+    tbody td.freeze-stock{
+        position:sticky;
+        left:80px;
+        z-index:60;
+        background:#0f172a;
+        min-width:210px;
+        width:210px;
+        box-shadow:2px 0 6px rgba(0,0,0,.4);
+    }
+
+    /* =========================
+    FROZEN SECTOR
+    ========================= */
+
+    thead th.freeze-sector,
+    tbody td.freeze-sector{
+        position:sticky;
+        left:290px;
+        z-index:25;
+        background:#0f172a;
+        min-width:180px;
+    }
+
+    /* =========================
+    BODY
+    ========================= */
+
+    body{
+        background:#0b1220;
+        color:#e5e7eb;
+        font-family:Segoe UI,Arial,sans-serif;
+    }
+
+    /* =========================
+    TABLE CONTAINER
+    ========================= */
+
+    .table-container{
+        width:100%;
+        overflow-x:auto;
+        overflow-y:auto;
+        position:relative;
+    }
+
+    /* =========================
+    TABLE
+    ========================= */
+
+    table{
+        min-width:2400px;
+        border-collapse:collapse;
+        background:#111827;
+        box-shadow:0 10px 25px rgba(0,0,0,.35);
+    }
+
+    /* =========================
+    FROZEN HEADER
+    ========================= */
+
+    thead th{
+        position:sticky;
+        top:0;
+        z-index:50;
+        background:#0f172a;
+        color:#cbd5e1;
+        box-shadow:
+            0 2px 6px rgba(0,0,0,.35);
+    }
+    /* =========================
+    RANK HEADER
+    ========================= */
+
+    thead th.freeze-rank{
+        position:sticky;
+        left:0;
+        top:0;
+        z-index:80;
+        background:#0f172a !important;
+        min-width:80px;
+        width:80px;
+        box-shadow:
+            3px 0 8px rgba(0,0,0,.35);
+    }
+
+    /* =========================
+    RANK BODY
+    ========================= */
+
+    tbody td.freeze-rank{
+        position:sticky;
+        left:0;
+        z-index:70;
+        background:#0f172a !important;
+        min-width:80px;
+        width:80px;
+        box-shadow:
+            3px 0 8px rgba(0,0,0,.35);
+    }
+    /* =========================
+    FROZEN HEADER CELLS
+    ========================= */
+
+    
+    thead th.freeze-stock,
+    thead th.freeze-sector{
+        top:0;
+        z-index:70;
+        background:#0f172a;
+    }
+    /* =========================
+    CELL
+    ========================= */
+
+    td{
+        padding:16px;
+        text-align:center;
+        border-bottom:1px solid #1f2937;
+        font-size:15px;
+    }
+
+    /* =========================
+    ROW COLORS
+    ========================= */
+
+    tbody tr:nth-child(even){
+        background:#0f172a;
+    }
+
+    tbody tr:nth-child(odd){
+        background:#111827;
+    }
+
+    tbody tr:hover{
+        background:#1e293b;
+        transition:.2s;
+    }
+
+    /* =========================
+    FROZEN RANK
+    ========================= */
+
+    th.freeze-rank,
+    td.freeze-rank{
+        position:sticky;
+        left:0;
+        z-index:25;
+        background:#0f172a !important;
+        min-width:70px;
+        width:70px;
+        box-shadow:2px 0 5px rgba(0,0,0,.35);
+    }
+
+    /* =========================
+    FROZEN STOCK
+    ========================= */
+
+    th.freeze-stock,
+    td.freeze-stock{
+        position:sticky;
+        left:80px;
+        z-index:25;
+        background:#0f172a !important;
+        min-width:210px;
+        width:210px;
+        box-shadow:2px 0 5px rgba(0,0,0,.35);
+    }
+
+    /* =========================
+    FROZEN SECTOR
+    ========================= */
+
+    th.freeze-sector,
+    td.freeze-sector{
+        position:sticky;
+        left:280px;
+        z-index:25;
+        background:#0f172a !important;
+        min-width:180px;
+        width:180px;
+        box-shadow:2px 0 5px rgba(0,0,0,.35);
+    }
+
+    /* =========================
+    NAV BAR
+    ========================= */
+
+    .nav-bar a{
+        background:#111827;
+        color:#22c55e;
+        padding:10px 16px;
+        margin-right:10px;
+        text-decoration:none;
+        border-radius:10px;
+        font-weight:600;
+        border:1px solid #1f2937;
+        transition:.2s;
+    }
+
+    .nav-bar a:hover{
+        background:#1e293b;
+        color:#93c5fd;
+    }
+
+    h1{
+        color:#f8fafc;
+        font-size:28px;
+    }
+
+    /* =========================
+    FILTER BAR
+    ========================= */
+
+    .filter-bar{
+        display:flex;
+        gap:12px;
+        margin-bottom:18px;
+        flex-wrap:wrap;
+    }
+
+    .filter-bar input,
+    .filter-bar select{
+        background:#111827;
+        color:#e5e7eb;
+        border:1px solid #1f2937;
+        border-radius:10px;
+        padding:10px 14px;
+        font-size:14px;
+        outline:none;
+    }
+
+    .filter-bar input{
+        min-width:240px;
+    }
+
+    .filter-bar input:focus,
+    .filter-bar select:focus{
+        border-color:#2563eb;
+    }
+    </style>
+
+</head>
+
+<div
+    id="quickModal"
+    style="
+        display:none;
+        position:fixed;
+        top:0;
+        left:0;
+        width:100%;
+        height:100%;
+        background:rgba(0,0,0,.75);
+        z-index:999;">
+
+    <div
+        style="
+            background:#111827;
+            width:80%;
+            max-width:900px;
+            margin:60px auto;
+            padding:25px;
+            border-radius:16px;
+            position:relative;">
+
+        <span
+            onclick="
+                document.getElementById(
+                    'quickModal'
+                ).style.display='none'"
+            style="
+                position:absolute;
+                right:18px;
+                top:10px;
+                font-size:26px;
+                cursor:pointer;
+                color:#fff;">
+
+            ×
+
+        </span>
+
+        <iframe
+            id="quickFrame"
+            width="100%"
+            height="600"
+            style="
+                border:none;
+                border-radius:10px;">
+        </iframe>
+
+    </div>
+
+</div>
+
+<body>
+
+    <h1>🔥 Top Technofunda Stocks</h1>
+
+    <div class="filter-bar">
+
+        <input
+            type="text"
+            id="searchInput"
+            placeholder="🔍 Search Stock..."
+            onkeyup="filterTable()">
+
+        <select
+            id="gradeFilter"
+            onchange="filterTable()">
+
+            <option value="">
+                All Grades
+            </option>
+
+            <option>A+</option>
+            <option>A</option>
+            <option>B+</option>
+            <option>B</option>
+            <option>C</option>
+            <option>AVOID</option>
+
+        </select>
+
+        <select
+            id="signalFilter"
+            onchange="filterTable()">
+
+            <option value="">
+                All Signals
+            </option>
+
+            <option>Buy</option>
+            <option>Add</option>
+            <option>Sell</option>
+            <option>NONE</option>
+
+        </select>
+
+        <select
+            id="sectorFilter"
+            onchange="filterTable()">
+
+            <option value="">
+                All Sectors
+            </option>
+
+            {% for stock in rankings %}
+
+            <option>
+                {{ stock.sector }}
+            </option>
+
+            {% endfor %}
+
+        </select>
+
+    </div>
+
+    <div class="table-container">
+
+        <table id="momentumTable">
+            
+
+            <thead>
+
+                <tr>
+
+                    <th class="freeze-rank">Rank</th>
+                    <th class="freeze-stock">Stock</th>
+                    <th class="freeze-sector">Sector</th>
+
+                    <th onclick="sortTable(3)">
+                        Sector Score ⇅
+                    </th>
+
+                    <th onclick="sortTable(4)">
+                        Price ⇅
+                    </th>
+
+                    <th onclick="sortTable(5)">
+                        Teh Score ⇅
+                    </th>
+
+                    <th>
+                        Rating
+                    </th>
+
+                    <th onclick="sortTable(6)">
+                        TF Rank ⇅
+                    </th>
+
+                    <th>TF Signal</th>
+
+                    <th onclick="sortTable(7)">
+                        Grade ⇅
+                    </th>
+
+                    <th>Category</th>                    
+
+                    <th>Signal</th>
+
+                    <th>Status</th>
+
+                    <th>RS</th>
+
+                    <th>RS Trend</th>
+
+                    <th>RSI</th>
+
+                    <th>EMA</th>                    
+
+                    <th>ATR Stop Loss</th>
+
+                    
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for stock in rankings %}
+
+                <tr>
+
+                    <td class="freeze-rank">{{ loop.index }}</td>
+
+                    <td class="freeze-stock">
+
+                        <a
+                            href="/company-analysis?stock={{ stock.stock | urlencode }}"
+                            style="
+                                color:#93c5fd;
+                                text-decoration:none;
+                                font-weight:600;">
+
+                            {{ stock.stock }}
+
+                        </a>
+
+                        <br>
+
+                        <a
+                            href="/toggle-watchlist/{{ stock.stock }}"
+                            style="
+                                text-decoration:none;
+                                font-size:20px;
+                                margin-right:8px;">
+
+                            ⭐
+
+                        </a>
+
+                        <button
+                            onclick="quickView('{{ stock.stock }}')"
+                            style="
+                                margin-top:5px;
+                                background:#1e293b;
+                                color:#93c5fd;
+                                border:none;
+                                padding:4px 8px;
+                                border-radius:6px;
+                                cursor:pointer;">
+
+                            View
+
+                        </button>
+
+                    </td>
+
+                    <td class="freeze-sector">
+                        {{ stock.sector }}
+                    </td>
+
+                    <td>
+
+                    {% if stock.sector_score >= 75 %}
+                        <span style="color:#22c55e;font-weight:bold;">
+                            {{ stock.sector_score }}
+                        </span>
+
+                    {% elif stock.sector_score >= 60 %}
+                        <span style="color:#f59e0b;font-weight:bold;">
+                            {{ stock.sector_score }}
+                        </span>
+
+                    {% else %}
+                        <span style="color:#ef4444;font-weight:bold;">
+                            {{ stock.sector_score }}
+                        </span>
+                    {% endif %}
+
+                    </td>
+
+                    <td>
+                        ₹ {{ "%.2f"|format(stock.price) }}
+                    </td>
+
+
+                    <td>{{ stock.score }}</td>
+
+                    <td>
+
+                    {% if stock.get('final_score', 0) >= 70 %}
+                        <span style="
+                            background:#15803d;
+                            color:white;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            🏆 Elite
+                        </span>
+
+                    {% elif stock.final_score >= 60 %}
+                        <span style="
+                            background:#16a34a;
+                            color:white;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            🚀 Strong Buy
+                        </span>
+
+                    {% elif stock.final_score >= 50 %}
+                        <span style="
+                            background:#f59e0b;
+                            color:black;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            👀 Watchlist
+                        </span>
+
+                    {% elif stock.final_score >= 40 %}
+                        <span style="
+                            background:#facc15;
+                            color:black;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            ⚠️ Average
+                        </span>
+
+                    {% else %}
+                        <span style="
+                            background:#dc2626;
+                            color:white;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            ❌ Avoid
+                        </span>
+
+                    {% endif %}
+
+                    </td>
+
+                    <td>
+
+                    {% if stock.technofunda_rank > 20 %}
+
+                        <span style="
+                            color:#22c55e;
+                            font-weight:700;">
+
+                            {{ stock.technofunda_rank }}
+
+                        </span>
+
+                    {% elif stock.technofunda_rank >= 10 %}
+
+                        <span style="
+                            color:#facc15;
+                            font-weight:700;">
+
+                            {{ stock.technofunda_rank }}
+
+                        </span>
+
+                    {% else %}
+
+                        <span style="
+                            color:#ef4444;
+                            font-weight:700;">
+
+                            {{ stock.technofunda_rank }}
+
+                        </span>
+
+                    {% endif %}
+
+                    </td>
+
+                    <td>{{ stock.tf_signal }}</td>                    
+
+                    <td>
+
+                    {% if stock.grade in ['A+','A'] %}
+                        <span style="color:#00ff66; font-weight:bold;">
+                            {{ stock.grade }}
+                        </span>
+
+                    {% elif stock.grade in ['B+','B'] %}
+                        <span style="color:#ffd700; font-weight:bold;">
+                            {{ stock.grade }}
+                        </span>
+
+                    {% else %}
+                        <span style="color:#ff4d4d; font-weight:bold;">
+                            {{ stock.grade }}
+                        </span>
+                    {% endif %}
+
+                    </td>
+
+                    <td>
+
+                    {% if 'ELITE' in stock.category %}
+                        <span style="
+                            background:#00aa44;
+                            color:white;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            {{ stock.category }}
+                        </span>
+
+                    {% elif 'SWING' in stock.category %}
+                        <span style="
+                            background:#7a9ec1;
+                            color:white;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            {{ stock.category }}
+                        </span>
+
+                    {% elif 'WATCH' in stock.category %}
+                        <span style="
+                            background:#beb13e;
+                            color:black;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            {{ stock.category }}
+                        </span>
+
+                    {% else %}
+                        <span style="
+                            background:#b86c6c;
+                            color:white;
+                            padding:5px 10px;
+                            border-radius:12px;
+                            font-weight:bold;">
+                            {{ stock.category }}
+                        </span>
+                    {% endif %}
+
+                    </td>
+
+                    
+
+                    <td>
+
+                    {% if 'Buy' in stock.signal %}
+                        <span style="color:#00ff66; font-weight:bold;">
+                            {{ stock.signal }}
+                        </span>
+
+                    {% elif 'Add' in stock.signal %}
+                        <span style="color:#33ccff; font-weight:bold;">
+                            {{ stock.signal }}
+                        </span>
+
+                    {% elif 'Sell' in stock.signal %}
+                        <span style="color:#ff4444; font-weight:bold;">
+                            {{ stock.signal }}
+                        </span>
+
+                    {% else %}
+                        {{ stock.signal }}
+                    {% endif %}
+
+                    </td>
+
+                    <td>{{ stock.status }}</td>
+
+                    <td>{{ stock.rs }}</td>
+
+                    <td>{{ stock.rs_status }}</td>
+
+                    <td style="white-space: nowrap; font-size:14px; line-height:1.6;">
+
+                        1H: {{ stock.hourly_rsi }} <br>
+
+                        D: {{ stock.daily_rsi }} <br>
+
+                        W: {{ stock.weekly_rsi }}
+
+                    </td>
+
+                    <td style="white-space: nowrap; font-size:14px; line-height:1.6;">
+
+                        10: {{ stock.ema10 }} <br>
+
+                        20: {{ stock.ema20 }} <br>
+
+                        50: {{ stock.ema50 }}
+
+                    </td>
+                    
+                    <td>
+                        1H: {{ stock.hourly_sl }} <br>
+                        D: {{ stock.daily_sl }} <br>
+                        W: {{ stock.weekly_sl }}
+                    </td>
+
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+</div>
+<script>
+
+let sortDirection = {};
+
+function sortTable(colIndex){
+
+    const table =
+        document.getElementById(
+            "momentumTable"
+        );
+
+    const tbody =
+        table.tBodies[0];
+
+    const rows =
+        Array.from(
+            tbody.rows
+        );
+
+    sortDirection[colIndex] =
+        !sortDirection[colIndex];
+
+    const asc =
+        sortDirection[colIndex];
+
+    rows.sort(function(a,b){
+
+        let x =
+            a.cells[colIndex]
+            .innerText
+            .replace(/[₹,%⇅]/g,'')
+            .trim();
+
+        let y =
+            b.cells[colIndex]
+            .innerText
+            .replace(/[₹,%⇅]/g,'')
+            .trim();
+
+        let numX =
+            parseFloat(x);
+
+        let numY =
+            parseFloat(y);
+
+        if(
+            !isNaN(numX)
+            &&
+            !isNaN(numY)
+        ){
+
+            return asc
+                ?
+                numX-numY
+                :
+                numY-numX;
+        }
+
+        return asc
+            ?
+            x.localeCompare(y)
+            :
+            y.localeCompare(x);
+    });
+
+    rows.forEach(
+        row =>
+        tbody.appendChild(row)
+    );
+}
+
+
+function filterTable(){
+
+    let search =
+        document
+        .getElementById(
+            "searchInput"
+        )
+        .value
+        .toUpperCase();
+
+    let grade =
+        document
+        .getElementById(
+            "gradeFilter"
+        )
+        .value
+        .toUpperCase();
+
+    let signal =
+        document
+        .getElementById(
+            "signalFilter"
+        )
+        .value
+        .toUpperCase();
+
+    let sector =
+        document
+        .getElementById(
+            "sectorFilter"
+        )
+        .value
+        .toUpperCase();    
+
+    let table =
+        document
+        .getElementById(
+            "momentumTable"
+        );
+
+    let tr =
+        table
+        .getElementsByTagName(
+            "tr"
+        );
+
+    for(
+        let i=1;
+        i<tr.length;
+        i++
+    ){
+
+        let stock =
+            tr[i]
+            .cells[1]
+            .innerText
+            .toUpperCase();
+
+        let gradeCell =
+            tr[i]
+            .cells[8]
+            .innerText
+            .toUpperCase();
+
+        let signalCell =
+            tr[i]
+            .cells[10]
+            .innerText
+            .toUpperCase();
+
+        let sectorCell =
+            tr[i]
+            .cells[2]
+            .innerText
+            .toUpperCase();    
+
+        let show = true;
+
+        if(
+            search
+            &&
+            !stock.includes(search)
+        ){
+            show=false;
+        }
+
+        if(
+            grade
+            &&
+            !gradeCell.includes(grade)
+        ){
+            show=false;
+        }
+
+        if(
+            signal
+            &&
+            !signalCell.includes(signal)
+        ){
+            show=false;
+        }
+
+        if(
+            sector
+            &&
+            !sectorCell.includes(
+                sector
+            )
+        ){
+            show=false;
+        }
+
+        tr[i].style.display =
+            show
+            ?
+            ""
+            :
+            "none";
+    }
+}
+
+function quickView(stock){
+
+    document
+    .getElementById(
+        "quickFrame"
+    )
+    .src =
+        "/company-analysis?stock="
+        +
+        encodeURIComponent(
+            stock
+        );
+
+    document
+    .getElementById(
+        "quickModal"
+    )
+    .style.display =
+        "block";
+}
+</script>
+
+</body>
+
+</html>

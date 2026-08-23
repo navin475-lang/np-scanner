@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html>
+<style>
+
+body{
+    font-family:Arial,sans-serif;
+    background:#0d1117;
+    color:white;
+    padding:20px;
+}
+
+/* NAV */
+.nav-bar{
+    margin-bottom:25px;
+    display:flex;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.nav-bar a{
+    background:#222;
+    color:#00ff99;
+    padding:14px 22px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    transition:.3s;
+}
+
+.nav-bar a:hover{
+    background:#00ff99;
+    color:black;
+}
+
+/* TITLE */
+h1{
+    color:#00ff99;
+    font-size:25px;
+    margin-bottom:20px;
+}
+
+/* TOP ACTION BAR */
+.action-bar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:20px;
+    flex-wrap:wrap;
+    gap:15px;
+}
+
+/* DROPDOWN */
+select{
+    padding:12px 18px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    background:#161d29;
+    color:white;
+}
+
+/* BUTTONS */
+.btn{
+    background:#00b85c;
+    color:white;
+    border:none;
+    padding:12px 20px;
+    border-radius:10px;
+    font-size:16px;
+    font-weight:bold;
+    cursor:pointer;
+    transition:.3s;
+}
+
+.btn:hover{
+    background:#00ff99;
+    color:black;
+}
+
+/* TABLE CONTAINER */
+.table-container{
+    max-height:650px;
+    overflow:auto;
+    border-radius:18px;
+    box-shadow:0 0 15px rgba(0,255,153,.08);
+}
+
+/* TABLE */
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#121d2f;
+    border-radius:18px;
+    overflow:hidden;
+}
+
+/* FREEZE HEADER */
+thead th{
+    position:sticky;
+    top:0;
+    z-index:10;
+    background:#161d29;
+    color:#00ff99;
+}
+
+/* CELLS */
+th, td{
+    padding:16px;
+    text-align:center;
+    border-bottom:1px solid #2f3545;
+}
+
+th{
+    font-size:18px;
+}
+
+/* ROWS */
+tbody tr{
+    transition:.25s;
+}
+
+tbody tr:nth-child(even){
+    background:#162033;
+}
+
+tbody tr:hover{
+    background:#24344d;
+    color:white;
+}
+
+/* STATUS */
+.active-status{
+    color:#00ff99;
+    font-weight:bold;
+}
+
+/* PRINT STYLE */
+@media print{
+
+    body{
+        background:white;
+        color:black;
+    }
+
+    .nav-bar,
+    .action-bar{
+        display:none;
+    }
+
+    table{
+        background:white;
+        color:black;
+    }
+
+    th{
+        background:#ddd;
+        color:black;
+    }
+}
+
+</style>   
+<div class="nav-bar">
+
+    <a href="/">🏠 Dashboard</a>    
+
+</div>     
+
+<head>
+
+    <title>Active Trades</title>
+
+</head>
+
+<body>
+
+    <h1>🔥 Active Trades</h1>
+
+    <div class="action-bar">
+
+        <select id="timeframeFilter">
+
+            <option value="">
+                All Timeframes
+            </option>
+
+            <option value="HOURLY">
+                Hourly
+            </option>
+
+            <option value="DAILY">
+                Daily
+            </option>
+
+            <option value="WEEKLY">
+                Weekly
+            </option>
+
+        </select>
+
+    <button
+        class="btn"
+        onclick="exportTableToExcel()"
+    >
+        📥 Export Excel
+    </button>
+
+</div>
+
+        
+    <div class="table-container">
+
+        <table id="tradeTable">
+
+            <thead>
+
+                <tr>
+                    <th>Stock</th>
+                    <th>Status</th>
+                    <th>Entry Price</th>
+                    <th>Last Signal</th>
+                    <th>Updated</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                {% for trade in trades %}
+
+                <tr>
+                    <td>{{ trade.stock }}</td>
+                    <td>{{ trade.status }}</td>
+                    <td>{{ "%.2f"|format(trade.entry_price) }}</td>
+                    <td>{{ trade.last_signal }}</td>
+                    <td>{{ trade.updated_time }}</td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</body>
+<script>
+
+function exportTableToExcel(){
+
+    let table = document.getElementById("tradeTable");
+
+    let html = table.outerHTML;
+
+    let url =
+        'data:application/vnd.ms-excel,' +
+        encodeURIComponent(html);
+
+    let link =
+        document.createElement("a");
+
+    link.href = url;
+    link.download = "Active_Trades.csv";
+    link.click();
+}
+
+/* FILTER */
+
+function filterTrades(){
+
+    let tf =
+        document
+        .getElementById("timeframeFilter")
+        .value
+        .trim()
+        .toUpperCase();
+
+    let rows =
+        document.querySelectorAll(
+            "#tradeTable tbody tr"
+        );
+
+    rows.forEach(row => {
+
+        let sig =
+            row.cells[3]
+            .innerText
+            .trim()
+            .toUpperCase();
+
+        let show = true;
+
+        if(tf !== ""){
+
+            if(
+                tf === "HOURLY"
+                &&
+                !sig.includes("HOURLY")
+            ){
+                show = false;
+            }
+
+            else if(
+                tf === "DAILY"
+                &&
+                !sig.includes("DAILY")
+            ){
+                show = false;
+            }
+
+            else if(
+                tf === "WEEKLY"
+                &&
+                !sig.includes("WEEKLY")
+            ){
+                show = false;
+            }
+        }
+
+        row.style.display =
+            show ? "" : "none";
+    });
+}
+
+/* EVENT */
+
+document
+.getElementById("timeframeFilter")
+.addEventListener(
+    "change",
+    filterTrades
+);
+
+</script>
+
+</html>

@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Sector Ranking</title>
+
+<style>
+.nav-bar{
+
+    margin-bottom:20px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:12px 18px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    display:inline-block;
+    transition:.3s;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}    
+
+body{
+    background:#0b1220;
+    color:#e5e7eb;
+    font-family:Segoe UI;
+    margin:20px;
+}
+
+h1{
+    color:#93c5fd;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#111827;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+th{
+    background:#0f172a;
+    color:#93c5fd;
+    padding:16px;
+    font-size:15px;
+}
+
+td{
+    padding:14px;
+    text-align:center;
+    border-bottom:1px solid #1f2937;
+}
+
+tr:nth-child(even){
+    background:#111827;
+}
+
+tr:nth-child(odd){
+    background:#172033;
+}
+
+tr:hover{
+    background:#22304a;
+}
+
+</style>
+
+</head>
+
+<body>
+<div class="nav-bar">
+
+    <a href="/">
+        🏠 Dashboard
+    </a>
+
+</div>
+<h1>🏭 Sector Momentum Ranking</h1>
+
+<table>
+
+<tr>
+
+    <th>Rank</th>
+    <th>Sector</th>
+    <th>Avg Score</th>
+    <th>Total Stocks</th>
+    <th>Strong Stocks</th>
+    <th>Trend</th>
+
+</tr>
+
+{% for sector in sectors %}
+
+<tr>
+
+    <td>{{ loop.index }}</td>
+
+    <td>{{ sector.sector }}</td>
+
+    <td>{{ sector.avg_score }}</td>
+
+    <td>{{ sector.stocks }}</td>
+
+    <td>{{ sector.strong }}</td>
+
+    <td>{{ sector.trend }}</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

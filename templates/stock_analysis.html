@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html>
+<style>
+
+.nav-bar{
+
+    margin-bottom:20px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:10px 15px;
+    margin-right:10px;
+    text-decoration:none;
+    border-radius:8px;
+    font-weight:bold;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}
+
+</style>   
+<div class="nav-bar">
+
+    <a href="/">🏠 Dashboard</a>    
+
+</div> 
+
+<head>
+
+    <title>NP Momentum Stock Analysis</title>
+
+    <style>
+
+        body{
+            background:#111;
+            color:white;
+            font-family:Arial;
+            margin:20px;
+        }
+
+        h1{
+            color:#00ff99;
+        }
+
+        .filters{
+
+            display:flex;
+            flex-wrap:wrap;
+            gap:10px;
+            align-items:center;
+            margin-bottom:20px;
+        }
+
+        input, select{
+
+            padding:10px;
+            margin:5px;
+            border:none;
+            border-radius:5px;
+            font-size:14px;
+        }
+
+        .export-btn{
+
+            background:#00b85c;
+            color:white;
+            border:none;
+            padding:10px 18px;
+            border-radius:6px;
+            font-size:14px;
+            cursor:pointer;
+            font-weight:bold;
+        }
+
+        .export-btn:hover{
+
+            background:#00ff99;
+            color:black;
+        }
+
+        table{
+
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th, td{
+
+            border:1px solid #444;
+            padding:10px;
+            text-align:center;
+        }
+
+        th{
+
+            background:#222;
+            color:#00ff99;
+            position:sticky;
+            top:0;
+        }
+
+        tr:nth-child(even){
+
+            background:#1b1b1b;
+        }
+
+        tr:hover{
+
+            background:#333;
+        }
+
+        .buy{
+
+            color:#00ff66;
+            font-weight:bold;
+        }
+
+        .sell{
+
+            color:red;
+            font-weight:bold;
+        }
+
+        .none{
+
+            color:gray;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<h1>🔥 NP Momentum Stock Analysis 🔥</h1>
+
+<div class="filters">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search Stock"
+    >
+
+    <select id="signalFilter">
+
+        <option value="">
+            All Signals
+        </option>
+
+        <option value="Buy">
+            BUY
+        </option>
+
+        <option value="Sell">
+            SELL
+        </option>
+
+        <option value="H-">
+            HOURLY
+        </option>
+
+        <option value="D-">
+            DAILY
+        </option>
+
+        <option value="Wk-">
+            WEEKLY
+        </option>
+
+    </select>
+
+    <select id="sectorFilter">
+
+        <option value="">All Sectors</option>
+
+        {% for stock in data %}
+        <option value="{{ stock.sector }}">
+            {{ stock.sector }}
+        </option>
+        {% endfor %}
+
+    </select>
+
+    <input
+        type="number"
+        id="rsiFilter"
+        placeholder="Min RSI"
+    >
+
+    <input
+        type="number"
+        id="adxFilter"
+        placeholder="Min ADX"
+    >
+
+    <input
+        type="number"
+        step="0.01"
+        id="rsdFilter"
+        placeholder="Min RS(D)"
+    >
+
+    <input
+        type="number"
+        step="0.01"
+        id="rswFilter"
+        placeholder="Min RS(W)"
+    >
+
+    <input
+        type="number"
+        step="0.01"
+        id="volFilter"
+        placeholder="Min Vol Ratio"
+    >
+
+    <button
+        onclick="exportTableToExcel()"
+        class="export-btn"
+    >
+        📥 Export Excel
+    </button>
+
+</div>
+
+<table id="stockTable">
+
+    <thead>
+
+        <tr>
+
+            <th>Sr.No.</th>
+            <th>Stock</th>
+            <th>Sector</th>
+            <th>Close</th>
+            <th>RSI</th>
+            <th>ADX</th>
+            <th>RS(D)</th>
+            <th>RS(W)</th>
+            <th>Vol Ratio</th>
+            <th>EMA10</th>
+            <th>EMA20</th>
+            <th>EMA50</th>
+            <th>Signal</th>
+            <th>Signal Time</th>
+
+        </tr>
+
+    </thead>
+
+    <tbody>
+
+        {% for stock in data %}
+
+        <tr>
+
+            <td>{{ loop.index }}</td>
+
+            <td>{{ stock.stock }}</td>
+
+            <td>{{ stock.sector }}</td>
+
+            <td>{{ stock.daily_close }}</td>
+
+            <td>{{ stock.rsi }}</td>
+
+            <td>{{ stock.adx }}</td>
+
+            <td>{{ stock.rs_daily }}</td>
+
+            <td>{{ stock.rs_weekly }}</td>
+
+            <td>{{ stock.volume_ratio }}</td>
+
+            <td>{{ stock.ema10 }}</td>
+
+            <td>{{ stock.ema20 }}</td>
+
+            <td>{{ stock.ema50 }}</td>
+
+            <td
+                class="
+                {% if 'BUY' in stock.signal %}
+                buy
+                {% elif 'SELL' in stock.signal %}
+                sell
+                {% else %}
+                none
+                {% endif %}
+                "
+            >
+
+                {{ stock.signal }}
+
+            </td>
+
+            <td>{{ stock.signal_time }}</td>
+
+        </tr>
+
+        {% endfor %}
+
+    </tbody>
+
+</table>
+
+<script>
+
+function filterTable(){
+
+    let search =
+        document
+        .getElementById("searchInput")
+        .value
+        .toUpperCase();
+
+    let signal =
+        document
+        .getElementById("signalFilter")
+        .value
+        .toUpperCase();
+
+    let sector =
+        document
+        .getElementById("sectorFilter")
+        .value
+        .toUpperCase();
+
+    let rsi =
+        parseFloat(
+            document
+            .getElementById("rsiFilter")
+            .value
+        );
+
+    let adx =
+        parseFloat(
+            document
+            .getElementById("adxFilter")
+            .value
+        );
+
+    let rsd =
+        parseFloat(
+            document
+            .getElementById("rsdFilter")
+            .value
+        );
+
+    let rsw =
+        parseFloat(
+            document
+            .getElementById("rswFilter")
+            .value
+        );
+
+    let vol =
+        parseFloat(
+            document
+            .getElementById("volFilter")
+            .value
+        );
+
+    let rows =
+        document.querySelectorAll(
+            "#stockTable tbody tr"
+        );
+
+    rows.forEach(row => {
+
+        let cells =
+            row.querySelectorAll("td");
+
+        let stock =
+            cells[1]
+            .innerText
+            .toUpperCase();
+
+        let stockSector =
+            cells[2]
+            .innerText
+            .toUpperCase();
+
+        let stockRSI =
+            parseFloat(cells[4].innerText) || 0;
+
+        let stockADX =
+            parseFloat(cells[5].innerText) || 0;
+
+        let stockRSD =
+            parseFloat(cells[6].innerText) || 0;
+
+        let stockRSW =
+            parseFloat(cells[7].innerText) || 0;
+
+        let stockVOL =
+            parseFloat(cells[8].innerText) || 0;
+
+        let sig = 
+
+            cells[12]
+            .innerText
+            .toUpperCase();
+
+        let signalMatch = (
+
+            signal === ""
+
+            ||
+
+            (
+                signal === "BUY"
+                &&
+                sig.includes(
+                    "BUY"
+                )
+            )
+
+            ||
+
+            (
+                signal === "SELL"
+                &&
+                sig.includes(
+                    "SELL"
+                )
+            )
+
+            ||
+
+            (
+                signal === "HOURLY"
+                &&
+                sig.includes(
+                    "H-"
+                )
+            )
+
+            ||
+
+            (
+                signal === "DAILY"
+                &&
+                sig.includes(
+                    "D-"
+                )
+            )
+
+            ||
+
+            (
+                signal === "WEEKLY"
+                &&
+                sig.includes(
+                    "WK-"
+                )
+            )
+
+        );
+
+        let show = true;
+
+        // SEARCH
+
+        if(
+            search &&
+            !stock.includes(search)
+        ){
+            show = false;
+        }
+
+        // SIGNAL FILTER
+
+        if(signal !== ""){
+
+            if(
+
+                signal === "BUY"
+
+                &&
+
+                !sig.includes("BUY")
+
+            ){
+                show = false;
+            }
+
+            else if(
+
+                signal === "SELL"
+
+                &&
+
+                !sig.includes("SELL")
+
+            ){
+                show = false;
+            }
+
+            else if(
+
+                signal === "H-"
+
+                &&
+
+                !sig.includes("H-")
+
+            ){
+                show = false;
+            }
+
+            else if(
+
+                signal === "D-"
+
+                &&
+
+                !sig.includes("D-")
+
+            ){
+                show = false;
+            }
+
+            else if(
+
+                signal === "WK-"
+
+                &&
+
+                !sig.includes("WK-")
+
+            ){
+                show = false;
+            }
+
+        }
+
+        // SECTOR
+
+        if(
+            sector &&
+            !stockSector.includes(sector)
+        ){
+            show = false;
+        }
+
+        // RSI
+
+        if(
+            !isNaN(rsi) &&
+            stockRSI < rsi
+        ){
+            show = false;
+        }
+
+        // ADX
+
+        if(
+            !isNaN(adx) &&
+            stockADX < adx
+        ){
+            show = false;
+        }
+
+        // RS(D)
+
+        if(
+            !isNaN(rsd) &&
+            stockRSD < rsd
+        ){
+            show = false;
+        }
+
+        // RS(W)
+
+        if(
+            !isNaN(rsw) &&
+            stockRSW < rsw
+        ){
+            show = false;
+        }
+
+        // VOLUME
+
+        if(
+            !isNaN(vol) &&
+            stockVOL < vol
+        ){
+            show = false;
+        }
+
+        // SIGNAL FILTER
+
+        if(
+
+            signal !== ""
+
+        ){
+
+            if(
+
+                signal === "BUY"
+
+                &&
+
+                !sig.includes(
+                    "BUY"
+                )
+
+            ){
+
+                show = false;
+
+            }
+
+            else if(
+
+                signal === "SELL"
+
+                &&
+
+                !sig.includes(
+                    "SELL"
+                )
+
+            ){
+
+                show = false;
+
+            }
+
+            else if(
+
+                signal === "HOURLY"
+
+                &&
+
+                !sig.includes(
+                    "H-"
+                )
+
+            ){
+
+                show = false;
+
+            }
+
+            else if(
+
+                signal === "DAILY"
+
+                &&
+
+                !sig.includes(
+                    "D-"
+                )
+
+            ){
+
+                show = false;
+
+            }
+
+            else if(
+
+                signal === "WEEKLY"
+
+                &&
+
+                !sig.includes(
+                    "WK-"
+                )
+
+            ){
+
+                show = false;
+
+            }
+
+        }
+
+        row.style.display =
+
+            show
+            ?
+            ""
+            :
+            "none";
+            });
+        }
+
+// EVENTS
+
+document
+.getElementById("searchInput")
+.addEventListener(
+    "keyup",
+    filterTable
+);
+
+document
+.getElementById("signalFilter")
+.addEventListener(
+    "change",
+    filterTable
+);
+
+document
+.getElementById("sectorFilter")
+.addEventListener(
+    "change",
+    filterTable
+);
+
+document
+.getElementById("rsiFilter")
+.addEventListener(
+    "keyup",
+    filterTable
+);
+
+document
+.getElementById("adxFilter")
+.addEventListener(
+    "keyup",
+    filterTable
+);
+
+document
+.getElementById("rsdFilter")
+.addEventListener(
+    "keyup",
+    filterTable
+);
+
+document
+.getElementById("rswFilter")
+.addEventListener(
+    "keyup",
+    filterTable
+);
+
+document
+.getElementById("volFilter")
+.addEventListener(
+    "keyup",
+    filterTable
+);
+
+
+function exportTableToExcel(){
+
+    let table =
+        document.getElementById(
+            "stockTable"
+        );
+
+    let html =
+        table.outerHTML;
+
+    let url =
+        'data:application/vnd.ms-excel,' +
+        encodeURIComponent(html);
+
+    let link =
+        document.createElement("a");
+
+    link.href = url;
+
+    link.download =
+        "NP_Stock_Analysis.xls";
+
+    link.click();
+}
+
+</script>
+</body>
+</html>
+```

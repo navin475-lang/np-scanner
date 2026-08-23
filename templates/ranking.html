@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <title>Technofunda Ranking</title>
+
+    <style>
+
+        body{
+            background:#050b2c;
+            color:white;
+            font-family:Arial, sans-serif;
+            margin:20px;
+        }
+
+        h1{
+            color:#22d3ee;
+            margin-bottom:20px;
+        }
+
+        .table-wrap{
+            overflow:auto;
+            max-height:85vh;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+            min-width:1600px;
+        }
+
+        th{
+            position:sticky;
+            top:0;
+            z-index:50;
+            background:#0f172a;
+            color:#22d3ee;
+        }
+
+        td{
+            padding:10px;
+            border:1px solid #1e293b;
+            text-align:center;
+        }
+
+        tr:nth-child(even){
+            background:#0b1738;
+        }
+
+        tr:nth-child(odd){
+            background:#09112d;
+        }
+
+        tr:hover{
+            background:#12214d;
+        }
+
+        .total{
+            font-weight:bold;
+            color:#22c55e;
+        }
+
+       .elite{
+            background:#0f766e;
+            color:white;
+            font-weight:bold;
+            padding:4px 10px;
+            border-radius:6px;
+        }
+
+        .strong{
+            background:#16a34a;
+            color:white;
+            font-weight:bold;
+            padding:4px 10px;
+            border-radius:6px;
+        }
+
+        .watch{
+            background:#f59e0b;
+            color:black;
+            font-weight:bold;
+            padding:4px 10px;
+            border-radius:6px;
+        }
+
+        .average{
+            background:#eab308;
+            color:black;
+            font-weight:bold;
+            padding:4px 10px;
+            border-radius:6px;
+        }
+
+        .avoid{
+            background:#dc2626;
+            color:white;
+            font-weight:bold;
+            padding:4px 10px;
+            border-radius:6px;
+        }
+
+        .back-btn{
+            display:inline-block;
+            margin-bottom:20px;
+            padding:10px 20px;
+            background:#22c55e;
+            color:white;
+            text-decoration:none;
+            border-radius:10px;
+        }
+        th{
+            cursor:pointer;
+        }
+        /* Rank Column */
+
+        th:nth-child(1),
+        td:nth-child(1){
+            position: sticky;
+            left: 0;
+            z-index: 15;
+            background: #0b1738;
+        }
+
+        /* Stock Column */
+
+        th:nth-child(2),
+        td:nth-child(2){
+            position: sticky;
+            left: 70px;
+            z-index: 15;
+            background: #0b1738;
+        }
+        th:nth-child(1),
+        th:nth-child(2){
+            z-index:60;
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+<div class="nav-bar">
+
+    <a href="/">
+        🏠 Dashboard
+    </a>
+
+</div>    
+
+<h1>
+🏆 Technofunda Ranking
+</h1>
+
+<div style="margin-bottom:15px;">
+
+    <input
+        type="text"
+        id="companyFilter"
+        placeholder="🔍 Search Company..."
+        onkeyup="filterTable()"
+        style="
+            padding:8px;
+            width:250px;
+            border-radius:8px;
+            margin-right:10px;
+        "
+    >
+
+    <select
+        id="ratingFilter"
+        onchange="filterTable()"
+        style="
+            padding:8px;
+            border-radius:8px;
+        "
+    >
+        <option value="">All Ratings</option>
+        <option value="Elite">🏆 Elite</option>
+        <option value="Strong Buy">🟢 Strong Buy</option>
+        <option value="Watchlist">🟠 Watchlist</option>
+        <option value="Average">🟡 Average</option>
+        <option value="Avoid">🔴 Avoid</option>
+    </select>
+
+</div>
+
+<div class="table-wrap">
+
+<table>
+
+<tr>
+
+    <th onclick="sortTable(0)">Rank ⇅</th>
+    <th onclick="sortTable(1)">Stock ⇅</th>
+    <th onclick="sortTable(2)">SecRS /10 ⇅</th>
+    <th onclick="sortTable(3)">Demand /12 ⇅</th>
+    <th onclick="sortTable(4)">Earn /12 ⇅</th>
+    <th onclick="sortTable(5)">4-Cyl /12 ⇅</th>
+    <th onclick="sortTable(6)">MACHINE /10 ⇅</th>
+    <th onclick="sortTable(7)">CANSLIM /10 ⇅</th>
+    <th onclick="sortTable(8)">Orders /8 ⇅</th>
+    <th onclick="sortTable(9)">Fund /7 ⇅</th>
+    <th onclick="sortTable(10)">Val /5 ⇅</th>
+    <th onclick="sortTable(11)">Tech /5 ⇅</th>
+    <th onclick="sortTable(12)">News /3 ⇅</th>
+    <th onclick="sortTable(13)">Sent /2 ⇅</th>
+    <th onclick="sortTable(14)">Total ⇅</th>
+    <th onclick="sortTable(15)">Rating ⇅</th>
+
+</tr>
+
+{% for r in rankings %}
+
+<tr>
+
+    <td>{{ loop.index }}</td>
+
+    <td>{{ r.stock }}</td>
+    
+    <td>{{ r.sector_rs }}</td>
+
+    <td>{{ r.demand_score }}</td>
+
+    <td>{{ r.earnings_score }}</td>
+
+    <td>{{ r.four_cylinder_score }}</td>
+
+    <td>{{ r.machine_score }}</td>
+
+    <td>{{ r.canslim_score }}</td>
+
+    <td>{{ r.orders_score }}</td>
+
+    <td>{{ r.fund_display }}</td>
+
+    <td>{{ r.valuation_score }}</td>
+
+    <td>{{ r.tech_display }}</td>
+
+    <td>{{ r.news_score }}</td>
+
+    <td>{{ r.sentiment_score }}</td>
+
+    <td>{{ "%.2f"|format(r.final_score or 0) }}</td>
+
+    <td>
+
+    {% if "Elite" in r.rating %}
+
+        <span class="elite">
+            {{ r.rating }}
+        </span>
+
+    {% elif "Strong Buy" in r.rating %}
+
+        <span class="strong">
+            {{ r.rating }}
+        </span>
+
+    {% elif "Watchlist" in r.rating %}
+
+        <span class="watch">
+            {{ r.rating }}
+        </span>
+
+    {% elif r.rating == "🟡 Average" %}
+
+        <span class="average">
+            {{ r.rating }}
+        </span>
+
+    {% else %}
+
+        <span class="avoid">
+            {{ r.rating }}
+        </span>
+
+    {% endif %}
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+
+</div>
+<script>
+
+function sortTable(col) {
+
+    let table = document.querySelector("table");
+
+    let rows = Array.from(
+        table.rows
+    ).slice(1);
+
+    let asc =
+        table.getAttribute(
+            "data-sort-col"
+        ) != col
+        ||
+        table.getAttribute(
+            "data-sort-dir"
+        ) == "desc";
+
+    rows.sort((a, b) => {
+
+        let x =
+            a.cells[col]
+            .innerText
+            .trim();
+
+        let y =
+            b.cells[col]
+            .innerText
+            .trim();
+
+        let nx = parseFloat(x);
+        let ny = parseFloat(y);
+
+        if (
+            !isNaN(nx)
+            &&
+            !isNaN(ny)
+        ) {
+
+            return asc
+                ? nx - ny
+                : ny - nx;
+        }
+
+        return asc
+            ? x.localeCompare(y)
+            : y.localeCompare(x);
+    });
+
+    rows.forEach(
+        row => table.appendChild(row)
+    );
+
+    table.setAttribute(
+        "data-sort-col",
+        col
+    );
+
+    table.setAttribute(
+        "data-sort-dir",
+        asc ? "asc" : "desc"
+    );
+}
+function filterTable() {
+
+    let company =
+        document.getElementById(
+            "companyFilter"
+        ).value.toUpperCase();
+
+    let rating =
+        document.getElementById(
+            "ratingFilter"
+        ).value.toUpperCase();
+
+    let rows =
+        document.querySelectorAll(
+            "table tr"
+        );
+
+    rows.forEach((row,index)=>{
+
+        if(index===0) return;
+
+        let stock =
+            row.cells[1]
+            .innerText
+            .toUpperCase();
+
+        let ratingText =
+            row.cells[15]
+            .innerText
+            .toUpperCase();
+
+        let companyMatch =
+            stock.includes(company);
+
+        let ratingMatch =
+            rating === ""
+            ||
+            ratingText.includes(rating);
+
+        row.style.display =
+            (
+                companyMatch
+                &&
+                ratingMatch
+            )
+            ? ""
+            : "none";
+
+    });
+}
+
+</script>
+
+</body>
+
+</html>

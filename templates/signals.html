@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Signals</title>
+
+<style>
+
+body{
+
+    background:#0f1117;
+    color:white;
+    font-family:Arial;
+    padding:20px;
+    margin:0;
+
+}
+
+.nav-bar{
+
+    margin-bottom:20px;
+
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:12px 18px;
+    margin-right:10px;
+    text-decoration:none;
+    border-radius:10px;
+    font-weight:bold;
+    display:inline-block;
+
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+
+}
+
+h1{
+
+    color:#00ff99;
+    margin-bottom:20px;
+
+}
+
+.filters{
+
+    margin-bottom:20px;
+
+}
+
+input,
+select{
+
+    padding:10px;
+    margin-right:10px;
+    border-radius:8px;
+    border:none;
+    font-size:15px;
+
+}
+
+table{
+
+    width:100%;
+    border-collapse:collapse;
+    background:#1a1d26;
+    border-radius:10px;
+    overflow:hidden;
+
+}
+
+th{
+
+    background:#222733;
+    color:#00ff99;
+    padding:12px;
+
+}
+
+td{
+
+    padding:10px;
+    text-align:center;
+    border-bottom:1px solid #333;
+
+}
+
+tr:hover{
+
+    background:#2a2f3a;
+
+}
+
+.buy{
+
+    color:#00ff99;
+    font-weight:bold;
+
+}
+
+.sell{
+
+    color:#ff4444;
+    font-weight:bold;
+
+}
+
+.add{
+
+    color:orange;
+    font-weight:bold;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="nav-bar">
+
+    <a href="/">🏠 Dashboard</a>      
+
+</div>
+
+<h1>📡 Signal History</h1>
+
+<div class="filters">
+
+    <input
+        type="text"
+        id="searchInput"
+        placeholder="Search Stock"
+    >
+
+    <select id="signalFilter">
+
+        <option value="">
+            All Signals
+        </option>
+
+        <option value="BUY">
+            BUY
+        </option>
+
+        <option value="SELL">
+            SELL
+        </option>
+
+        <option value="ADD">
+            ADD
+        </option>
+
+        <option value="HOURLY">
+            HOURLY
+        </option>
+
+        <option value="DAILY">
+            DAILY
+        </option>
+
+        <option value="WEEKLY">
+            WEEKLY
+        </option>
+
+    </select>
+
+</div>
+
+<table id="signalTable">
+
+<thead>
+
+<tr>
+
+    <th>ID</th>
+    <th>Stock</th>
+    <th>Signal</th>
+    <th>Price</th>
+    <th>RSI</th>
+    <th>Timeframe</th>
+    <th>Time</th>
+
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in history %}
+
+<tr>
+
+    <td>{{ row.id }}</td>
+
+    <td>{{ row.stock }}</td>
+
+    <td
+
+    class="
+
+    {% if 'BUY' in row.signal_type %}
+        buy
+    {% elif 'SELL' in row.signal_type %}
+        sell
+    {% elif 'ADD' in row.signal_type %}
+        add
+    {% endif %}
+
+    "
+
+    >
+
+        {{ row.signal_type }}
+
+    </td>
+
+    <td>
+
+        {{ "%.2f"|format(
+            row.price
+        ) }}
+
+    </td>
+
+    <td>
+
+        {{ "%.2f"|format(row.rsi) }}
+
+    </td>
+
+    <td>
+
+    {% if 'WEEKLY' in row.signal_type %}
+        WEEKLY
+    {% elif 'DAILY' in row.signal_type %}
+        DAILY
+    {% elif 'HOURLY' in row.signal_type %}
+        HOURLY
+    {% endif %}
+
+    </td>
+
+    <td>
+
+        {{ row.signal_time }}
+
+    </td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+<script>
+
+function filterSignals(){
+
+    let search =
+
+        document
+        .getElementById(
+            "searchInput"
+        )
+        .value
+        .toUpperCase();
+
+    let sig =
+
+        document
+        .getElementById(
+            "signalFilter"
+        )
+        .value
+        .toUpperCase();
+
+    let rows =
+
+        document
+        .querySelectorAll(
+            "#signalTable tbody tr"
+        );
+
+    rows.forEach(row => {
+
+        let stock =
+
+            row.cells[1]
+            .innerText
+            .toUpperCase();
+
+        let signal =
+
+            row.cells[2]
+            .innerText
+            .toUpperCase();
+
+        let show = true;
+
+        if(
+
+            search !== ""
+
+            &&
+
+            !stock.includes(
+                search
+            )
+
+        ){
+
+            show = false;
+
+        }
+
+        if(
+
+            sig !== ""
+
+            &&
+
+            !signal.includes(
+                sig
+            )
+
+        ){
+
+            show = false;
+
+        }
+
+        row.style.display =
+
+            show
+            ?
+            ""
+            :
+            "none";
+
+    });
+
+}
+
+document
+.getElementById(
+    "searchInput"
+)
+.addEventListener(
+    "keyup",
+    filterSignals
+);
+
+document
+.getElementById(
+    "signalFilter"
+)
+.addEventListener(
+    "change",
+    filterSignals
+);
+
+</script>
+
+</body>
+</html>

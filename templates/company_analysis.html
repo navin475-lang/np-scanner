@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Company Analysis</title>
+
+<style>
+.nav-bar{
+
+    margin-bottom:20px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:12px 18px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    display:inline-block;
+    transition:.3s;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}    
+
+.nav-bar{
+
+    margin-bottom:20px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:12px 18px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    display:inline-block;
+    transition:.3s;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}    
+.navbar{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-bottom:15px;
+
+    flex-wrap:wrap;
+}
+
+.nav-btn{
+
+    background:#1b2e52;
+
+    color:#00ff99;
+
+    padding:10px 18px;
+
+    border-radius:10px;
+
+    text-decoration:none;
+
+    font-weight:bold;
+
+    font-size:16px;
+
+    transition:.2s;
+}
+
+.nav-btn:hover{
+
+    background:#00c853;
+
+    color:white;
+}
+
+body{
+    background:#041a28;
+    color:white;
+    font-family:Arial;
+    margin:12px;
+}
+
+h1{
+    color:#00ff99;
+    margin-bottom:15px;
+    font-size:34px;
+}
+
+h2{
+    color:#00ff99;
+    margin-top:20px;
+    margin-bottom:10px;
+    font-size:26px;
+}
+
+.search-box{
+    margin-bottom:15px;
+}
+
+input{
+    padding:12px;
+    width:280px;
+    border:none;
+    border-radius:10px;
+    font-size:18px;
+}
+
+button{
+    padding:12px 22px;
+    background:#00c853;
+    border:none;
+    color:white;
+    border-radius:10px;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.top-cards{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(5,1fr);
+
+    gap:8px;
+
+    margin-top:10px;
+}
+
+.card{
+
+    background:#1a2d54;
+
+    padding:12px;
+
+    border-radius:12px;
+
+    min-height:45px;
+
+    box-shadow:
+    0 0 8px rgba(0,255,120,.08);
+
+}
+
+.card h3{
+
+    color:#00ff99;
+
+    margin:0 0 8px 0;
+
+    font-size:14px;
+}
+
+.card p{
+
+    font-size:14px;
+
+    font-weight:bold;
+
+    margin:0;
+
+    line-height:1.2;
+
+    word-break:break-word;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    margin-top:10px;
+    background:#14284a;
+    border-radius:14px;
+    overflow:hidden;
+}
+
+th{
+    background:#243d66;
+    color:#00ff99;
+    padding:12px;
+    font-size:16px;
+}
+
+td{
+    padding:12px;
+    text-align:center;
+    border-bottom:1px solid #203858;
+    font-size:15px;
+}
+
+.buy{
+    color:#00ff66;
+    font-weight:bold;
+}
+
+.sell{
+    color:#ff4d4d;
+    font-weight:bold;
+}
+
+.table-box{
+    overflow-x:auto;
+}
+
+@media (max-width:1200px){
+
+.top-cards{
+grid-template-columns:
+repeat(3,1fr);
+}
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="nav-bar">
+    <a href="/">🏠 Dashboard</a>
+</div>
+
+<h1>
+...
+
+</div>
+
+<h1>📈 Company Analysis</h1>
+
+<div class="search-box">
+
+<form action="/company-analysis" method="GET">
+
+<input
+
+type="text"
+
+name="stock"
+
+value="{{ stock }}"
+
+placeholder="Search Stock"
+
+list="stocklist"
+
+autocomplete="off"
+
+>
+
+<datalist id="stocklist">
+
+{% for s in stock_list %}
+
+<option value="{{ s }}">
+
+{% endfor %}
+
+</datalist>
+
+<button>
+Search
+</button>
+
+</form>
+
+</div>
+
+{% if latest %}
+
+<h2>{{ latest["stock"] }}</h2>
+
+<div class="top-cards">
+
+<div class="card">
+<h3>Price</h3>
+<p>{{ "%.2f"|format(latest["daily_close"]) }}</p>
+</div>
+
+<div class="card">
+<h3>Signal</h3>
+<p>{{ latest["signal"] }}</p>
+</div>
+
+<div class="card">
+<h3>RSI</h3>
+<p>{{ "%.2f"|format(latest["rsi"]) }}</p>
+</div>
+
+<div class="card">
+<h3>Vol Ratio</h3>
+<p>{{ "%.2f"|format(latest["volume_ratio"]) }}</p>
+</div>
+
+<div class="card">
+<h3>ADX</h3>
+<p>{{ "%.2f"|format(latest["adx"]) }}</p>
+</div>
+
+<div class="card">
+<h3>RS(D)</h3>
+<p>{{ "%.2f"|format(latest["rs_daily"]) }}</p>
+</div>
+
+<div class="card">
+<h3>RS(W)</h3>
+<p>{{ "%.2f"|format(latest["rs_weekly"]) }}</p>
+</div>
+
+<div class="card">
+<h3>Trend</h3>
+<p>{{ latest["status"] }}</p>
+</div>
+
+<div class="card">
+<h3>Score</h3>
+<p>{{ "%.2f"|format(latest["score"]) }}</p>
+</div>
+
+<div class="card">
+<h3>Updated</h3>
+<p>{{ latest["updated_at"] }}</p>
+</div>
+
+</div>
+
+<h2>EMA + ATR Analysis</h2>
+
+<div class="table-box">
+
+<table>
+
+<thead>
+
+<tr>
+<th>TF</th>
+<th>EMA10</th>
+<th>EMA20</th>
+<th>EMA50</th>
+<th>ATR SL</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+<tr>
+<td>1H</td>
+<td>{{ "%.2f"|format(latest["ema10_h"]) }}</td>
+<td>{{ "%.2f"|format(latest["ema20_h"]) }}</td>
+<td>{{ "%.2f"|format(latest["ema50_h"]) }}</td>
+<td>{{ "%.2f"|format(latest["atr_h"]) }}</td>
+</tr>
+
+<tr>
+<td>Daily</td>
+<td>{{ "%.2f"|format(latest["ema10_d"]) }}</td>
+<td>{{ "%.2f"|format(latest["ema20_d"]) }}</td>
+<td>{{ "%.2f"|format(latest["ema50_d"]) }}</td>
+<td>{{ "%.2f"|format(latest["atr_d"]) }}</td>
+</tr>
+
+<tr>
+<td>Weekly</td>
+<td>{{ "%.2f"|format(latest["ema10_w"]) }}</td>
+<td>{{ "%.2f"|format(latest["ema20_w"]) }}</td>
+<td>{{ "%.2f"|format(latest["ema50_w"]) }}</td>
+<td>{{ "%.2f"|format(latest["atr_w"]) }}</td>
+</tr>
+
+</tbody>
+
+</table>
+
+</div>
+
+<h2>Signal History</h2>
+
+<table>
+
+<thead>
+
+<tr>
+<th>Date</th>
+<th>Signal</th>
+<th>Price</th>
+<th>RSI</th>
+<th>Vol Ratio</th>
+</tr>
+
+</thead>
+
+<tbody>
+
+{% for row in signals %}
+
+<tr>
+
+<td>{{ row["signal_time"] }}</td>
+
+<td class="
+{% if 'BUY' in row['signal_type'] %}
+buy
+{% else %}
+sell
+{% endif %}
+">
+{{ row["signal_type"] }}
+</td>
+
+<td>{{ "%.2f"|format(row["price"]) }}</td>
+
+<td>{{ "%.2f"|format(row["rsi"]) }}</td>
+
+<td>{{ "%.2f"|format(row["volume_ratio"]) }}</td>
+
+</tr>
+
+{% endfor %}
+
+</tbody>
+
+</table>
+
+{% endif %}
+
+</body>
+</html>

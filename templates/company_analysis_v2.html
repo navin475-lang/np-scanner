@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+    <title>Company Analysis V2</title>
+
+    <style>
+
+        body{
+            background:#04153a;
+            color:white;
+            font-family:Segoe UI;
+            margin:0;
+            padding:20px;
+        }
+
+        .container{
+            max-width:1400px;
+            margin:auto;
+        }
+
+        h1{
+            color:#00e5ff;
+            margin-bottom:20px;
+        }
+
+        .search-box{
+            background:#081f52;
+            padding:20px;
+            border-radius:12px;
+            margin-bottom:20px;
+        }
+
+        select{
+            padding:10px;
+            width:350px;
+            font-size:16px;
+        }
+
+        button{
+            padding:10px 20px;
+            background:#00bcd4;
+            border:none;
+            color:white;
+            cursor:pointer;
+            border-radius:6px;
+        }
+
+        .header-card{
+            background:#081f52;
+            padding:25px;
+            border-radius:12px;
+            margin-bottom:20px;
+        }
+
+        .stock-name{
+            font-size:34px;
+            font-weight:bold;
+            color:#00e5ff;
+        }
+
+        .rating{
+            font-size:22px;
+            margin-top:10px;
+        }
+
+        .cards{
+            display:grid;
+            grid-template-columns:repeat(5,1fr);
+            gap:15px;
+            margin-bottom:25px;
+        }
+
+        .card{
+            background:#081f52;
+            padding:20px;
+            border-radius:12px;
+            text-align:center;
+        }
+
+        .card-title{
+            color:#9db4ff;
+            font-size:14px;
+        }
+
+        .card-value{
+            font-size:30px;
+            font-weight:bold;
+            margin-top:10px;
+            color:#00e5ff;
+        }
+
+        .section{
+            background:#081f52;
+            padding:20px;
+            border-radius:12px;
+            margin-bottom:20px;
+        }
+
+        .section h2{
+            color:#00e5ff;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th{
+            background:#0f327c;
+            padding:12px;
+        }
+
+        td{
+            padding:12px;
+            text-align:center;
+            border-top:1px solid #1f3f80;
+        }
+
+        .green{
+            color:#00ff88;
+            font-weight:bold;
+        }
+
+        .red{
+            color:#ff4d4d;
+            font-weight:bold;
+        }
+
+        .score-row{
+            margin-bottom:18px;
+        }
+
+        .score-header{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:6px;
+            font-weight:bold;
+        }
+
+        .score-bar{
+            width:100%;
+            height:22px;
+            background:#16336f;
+            border-radius:20px;
+            overflow:hidden;
+        }
+
+        .score-fill{
+            height:100%;
+            background:linear-gradient(90deg,#00e676,#00c853);
+            text-align:right;
+            padding-right:10px;
+            line-height:22px;
+            color:white;
+            font-size:12px;
+        }
+
+    </style>
+
+</head>
+
+<body>
+<div style="margin-top:15px;">
+
+    <a href="/"
+       style="
+       background:#00bcd4;
+       color:white;
+       padding:10px 18px;
+       border-radius:8px;
+       text-decoration:none;
+       font-weight:bold;">
+       🏠 Dashboard
+    </a>
+
+    <a href="/momentum-ranking"
+       style="
+       background:#28a745;
+       color:white;
+       padding:10px 18px;
+       border-radius:8px;
+       text-decoration:none;
+       font-weight:bold;
+       margin-left:10px;">
+       📊 Ranking
+    </a>
+
+</div>    
+
+<div class="container">
+
+<h1>🚀 Company Analysis V2</h1>
+
+<form method="GET" class="search-box">
+
+    <select name="stock">
+
+        {% for s in stock_list %}
+
+        <option value="{{ s }}"
+        {% if stock == s %}selected{% endif %}>
+
+            {{ s }}
+
+        </option>
+
+        {% endfor %}
+
+    </select>
+
+    <button type="submit">
+        Load Stock
+    </button>
+
+</form>
+
+{% if latest %}
+
+<div class="header-card">
+
+    <div class="stock-name">
+        {{ latest["stock"] }}
+    </div>
+
+    <div class="rating">
+        {{ latest["rating"] }}
+    </div>
+
+    <br>
+
+    <b>Sector:</b> {{ latest["sector"] }}
+    <br><br>
+       
+    <b>Price:</b> ₹ {{ "%.2f" |format(latest["daily_close"]) }}
+
+</div>
+
+<div class="cards">
+
+    <div class="card">
+        <div class="card-title">Final Score</div>
+        <div class="card-value">
+            {{ latest["final_score"] }}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">TF Rank</div>
+        <div class="card-value">
+            {{ latest["technofunda_rank"] }}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Fund Score</div>
+        <div class="card-value">
+            {{ latest["fund_score"] }}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">Tech Score</div>
+        <div class="card-value">
+            {{ latest["score"] }}
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-title">RS Daily</div>
+        <div class="card-value">
+            {{ "%.2f"|format(latest["rs_daily"]) }}
+        </div>
+    </div>
+
+</div>
+<div class="section">
+
+<h2>🎯 Signal Dashboard</h2>
+
+<table>
+
+<tr>
+    <th>Current Signal</th>
+    <th>Status</th>
+    <th>Rating</th>
+    <th>Updated</th>
+</tr>
+
+<tr>
+    <td>{{ latest["signal"] }}</td>
+    <td>{{ latest["status"] }}</td>
+    <td>{{ latest["rating"] }}</td>
+    <td>{{ latest["updated_at"] }}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<h2>🏆 Ranking Engine Breakdown</h2>
+
+{% set scores = [
+('Demand', latest.demand_score, 12),
+('Earnings', latest.earnings_score, 12),
+('4-Cylinder', latest.four_cylinder_score, 12),
+('Machine', latest.machine_score, 10),
+('CANSLIM', latest.canslim_score, 10),
+('Valuation', latest.valuation_score, 5)
+] %}
+
+{% for name, score, max_score in scores %}
+
+<div class="score-row">
+
+    <div class="score-header">
+        <span>{{ name }}</span>
+        <span>{{ score }} / {{ max_score }}</span>
+    </div>
+
+    <div class="score-bar">
+
+        <div class="score-fill"
+             style="width:{{ ((score / max_score) * 100)|round(1) }}%">
+
+            {{ ((score / max_score) * 100)|round(1) }}%
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endfor %}
+
+</div>
+
+
+<div class="section">
+
+<h2>📈 Growth Dashboard</h2>
+
+<table>
+
+<tr>
+    <th>Sales Growth</th>
+    <th>Profit Growth</th>
+    <th>EPS Growth</th>
+</tr>
+
+<tr>
+    <td>{{ "%.2f"|format(latest["sales_growth"]) }}%</td>
+    <td>{{ "%.2f"|format(latest["profit_growth"]) }}%</td>
+    <td>{{ "%.2f"|format(latest["eps_growth"]) }}%</td>
+</tr>
+
+</table>
+
+</div>
+<div class="section">
+
+<h2>🏛 Quality Dashboard</h2>
+
+<table>
+
+<tr>
+    <th>ROE</th>
+    <th>ROCE</th>
+    <th>Debt / Equity</th>
+</tr>
+
+<tr>
+    <td>{{ "%.2f"|format(latest["roe"]) }}%</td>
+    <td>{{ "%.2f"|format(latest["roce"]) }}%</td>
+    <td>{{ "%.2f"|format(latest["debt_equity"]) }}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<h2>💰 Valuation</h2>
+
+<table>
+
+<tr>
+    <th>PE Ratio</th>
+    <th>PB Ratio</th>
+</tr>
+
+<tr>
+    <td>{{ latest["pe_ratio"] }}</td>
+    <td>{{ latest["pb_ratio"] }}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<h2>⚡ Technical Analysis</h2>
+
+<table>
+
+<tr>
+    <th>RS Daily</th>
+    <th>RS Weekly</th>
+    <th>RSI</th>
+    <th>ADX</th>
+    <th>Volume Ratio</th>
+</tr>
+
+<tr>
+    <td>{{ "%.2f"|format(latest["rs_daily"]) }}</td>
+    <td>{{ "%.2f"|format(latest["rs_weekly"]) }}</td>
+    <td>{{ "%.2f"|format(latest["rsi"]) }}</td>
+    <td>{{ "%.2f"|format(latest["adx"]) }}</td>
+    <td>{{ "%.2f"|format(latest["volume_ratio"]) }}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<h2>📊 EMA Structure</h2>
+
+<table>
+
+<tr>
+    <th>Timeframe</th>
+    <th>EMA10</th>
+    <th>EMA20</th>
+    <th>EMA50</th>
+</tr>
+
+<tr>
+    <td>Hourly</td>
+    <td>{{ "%.2f"|format(latest["ema10_h"]) }}</td>
+    <td>{{ "%.2f"|format(latest["ema20_h"]) }}</td>
+    <td>{{ "%.2f"|format(latest["ema50_h"]) }}</td>
+</tr>
+
+<tr>
+    <td>Daily</td>
+    <td>{{ "%.2f"|format(latest["ema10_d"]) }}</td>
+    <td>{{ "%.2f"|format(latest["ema20_d"]) }}</td>
+    <td>{{ "%.2f"|format(latest["ema50_d"]) }}</td>
+</tr>
+
+<tr>
+    <td>Weekly</td>
+    <td>{{ "%.2f"|format(latest["ema10_w"]) }}</td>
+    <td>{{ "%.2f"|format(latest["ema20_w"]) }}</td>
+    <td>{{ "%.2f"|format(latest["ema50_w"]) }}</td>
+</tr>
+
+</table>
+
+</div>
+
+<div class="section">
+
+<h2>🛡 ATR Stop Loss</h2>
+
+<table>
+
+<tr>
+    <th>Hourly SL</th>
+    <th>Daily SL</th>
+    <th>Weekly SL</th>
+</tr>
+
+<tr>
+    <td>{{ "%.2f"|format(latest["atr_h"]) }}</td>
+    <td>{{ "%.2f"|format(latest["atr_d"]) }}</td>
+    <td>{{ "%.2f"|format(latest["atr_w"]) }}</td>
+</tr>
+
+</table>
+
+</div>
+
+{% endif %}
+
+</div>
+
+</body>
+</html>

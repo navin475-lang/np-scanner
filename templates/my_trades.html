@@ -1,0 +1,1457 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>My Trades</title>
+
+<style>
+.nav-bar{
+
+    margin-bottom:6px;
+}
+
+.nav-bar a{
+
+    background:#222;
+    color:#00ff99;
+    padding:12px 18px;
+    text-decoration:none;
+    border-radius:12px;
+    font-weight:bold;
+    display:inline-block;
+    transition:.3s;
+}
+
+.nav-bar a:hover{
+
+    background:#00ff99;
+    color:black;
+}    
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    background:#020617;
+    color:#e2e8f0;
+    font-family:'Segoe UI',sans-serif;
+    margin:0;
+    padding:0;
+}
+
+.page-container{
+    max-width:1600px;
+    margin:auto;
+    padding:10px;
+}
+
+/* =========================
+TITLE
+========================= */
+
+h1{
+    color:#22d3ee;
+    margin-top:0;
+    margin-bottom:14px;
+    font-size:34px;
+    font-weight:700;
+    letter-spacing:-1px;
+}
+
+/* =========================
+FILTER BAR
+========================= */
+
+.filter-bar{
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+    flex-wrap:nowrap;
+    margin:18px 0;
+}
+
+/* FILTER WIDTH */
+
+.filter-bar select,
+.filter-bar input{
+
+    height:56px;
+    border:none;
+    border-radius:16px;
+    background:#1e293b;
+    color:white;
+    padding:0 18px;
+    font-size:15px;
+    outline:none;
+    flex:none;
+}
+
+/* WIDTH */
+
+.filter-bar select{
+
+    width:170px;
+}
+
+.filter-bar input{
+
+    width:240px;
+}
+
+/* BUTTON */
+
+.filter-bar .green-btn,
+.filter-bar .download-btn,
+.filter-bar .new-btn{
+
+    min-width:180px;
+    height:56px;
+    border-radius:16px;
+}
+
+/* FOCUS */
+
+.filter-bar input:focus,
+.filter-bar select:focus{
+
+    box-shadow:
+    0 0 0 2px
+    #22d3ee55;
+}
+
+/* =========================
+DASHBOARD
+========================= */
+
+.dashboard{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(6,minmax(120px,1fr));
+
+    gap:8px;
+
+    margin-bottom:14px;
+
+    width:100%;
+}
+
+/* ALERT PANEL */
+
+.alert-panel{
+    display:flex;
+    justify-content:flex-end;
+    margin-top:-45px;
+    margin-bottom:18px;
+}
+
+.alert-item{
+    background:#111c34;
+    border-left:5px solid orange;
+    color:white;
+    padding:12px 18px;
+    border-radius:14px;
+    font-size:18px;
+    box-shadow:0 6px 18px rgba(0,0,0,.35);
+}
+
+.dash-card{
+
+    background:#0f172a;
+    border:1px solid #1e293b;
+    border-radius:16px;
+
+    padding:10px 12px;
+
+    min-height:75px;
+
+    text-align:center;
+}
+
+.dash-card:hover{
+    transform:translateY(-3px);
+    border-color:#334155;
+}
+
+.dash-card h3{
+
+    color:#94a3b8;
+    font-size:13px;
+    margin-bottom:6px;
+    font-weight:600;
+}
+
+.dash-card h2{
+
+    font-size:18px;
+    margin:0;
+    font-weight:700;
+}
+
+/* =========================
+CARD
+========================= */
+
+.card{
+    background:#0f172a;
+    border:1px solid #1e293b;
+    border-radius:24px;
+    padding:24px;
+    margin-bottom:30px;
+}
+
+/* =========================
+TRADE FORM
+========================= */
+
+.trade-form{
+
+    display:grid;
+
+    grid-template-columns:
+    130px
+    130px
+    140px
+    90px
+    1.1fr
+    100px
+    80px
+    100px
+    100px
+    1fr
+    130px;
+}
+
+/* =========================
+BUTTONS
+========================= */
+
+button{
+    border:none;
+    border-radius:16px;
+    cursor:pointer;
+    font-weight:700;
+    color:white;
+    transition:.2s;
+}
+
+button:hover{
+    opacity:.92;
+}
+
+.green-btn{
+
+    background:#22c55e;
+
+    color:white;
+
+    border:none;
+
+    height:46px;
+
+    padding:0 18px;
+
+    border-radius:12px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.add-btn{
+    background:#3b82f6;
+    padding:8px 10px;
+    border-radius:12px;
+}
+
+.tsl-btn{
+    background:#8b5cf6;
+    padding:8px 10px;
+    border-radius:12px;
+}
+.yellow-btn{
+    background:#14b8a6;
+    padding:8px 10px;
+    border-radius:12px;
+}
+
+
+.sell-btn{
+    background:#f59e0b;
+    padding:8px 10px;
+    border-radius:12px;
+}
+
+.date-btn{
+    background:#64748b;
+    padding:6px 10px;
+    font-size:12px;
+    border-radius:8px;
+}
+
+/* =========================
+TABLE
+========================= */
+.table-wrap{
+    overflow-x:auto;
+    border-radius:22px;
+    margin-bottom:28px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:#0f172a;
+    border-radius:22px;
+    overflow:hidden;
+    border:1px solid #1e293b;
+}
+
+th{
+    background:#111827;
+    color:#22d3ee;
+    padding:20px 16px;
+    font-size:15px;
+    white-space:nowrap;
+}
+
+td{
+    padding:20px 14px;
+    text-align:center;
+    border-top:1px solid #1e293b;
+    font-size:15px;
+}
+
+tr:hover{
+    background:#132035;
+}
+
+.open{
+    color:#22c55e;
+    font-weight:700;
+}
+
+/* =========================
+ACTION BUTTONS
+========================= */
+
+.action-group{
+    display:flex;
+    gap:8px;
+    justify-content:center;
+    align-items:center;
+    flex-wrap:nowrap;
+}
+
+/* =========================
+MODALS
+========================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.7);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.modal-box{
+    background:#0f172a;
+    border:1px solid #1e293b;
+    border-radius:24px;
+    padding:30px;
+    width:360px;
+}
+
+.modal-box h2{
+    margin-top:0;
+    margin-bottom:20px;
+}
+
+.modal-box input{
+    margin:10px 0;
+}
+/* TARGET BUTTON */
+
+
+
+</style>
+
+</head>
+
+<body>
+<div class="nav-bar">
+
+    <a href="/">
+        🏠 Dashboard
+    </a>
+
+</div>    
+
+<div class="page-container">       
+
+<h1 class="page-title">
+    My Trades
+</h1>
+
+{% if alerts %}
+<div class="alert-panel">
+
+    {% for a in alerts %}
+    <div class="alert-item">
+        {{ a }}
+    </div>
+    {% endfor %}
+
+</div>
+{% endif %}
+
+<form
+method="GET"
+class="filter-bar"
+>
+
+<select
+name="portfolio"
+onchange="this.form.submit()"
+>
+
+<option
+value="All"
+{% if portfolio_filter=="All" %}
+selected
+{% endif %}
+>
+All Portfolio
+</option>
+
+<option
+value="Main"
+{% if portfolio_filter=="Main" %}
+selected
+{% endif %}
+>
+Main
+</option>
+
+<option
+value="Swing"
+{% if portfolio_filter=="Swing" %}
+selected
+{% endif %}
+>
+Swing
+</option>
+
+<option
+value="Long Term"
+{% if portfolio_filter=="Long Term" %}
+selected
+{% endif %}
+>
+Long Term
+</option>
+
+<option
+value="Paper"
+{% if portfolio_filter=="Paper" %}
+selected
+{% endif %}
+>
+Paper
+</option>
+
+</select>
+
+<input
+list="company_list"
+name="company"
+placeholder="Search Company"
+value="{{ company_filter }}"
+autocomplete="off"
+>
+
+<datalist id="company_list">
+
+<option value="">
+All Company
+</option>
+
+{% for c in companies %}
+<option value="{{ c.stock }}">
+{% endfor %}
+
+</datalist>
+
+<select
+name="date"
+onchange="this.form.submit()"
+>
+
+<option value="All"
+{% if date_filter=="All" %}
+selected
+{% endif %}
+>
+All Date
+</option>
+
+<option value="Today"
+{% if date_filter=="Today" %}
+selected
+{% endif %}
+>
+Today
+</option>
+
+<option value="Week"
+{% if date_filter=="Week" %}
+selected
+{% endif %}
+>
+This Week
+</option>
+
+<option value="Month"
+{% if date_filter=="Month" %}
+selected
+{% endif %}
+>
+This Month
+</option>
+
+</select>
+
+<select
+name="status"
+onchange="this.form.submit()"
+>
+
+<option value="All"
+{% if status_filter=="All" %}
+selected
+{% endif %}
+>
+All Status
+</option>
+
+<option value="OPEN"
+{% if status_filter=="OPEN" %}
+selected
+{% endif %}
+>
+Open
+</option>
+
+<option value="CLOSED"
+{% if status_filter=="CLOSED" %}
+selected
+{% endif %}
+>
+Closed
+</option>
+
+</select>
+
+<input
+type="hidden"
+name="sort"
+value="{{ sort_filter }}"
+>
+
+<button
+class="green-btn"
+type="submit"
+>
+Filter
+</button>
+
+<a
+href="/download-trades-csv"
+class="green-btn"
+style="
+text-decoration:none;
+display:flex;
+align-items:center;
+justify-content:center;
+"
+>
+Download CSV
+</a>
+
+<a
+href="/trade-add"
+class="green-btn"
+style="
+text-decoration:none;
+display:flex;
+align-items:center;
+justify-content:center;
+"
+>
++ New Trade
+</a>
+
+</form>
+
+
+<div class="dashboard">
+
+    
+
+    <div class="dash-card">
+        <h3>Total Trades</h3>
+        <h2>{{ total_trades }}</h2>
+    </div>
+
+    <div class="dash-card">
+        <h3>Open Trades</h3>
+        <h2 style="color:#22c55e;">
+            {{ open_trades }}
+        </h2>
+    </div>
+
+    <div class="dash-card"> 
+        <h3>Closed Trades</h3>
+        <h2 style="color:#ef4444;">
+            {{ closed_trades }}
+        </h2>
+    </div>
+
+    <div class="dash-card">
+        <h3>Total P/L</h3>
+
+        <h2
+        {% if total_pl >= 0 %}
+        style="color:#22c55e;"
+        {% else %}
+        style="color:#ef4444;"
+        {% endif %}
+        >
+            ₹ {{ total_pl }}
+        </h2>
+
+    </div>
+
+    <div class="dash-card">
+        <h3>Invested</h3>
+        <h2>
+            ₹ {{ invested_capital }}
+        </h2>
+    </div>
+
+    <div class="dash-card">
+        <h3>Portfolio RR</h3>
+        <h2 style="color:#f59e0b;">
+            {{ portfolio_rr }}
+        </h2>
+    </div>
+
+</div>
+
+<div class="table-wrap">
+<table>
+
+<tr>
+
+<th>Portfolio</th>
+<th>
+<a
+href="?sort=date
+&portfolio={{ portfolio_filter }}
+&company={{ company_filter }}
+&date={{ date_filter }}
+&status={{ status_filter }}"
+style="
+color:#19d3ff;
+text-decoration:none;
+"
+>
+Date ⇅
+</a>
+</th>
+<th>Stock</th>
+<th>Strategy</th>
+<th>Tranche</th>
+<th>Entry</th>
+<th>Qty</th>
+<th>SL</th>
+<th>Target</th>
+<th>CMP</th>
+<th>
+<a
+href="?sort=pl
+&portfolio={{ portfolio_filter }}
+&company={{ company_filter }}
+&date={{ date_filter }}
+&status={{ status_filter }}"
+style="
+color:#19d3ff;
+text-decoration:none;
+"
+>
+P/L ⇅
+</a>
+</th>
+<th>
+<a
+href="?sort=rr
+&portfolio={{ portfolio_filter }}
+&company={{ company_filter }}
+&date={{ date_filter }}
+&status={{ status_filter }}"
+style="
+color:#19d3ff;
+text-decoration:none;
+"
+>
+RR ⇅
+</a>
+</th>
+<th>Remarks</th>
+<th>Status</th>
+
+<th
+style="
+min-width:190px;
+white-space:nowrap;
+text-align:center;
+">
+Trade Action
+</th>
+
+</tr>
+
+{% for t in trades %}
+
+<tr>
+
+<td>
+
+{{ t.portfolio }}
+
+</td>    
+
+<td>
+
+<div class="action-group">
+
+<span>
+
+{{ t.created_at[:10].split('-')[2] }}/{{ t.created_at[:10].split('-')[1] }}/{{ t.created_at[:10].split('-')[0] }}
+
+</span>
+
+<button
+class="date-btn"
+onclick="openDate(
+'{{ t.id }}',
+'{{ t.created_at }}'
+)"
+>
+Edit
+</button>
+
+</div>
+
+</td> 
+
+<td>
+{{ t.stock }}
+</td>
+
+
+<td>
+{{ t.strategy }}
+</td>
+
+<td>
+{{ t.tranche }}
+</td>
+
+<td>
+₹ {{ "%.2f"|format(t.entry) }}
+</td>
+
+<td>
+{{ t.qty }}
+</td>
+
+<td>
+{{ t.stoploss|int }}
+</td>
+
+<td>
+{{ t.target }}
+</td>
+
+<td>
+₹ {{ "%.2f"|format(t.cmp) }}
+</td>
+
+<td>
+
+{% if t.pl >= 0 %}
+
+<span style="color:#22c55e;font-weight:700;">
+
++{{ t.pl }}
+
+</span>
+
+{% else %}
+
+<span style="color:#ef4444;font-weight:700;">
+
+{{ t.pl }}
+
+</span>
+
+{% endif %}
+
+</td>
+
+<td>
+
+{{ t.rr }}
+
+</td>
+
+<td>
+{{ t.remarks }}
+</td>
+
+<!-- STATUS COLUMN -->
+
+<td>
+
+{% if t.status == "OPEN" %}
+
+<span
+style="
+color:#22c55e;
+font-weight:700;
+"
+>
+OPEN
+</span>
+
+{% else %}
+
+<span
+style="
+color:#ef4444;
+font-weight:700;
+"
+>
+CLOSED
+</span>
+
+{% endif %}
+
+</td>
+
+<!-- ACTION COLUMN -->
+
+<td>
+
+<div class="action-group">
+
+{% if t.status == "OPEN" %}
+
+<button
+type="button"
+class="add-btn"
+onclick="
+openAddModal(
+'{{ t.id }}'
+)
+"
+>
+Add
+</button>
+
+<button
+onclick="
+openTargetModal(
+'{{ t.id }}'
+)
+"
+class="yellow-btn"
+>
+Target
+</button>
+
+<button
+class="sell-btn"
+onclick="
+openSellModal(
+'{{ t.id }}',
+'{{ t.qty }}'
+)"
+>
+Sell
+</button>
+
+{% else %}
+
+-
+
+{% endif %}
+
+</div>
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+</div>
+<br><br>
+
+<h2 style="
+color:#22d3ee;
+margin-bottom:15px;
+">
+
+📜 Trade Activity Log
+
+</h2>
+
+<div class="table-wrap">
+<table>
+
+<tr>
+
+<th>Date</th>
+<th>Stock</th>
+<th>Action</th>
+<th>Qty</th>
+<th>Price</th>
+
+</tr>
+
+{% for tx in transactions %}
+
+<tr>
+
+<td>
+
+{{ tx.created_at }}
+
+</td>
+
+<td>
+
+{{ tx.stock }}
+
+</td>
+
+<td>
+
+{{ tx.action }}
+
+</td>
+
+<td>
+
+{{ tx.qty }}
+
+</td>
+
+<td>
+
+₹ {{ tx.price }}
+
+</td>
+
+</tr>
+
+{% endfor %}
+
+</table>
+<!-- ADD POSITION MODAL -->
+
+<div
+id="addModal"
+class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2>
+            Add Position
+        </h2>
+
+        <form
+        id="addForm"
+        method="POST"
+        >
+
+            <input
+            type="number"
+            name="add_qty"
+            placeholder="Qty"
+            required
+            >
+
+            <input
+            type="number"
+            step="0.01"
+            name="add_price"
+            placeholder="Price"
+            required
+            >
+
+            <button
+            type="submit"
+            class="green-btn"
+            >
+                Add
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+<!-- TSL MODAL -->
+
+<div
+id="tslModal"
+class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2>
+            Update TSL
+        </h2>
+
+        <form
+        id="tslForm"
+        method="POST"
+        >
+
+            <input
+            type="number"
+            step="0.01"
+            name="new_tsl"
+            id="new_tsl"
+            placeholder="TSL Price"
+            required
+            >
+
+            <button
+            type="submit"
+            class="green-btn"
+            >
+                Update
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+<!-- =========================
+UPDATE TARGET MODAL
+========================= -->
+
+<div
+    id="targetModal"
+    class="modal"
+>
+    <div class="modal-box">
+
+        <h2>
+            Update Target
+        </h2>
+
+        <form
+            id="targetForm"
+            method="POST"
+        >
+
+            <input
+                type="number"
+                step="0.01"
+                name="new_target"
+                id="new_target"
+                placeholder="Target Price"
+                required
+            >
+
+            <button
+                type="submit"
+                class="green-btn"
+            >
+                Update
+            </button>
+
+        </form>
+
+    </div>
+</div>
+<!-- DATE MODAL -->
+
+<div
+id="dateModal"
+class="modal"
+>
+
+    <div class="modal-box">
+
+        <h2>
+            Edit Entry Date
+        </h2>
+
+        <form
+        id="dateForm"
+        method="POST"
+        >
+
+            <input
+            type="datetime-local"
+            name="new_date"
+            id="new_date"
+            required
+            >
+
+            <button
+            type="submit"
+            class="green-btn"
+            >
+                Save
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<!-- ACTION MODAL -->
+
+<div
+id="actionModal"
+style="
+display:none;
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,.65);
+z-index:9999;
+">
+
+<div
+style="
+background:#111827;
+width:420px;
+max-width:95%;
+margin:80px auto;
+padding:25px;
+border-radius:16px;
+"
+>
+
+<h3
+id="modalTitle"
+style="
+margin-top:0;
+color:#22d3ee;
+"
+>
+Trade Action
+</h3>
+
+<form
+id="actionForm"
+method="POST"
+>
+
+<input
+type="date"
+name="action_date"
+required
+style="
+width:100%;
+padding:10px;
+margin-bottom:12px;
+border-radius:8px;
+"
+>
+
+<div
+id="modalFields"
+>
+</div>
+
+<input
+type="text"
+name="remarks"
+placeholder="Remarks"
+style="
+width:100%;
+padding:10px;
+margin-top:12px;
+border-radius:8px;
+"
+>
+
+<div
+style="
+display:flex;
+gap:10px;
+margin-top:15px;
+"
+>
+
+<button
+type="submit"
+class="green-btn"
+style="
+flex:1;
+"
+>
+Save
+</button>
+
+<button
+type="button"
+onclick="closeModal()"
+style="
+flex:1;
+background:#64748b;
+border:none;
+border-radius:10px;
+color:white;
+"
+>
+Cancel
+</button>
+
+</div>
+
+</form>
+
+</div>
+
+</div>
+<script>
+
+function openDate(
+    tradeId,
+    currentDate
+){
+
+    let dt =
+    currentDate
+    .replace(
+        " ",
+        "T"
+    )
+    .slice(
+        0,
+        16
+    );
+
+    document
+    .getElementById(
+        "new_date"
+    ).value =
+    dt;
+
+    document
+    .getElementById(
+        "dateForm"
+    ).action =
+    "/update-date/"
+    +
+    tradeId;
+
+    document
+    .getElementById(
+        "dateModal"
+    ).style.display =
+    "flex";
+}
+
+function openTargetModal(tradeId){
+
+    document.getElementById(
+        "targetForm"
+    ).action =
+        "/update-target/" +
+        tradeId;
+
+    document.getElementById(
+        "targetModal"
+    ).style.display =
+        "flex";
+}
+
+function closeModal(){
+
+    document
+    .getElementById(
+        "actionModal"
+    )
+    .style.display =
+    "none";
+}
+
+function openAddModal(
+    tradeId
+){
+
+    document
+    .getElementById(
+        "actionModal"
+    )
+    .style.display =
+    "block";
+
+    document
+    .getElementById(
+        "modalTitle"
+    )
+    .innerHTML =
+    "Add Position";
+
+    document
+    .getElementById(
+        "actionForm"
+    )
+    .action =
+    "/add-position/"
+    +
+    tradeId;
+
+    document
+    .getElementById(
+        "modalFields"
+    )
+    .innerHTML =
+    `
+    <input
+    type="number"
+    step="0.01"
+    name="price"
+    placeholder="Price"
+    required
+    style="
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:8px;
+    ">
+
+    <input
+    type="number"
+    name="qty"
+    placeholder="Qty"
+    required
+    style="
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    ">
+    `;
+}
+
+function openSellModal(
+    tradeId,
+    maxQty
+){
+
+    document
+    .getElementById(
+        "actionModal"
+    )
+    .style.display =
+    "block";
+
+    document
+    .getElementById(
+        "modalTitle"
+    )
+    .innerHTML =
+    "Sell Position";
+
+    document
+    .getElementById(
+        "actionForm"
+    )
+    .action =
+    "/partial-sell/"
+    +
+    tradeId;
+
+    document
+    .getElementById(
+        "modalFields"
+    )
+    .innerHTML =
+    `
+    <input
+    type="number"
+    step="0.01"
+    name="price"
+    placeholder="Sell Price"
+    required
+    style="
+    width:100%;
+    padding:10px;
+    margin-bottom:10px;
+    border-radius:8px;
+    ">
+
+    <input
+    type="number"
+    name="qty"
+    max="${maxQty}"
+    placeholder="Sell Qty"
+    required
+    style="
+    width:100%;
+    padding:10px;
+    border-radius:8px;
+    ">
+    `;
+}
+
+window.onclick = function(e){
+
+    let modals = [
+        "addModal",
+        "tslModal",
+        "dateModal",
+        "sellModal"
+    ];
+
+    modals.forEach(function(id){
+
+        let modal =
+        document.getElementById(id);
+
+        if(e.target == modal){
+            modal.style.display = "none";
+        }
+
+    });
+}
+
+</script>
+</body>
+</html>
