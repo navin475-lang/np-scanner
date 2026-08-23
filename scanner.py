@@ -14,6 +14,13 @@ from bs4 import BeautifulSoup
 from flask import Flask, render_template, request, jsonify, redirect
 from datetime import datetime, timedelta
 
+app = Flask(__name__)
+
+socketio = SocketIO(
+    app,
+    cors_allowed_origins="*"
+)
+
 
 
 IST = pytz.timezone("Asia/Kolkata")
