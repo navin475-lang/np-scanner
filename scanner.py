@@ -4243,26 +4243,25 @@ latest_nifty = df_nifty.iloc[-1]
 
 nifty_close = float(latest_nifty["Close"])
 
-print(f"NIFTY Close = {nifty_close}")    
-    
-    # ====================================
-    # STOCK LOOP
-    # ====================================
+print(f"NIFTY Close = {nifty_close}")
 
-       
-    for stock in stocks:
+# ====================================
+# STOCK LOOP
+# ====================================
+
+for stock in stocks:
+
+    try:
+
+        print(f"Scanning {stock} 🚀")
+
+        # ====================================
+        # FUNDAMENTAL UPDATE
+        # ====================================
 
         try:
 
-            print(f"Scanning {stock} 🚀")   # Yes
-
-            # ====================================
-            # FUNDAMENTAL UPDATE
-            # ====================================
-
-            try:
-
-                symbol_clean = stock.replace(".NS", "")
+            symbol_clean = stock.replace(".NS", "")
 
                 def load_fundamental_scores(symbol):
 
