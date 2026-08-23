@@ -8317,7 +8317,7 @@ def run_scanner():
 
         print("Next Scan After 1 Hour ⏳")
 
-        time.sleep(3600)
+        time.sleep(300)
 #================================
 
 #===============================
