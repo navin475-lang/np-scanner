@@ -6587,6 +6587,7 @@ def scan_market():
             orders_score = locals().get("orders_score", 0)
             fund_display = locals().get("fund_display", 0)
             valuation_score = locals().get("valuation_score", 0)
+            tech_display = locals().get("tech_display", 0)
             news_score = locals().get("news_score", 0)
             sentiment_score = locals().get("sentiment_score", 0)
             
@@ -6646,6 +6647,11 @@ def scan_market():
                 (sentiment_score / 2) * 2,
 
                 2
+            )
+            print(
+                f"{stock} | FINAL={final_score} | "
+                f"TECH={tech_display} | "
+                f"FUND={fund_display}"
             )
             
             # ======================
