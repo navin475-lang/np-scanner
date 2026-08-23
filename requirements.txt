@@ -1,11 +1,13 @@
 nsepython
 yfinance
 pandas
+numpy
 requests
 schedule
 flask
+flask-socketio
+eventlet
 ta
 gunicorn
 pytz
 beautifulsoup4
-numpy
