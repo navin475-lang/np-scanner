@@ -6568,11 +6568,14 @@ def scan_market():
             )
             print(f"{stock} Demand Score={demand_score}")
            
-        
+            print(f"DEBUG {stock}")
+            print(f"sector={sector}")
+            print(f"sector_rs={locals().get('sector_rs', 'MISSING')}")
             # ==========================
             # DISPLAY TOTAL
             # ==========================
-
+            sector_rs = locals().get("sector_rs", 0)
+            
             display_total = round(
 
                 sector_rs +
