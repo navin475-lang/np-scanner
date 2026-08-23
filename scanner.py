@@ -6573,8 +6573,17 @@ def scan_market():
             print(f"sector_rs={locals().get('sector_rs', 'MISSING')}")
             # ==========================
             # DISPLAY TOTAL
-            # ==========================
+            # ==========================          
+            
             sector_rs = locals().get("sector_rs", 0)
+            demand_score = locals().get("demand_score", 0)
+            earnings_score = locals().get("earnings_score", 0)
+            four_cylinder_score = locals().get("four_cylinder_score", 0)
+            machine_score = locals().get("machine_score", 0)
+            canslim_score = locals().get("canslim_score", 0)
+            orders_score = locals().get("orders_score", 0)
+            fund_display = locals().get("fund_display", 0)
+            valuation_score = locals().get("valuation_score", 0)
             
             display_total = round(
 
