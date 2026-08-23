@@ -4171,9 +4171,9 @@ def scan_market():
     # ====================================
     # NIFTY DATA DOWNLOAD
     # ====================================
-
+    
     try:
-
+    
         df_nifty = yf.download(
             "^NSEI",
             period="6mo",
@@ -4182,25 +4182,54 @@ def scan_market():
             auto_adjust=True,
             threads=False
         )
-
+    
     except Exception as e:
-
+    
         print(f"NIFTY Download Error ❌ : {e}")
-
-        return
-
-
+    
+        df_nifty = pd.DataFrame()
+    
+    
     # ====================================
     # EMPTY CHECK
     # ====================================
-
+    
+    market_trend = "NEUTRAL"
+    nifty_close = 0
+    
     if df_nifty is None or df_nifty.empty:
-
-        print("NIFTY dataframe empty ❌")
-
-        return
-
-
+    
+        print("NIFTY dataframe empty ⚠️")
+    
+    else:
+    
+        # MULTIINDEX FIX
+    
+        if isinstance(df_nifty.columns, pd.MultiIndex):
+    
+            df_nifty.columns = (
+                df_nifty.columns
+                .droplevel(1)
+            )
+    
+        df_nifty = (
+            df_nifty
+            .dropna(subset=["Close"])
+            .ffill()
+        )
+    
+        if not df_nifty.empty:
+    
+            latest_nifty = df_nifty.iloc[-1]
+    
+            nifty_close = float(
+                latest_nifty["Close"]
+            )
+    
+            print(
+                f"NIFTY Close = {nifty_close}"
+            )
+    
     # ====================================
     # MULTIINDEX FIX
     # ====================================
