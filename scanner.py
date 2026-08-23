@@ -8302,11 +8302,14 @@ def run_scanner():
 
         try:
 
-            #print("SCANNER STARTED 🚀")
+            print("=" * 60)
+            print("SCANNER CYCLE STARTED 🚀")
+            print(datetime.now())
+            print("=" * 60)
 
             scan_market()
 
-            #print("SCAN COMPLETED ✅")
+            print("SCAN COMPLETED ✅")
 
         except Exception as e:
 
@@ -8315,7 +8318,6 @@ def run_scanner():
         print("Next Scan After 1 Hour ⏳")
 
         time.sleep(3600)
-
 #================================
 
 #===============================
