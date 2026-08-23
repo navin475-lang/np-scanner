@@ -3731,10 +3731,10 @@ def calculate_four_cylinder_score(data):
 
 def calculate_earnings_score(data):
 
-    score = 0
+    if data is None:
+        return 0
 
-    sales_growth = data.get(
-        "sales_growth", 0
+    sales_growth = data.get("sales_growth", 0)
     ) or 0
 
     profit_growth = data.get(
@@ -4363,9 +4363,12 @@ def scan_market():
                             # ADD THIS HERE
                             # ======================
 
-                            earnings_score = calculate_earnings_score(
-                                fund_data
-                            )
+                            if fund_data:
+                                earnings_score = calculate_earnings_score(
+                                    fund_data
+                                )
+                            else:
+                                earnings_score = 0
 
                             machine_score = calculate_machine_score(
                                 fund_data
@@ -6584,6 +6587,8 @@ def scan_market():
             orders_score = locals().get("orders_score", 0)
             fund_display = locals().get("fund_display", 0)
             valuation_score = locals().get("valuation_score", 0)
+            news_score = locals().get("news_score", 0)
+            sentiment_score = locals().get("sentiment_score", 0)
             
             display_total = round(
 
