@@ -4169,59 +4169,81 @@ def scan_market():
     stock_analysis_data.clear()
     
     # ====================================
-    # NIFTY DOWNLOAD
-    # ====================================
+# NIFTY DATA DOWNLOAD
+# ====================================
+
+try:
 
     df_nifty = yf.download(
-
         "^NSEI",
-
         period="6mo",
-
         interval="1d",
-
-        progress=False
-
+        progress=False,
+        auto_adjust=True,
+        threads=False
     )
 
-    # MULTIINDEX FIX
+except Exception as e:
 
-    if isinstance(
-        df_nifty.columns,
-        pd.MultiIndex
-    ):
+    print(f"NIFTY Download Error ❌ : {e}")
 
-        df_nifty.columns = (
-            df_nifty.columns
-            .droplevel(1)
-        )
+    return
 
-    # CLEAN
 
-    df_nifty = (
-        df_nifty
-        .dropna(
-            subset=[
-                "Close"
-            ]
-        )
-        .ffill()
+# ====================================
+# EMPTY CHECK
+# ====================================
+
+if df_nifty is None or df_nifty.empty:
+
+    print("NIFTY dataframe empty ❌")
+
+    return
+
+
+# ====================================
+# MULTIINDEX FIX
+# ====================================
+
+if isinstance(df_nifty.columns, pd.MultiIndex):
+
+    df_nifty.columns = (
+        df_nifty.columns
+        .droplevel(1)
     )
 
-    # EMPTY CHECK
 
-    if df_nifty.empty:
+# ====================================
+# CLEAN DATA
+# ====================================
 
-        #print("NIFTY dataframe empty ❌")
+df_nifty = (
+    df_nifty
+    .dropna(subset=["Close"])
+    .ffill()
+)
 
-        return
 
-    # SAFE LATEST
+# ====================================
+# RECHECK AFTER CLEANING
+# ====================================
 
-    latest_nifty = (
-        df_nifty
-        .iloc[-1]
-    )    
+if df_nifty.empty:
+
+    print("NIFTY dataframe empty after cleaning ❌")
+
+    return
+
+
+# ====================================
+# SAFE LATEST ROW
+# ====================================
+
+latest_nifty = df_nifty.iloc[-1]
+
+nifty_close = float(latest_nifty["Close"])
+
+print(f"NIFTY Close = {nifty_close}")    
     
     # ====================================
     # STOCK LOOP
