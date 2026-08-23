@@ -8540,14 +8540,15 @@ def download_trades_csv():
 
 if __name__ == "__main__":
 
+    import os
+
     create_fundamental_table()
-    
+
     create_signal_table()
 
     create_active_trades_table()
 
-    #clear_old_signals()   # RUN ONCE 
-       
+    # clear_old_signals()   # RUN ONCE
 
     start_background_scanner()
 
@@ -8560,10 +8561,11 @@ if __name__ == "__main__":
 
     print("FLASK SERVER STARTED 🚀")
 
+    port = int(os.environ.get("PORT", 10000))
+
     socketio.run(
         app,
         host="0.0.0.0",
-        port=5000,
+        port=port,
         debug=False
     )
-   
