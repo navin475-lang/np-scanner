@@ -4176,6 +4176,8 @@ def scan_market():
     
     try:
     
+        time.sleep(2)
+    
         df_nifty = yf.download(
             "^NSEI",
             period="6mo",
@@ -4189,8 +4191,7 @@ def scan_market():
     
         print(f"NIFTY Download Error ❌ : {e}")
     
-        df_nifty = pd.DataFrame()
-    
+        df_nifty = pd.DataFrame()    
     
     # ====================================
     # EMPTY CHECK
