@@ -4169,455 +4169,455 @@ def scan_market():
     stock_analysis_data.clear()
     
     # ====================================
-# NIFTY DATA DOWNLOAD
-# ====================================
-
-try:
-
-    df_nifty = yf.download(
-        "^NSEI",
-        period="6mo",
-        interval="1d",
-        progress=False,
-        auto_adjust=True,
-        threads=False
-    )
-
-except Exception as e:
-
-    print(f"NIFTY Download Error ❌ : {e}")
-
-    return
-
-
-# ====================================
-# EMPTY CHECK
-# ====================================
-
-if df_nifty is None or df_nifty.empty:
-
-    print("NIFTY dataframe empty ❌")
-
-    return
-
-
-# ====================================
-# MULTIINDEX FIX
-# ====================================
-
-if isinstance(df_nifty.columns, pd.MultiIndex):
-
-    df_nifty.columns = (
-        df_nifty.columns
-        .droplevel(1)
-    )
-
-
-# ====================================
-# CLEAN DATA
-# ====================================
-
-df_nifty = (
-    df_nifty
-    .dropna(subset=["Close"])
-    .ffill()
-)
-
-
-# ====================================
-# RECHECK AFTER CLEANING
-# ====================================
-
-if df_nifty.empty:
-
-    print("NIFTY dataframe empty after cleaning ❌")
-
-    return
-
-
-# ====================================
-# SAFE LATEST ROW
-# ====================================
-
-latest_nifty = df_nifty.iloc[-1]
-
-nifty_close = float(latest_nifty["Close"])
-
-print(f"NIFTY Close = {nifty_close}")
-
-# ====================================
-# STOCK LOOP
-# ====================================
-
-for stock in stocks:
+    # NIFTY DATA DOWNLOAD
+    # ====================================
 
     try:
 
-        print(f"Scanning {stock} 🚀")
+        df_nifty = yf.download(
+            "^NSEI",
+            period="6mo",
+            interval="1d",
+            progress=False,
+            auto_adjust=True,
+            threads=False
+        )
 
-        # ====================================
-        # FUNDAMENTAL UPDATE
-        # ====================================
+    except Exception as e:
+
+        print(f"NIFTY Download Error ❌ : {e}")
+
+        return
+
+
+    # ====================================
+    # EMPTY CHECK
+    # ====================================
+
+    if df_nifty is None or df_nifty.empty:
+
+        print("NIFTY dataframe empty ❌")
+
+        return
+
+
+    # ====================================
+    # MULTIINDEX FIX
+    # ====================================
+
+    if isinstance(df_nifty.columns, pd.MultiIndex):
+
+        df_nifty.columns = (
+            df_nifty.columns
+            .droplevel(1)
+        )
+
+
+    # ====================================
+    # CLEAN DATA
+    # ====================================
+
+    df_nifty = (
+        df_nifty
+        .dropna(subset=["Close"])
+        .ffill()
+    )
+
+
+    # ====================================
+    # RECHECK AFTER CLEANING
+    # ====================================
+
+    if df_nifty.empty:
+
+        print("NIFTY dataframe empty after cleaning ❌")
+
+        return
+
+
+    # ====================================
+    # SAFE LATEST ROW
+    # ====================================
+
+    latest_nifty = df_nifty.iloc[-1]
+
+    nifty_close = float(latest_nifty["Close"])
+
+    print(f"NIFTY Close = {nifty_close}")
+
+    # ====================================
+    # STOCK LOOP
+    # ====================================
+
+    for stock in stocks:
 
         try:
 
-            symbol_clean = stock.replace(".NS", "")
+            print(f"Scanning {stock} 🚀")
+
+            # ====================================
+            # FUNDAMENTAL UPDATE
+            # ====================================
+
+            try:
+
+                symbol_clean = stock.replace(".NS", "")
 
                 def load_fundamental_scores(symbol):
 
-                    conn = sqlite3.connect("signals.db")
-                    cursor = conn.cursor()
+                        conn = sqlite3.connect("signals.db")
+                        cursor = conn.cursor()
 
-                    cursor.execute("""
-                        SELECT
-                            fundamental_score
-                        FROM company_fundamentals
-                        WHERE symbol=?
-                    """, (symbol,))
+                        cursor.execute("""
+                            SELECT
+                                fundamental_score
+                            FROM company_fundamentals
+                            WHERE symbol=?
+                        """, (symbol,))
 
-                    row = cursor.fetchone()
+                        row = cursor.fetchone()
 
-                    conn.close()
+                        conn.close()
 
-                    if row:
-                        return row[0]
+                        if row:
+                            return row[0]
 
-                    return 0
+                        return 0
 
-                fund_score = 0
-                technofunda_rank = 0
-                
-                if fundamental_needs_update(symbol_clean):
+                        fund_score = 0
+                        technofunda_rank = 0
+                    
+                        if fundamental_needs_update(symbol_clean):
 
-                    print(f"Updating Fundamentals: {symbol_clean}")
+                            print(f"Updating Fundamentals: {symbol_clean}")
 
-                    fund_data = fetch_fundamentals(symbol_clean)
+                            fund_data = fetch_fundamentals(symbol_clean)
 
-                    print(
-                        f"{symbol_clean} | "
-                        f"PE={fund_data.get('pe_ratio')} | "
-                        f"PB={fund_data.get('pb_ratio')} | "
-                        f"PROFIT={fund_data.get('profit_growth')} | "
-                        f"SALES={fund_data.get('sales_growth')}"
-                    )
-
-                    if fund_data:
-
-                        fund_score = calculate_fundamental_score(
-                            fund_data,
-                            locals().get(
-                                "latest_rs_daily",
-                                0
+                            print(
+                                f"{symbol_clean} | "
+                                f"PE={fund_data.get('pe_ratio')} | "
+                                f"PB={fund_data.get('pb_ratio')} | "
+                                f"PROFIT={fund_data.get('profit_growth')} | "
+                                f"SALES={fund_data.get('sales_growth')}"
                             )
-                        )
 
-                        fund_data["fundamental_score"] = fund_score
+                        if fund_data:
 
-                        technofunda_rank = calculate_technofunda_rank(
-                            locals().get(
-                                "technical_score",
-                                0
-                            ),
-                            fund_score
-                        )
-
-                        fund_data[
-                            "technofunda_rank"
-                        ] = technofunda_rank
-
-                        save_fundamentals(
-                            symbol_clean,
-                            fund_data
-                        )
-
-                        # ======================
-                        # ADD THIS HERE
-                        # ======================
-
-                        earnings_score = calculate_earnings_score(
-                            fund_data
-                        )
-
-                        machine_score = calculate_machine_score(
-                            fund_data
-                        )
-
-                        four_cylinder_score = calculate_four_cylinder_score(
-                            fund_data
-                        )
-
-                        canslim_score = calculate_canslim_score(
-                            fund_data,
-                            locals().get("rs_daily", 0),
-                            locals().get("volume_ratio", 0)
-                        )        
-
-                else:
-
-                    fund_score = load_fundamental_scores(
-                        symbol_clean
-                    )
-
-                    technofunda_rank = calculate_technofunda_rank(
-                        momentum_score
-                        if "momentum_score" in locals()
-                        else 0,
-                        fund_score
-                    )
-
-                    print(
-                        f"Updating Fundamentals: {symbol_clean}"
-                    )
-
-                    fund_data = fetch_fundamentals(
-                        symbol_clean
-                    )
-                    if not fund_data:
-                        print(
-                            f"NO FUNDAMENTALS: {symbol_clean}"
-                        )
-
-                    # ----------------------
-                    # SCORE + SAVE
-                    # ----------------------
-
-                    if fund_data:
-
-                        # -----------------
-                        # FUND SCORE
-                        # -----------------
-
-                        fund_score = (
-                            calculate_fundamental_score(
+                            fund_score = calculate_fundamental_score(
                                 fund_data,
                                 locals().get(
                                     "latest_rs_daily",
                                     0
                                 )
                             )
-                        )
 
-                        fund_data[
-                            "fundamental_score"
-                        ] = fund_score
+                            fund_data["fundamental_score"] = fund_score
 
-                        print(
-                            f"Fundamental Score: {fund_score}"
-                        )
-
-                        # -----------------
-                        # TECHNOFUNDA RANK
-                        # -----------------
-
-                        technofunda_rank = (
-                            calculate_technofunda_rank(
+                            technofunda_rank = calculate_technofunda_rank(
                                 locals().get(
                                     "technical_score",
                                     0
                                 ),
                                 fund_score
                             )
-                        )
 
-                        print(
-                            f"Technofunda Rank: {technofunda_rank}"
-                        )
+                            fund_data[
+                                "technofunda_rank"
+                            ] = technofunda_rank
 
-                        # =====================
-                        # TEMP RANKING SCORES
-                        # =====================
-                        market_score = 0
-                        
-                        sector_rs = 0
-
-                        for s in sector_data:
-
-                            if s["sector"] == sector:
-
-                                sector_rs = round(
-                                    (s["avg_score"] / 100) * 10,
-                                    2
-                                )
-
-                                break
-                        earnings_score = calculate_earnings_score(
-                            fund_data
-                        )
-
-                        
-                        demand_score = 0
-                                    
-                        four_cylinder_score = calculate_four_cylinder_score(
-                            fund_data
-                        )
-
-                        
-                        sector_avg = 0
-
-                        for s in sector_data:
-
-                            if s["sector"] == sector:
-
-                                sector_avg = s["avg_score"]
-
-                                break
-
-                        machine_score = calculate_machine_score(
-
-                            fund_data,
-
-                            locals().get("rs_daily", 0),
-
-                            locals().get("volume_ratio", 0),
-
-                            sector_avg
-
-                        )
-                        
-                        valuation_score = calculate_valuation_score(
-                            fund_data
-                        )
-                        
-                        canslim_score = calculate_canslim_score(
-                            fund_data,
-                            locals().get("rs_daily", 0),
-                            locals().get("volume_ratio", 0)
-                        )
-                        
-                        orders_score = 0
-                        
-                        news_score = 0
-                        sentiment_score = 0
-
-                        technical_score = round(
-                            technofunda_rank,
-                            2
-                        )                        
-
-                        fund_display = round(
-                            (fund_score / 100) * 7,
-                            2
-                        )
-
-                        tech_display = round(
-                            (technical_score / 100) * 5,
-                            2
-                        )                        
-
-                        phase6_score = round(
-
-                            (
-                                technical_score * 0.40
+                            save_fundamentals(
+                                symbol_clean,
+                                fund_data
                             )
 
-                            +
+                            # ======================
+                            # ADD THIS HERE
+                            # ======================
 
-                            (
-                                fund_score * 0.35
+                            earnings_score = calculate_earnings_score(
+                                fund_data
                             )
 
-                            +
+                            machine_score = calculate_machine_score(
+                                fund_data
+                            )
 
-                            four_cylinder_score
+                            four_cylinder_score = calculate_four_cylinder_score(
+                                fund_data
+                            )
 
-                            +
-
-                            canslim_score,
-
-                            2
-                        )
-                        #======================
-                        #Display Total
-                        #=====================
-                        
-                        display_total = round(
-
-                            sector_rs +
-
-                            demand_score +
-
-                            earnings_score +
-
-                            four_cylinder_score +
-
-                            machine_score +
-
-                            canslim_score +
-
-                            orders_score +
-
-                            fund_display +
-
-                            valuation_score +
-
-                            tech_display +
-
-                            news_score +
-
-                            sentiment_score,
-
-                            2
-                        )
-
-                        total_score = phase6_score
-
-                        final_score = round(
-
-                            (sector_rs / 10) * 10 +
-
-                            (demand_score / 12) * 10 +
-
-                            (earnings_score / 12) * 15 +
-
-                            (four_cylinder_score / 12) * 15 +
-
-                            (machine_score / 10) * 10 +
-
-                            (canslim_score / 10) * 10 +
-
-                            (orders_score / 8) * 8 +
-
-                            (fund_display / 7) * 8 +
-
-                            (valuation_score / 5) * 5 +
-
-                            (tech_display / 5) * 5 +
-
-                            (news_score / 3) * 2 +
-
-                            (sentiment_score / 2) * 2,
-
-                            2
-                        )
-                        # ==========================
-                        # RATING
-                        # ==========================
-
-                        if final_score >= 70:
-                            rating = "🏆 Elite"
-
-                        elif final_score >= 60:
-                            rating = "🟢 Strong Buy"
-
-                        elif final_score >= 50:
-                            rating = "👀 Watchlist"
-
-                        elif final_score >= 35:
-                            rating = "⚠️ Accumulate"
+                            canslim_score = calculate_canslim_score(
+                                fund_data,
+                                locals().get("rs_daily", 0),
+                                locals().get("volume_ratio", 0)
+                            )        
 
                         else:
-                            rating = "❌ Avoid"
-                        
-                        # store in dict
-                        fund_data[
-                            "technofunda_rank"
-                        ] = technofunda_rank
 
-                        save_fundamentals(
-                            symbol_clean,
-                            fund_data
-                        )
-                        
+                            fund_score = load_fundamental_scores(
+                                symbol_clean
+                            )
+
+                            technofunda_rank = calculate_technofunda_rank(
+                                momentum_score
+                                if "momentum_score" in locals()
+                                else 0,
+                                fund_score
+                            )
+
+                            print(
+                                f"Updating Fundamentals: {symbol_clean}"
+                            )
+
+                            fund_data = fetch_fundamentals(
+                                symbol_clean
+                            )
+                            if not fund_data:
+                                print(
+                                    f"NO FUNDAMENTALS: {symbol_clean}"
+                                )
+
+                            # ----------------------
+                            # SCORE + SAVE
+                            # ----------------------
+
+                        if fund_data:
+
+                            # -----------------
+                            # FUND SCORE
+                            # -----------------
+
+                            fund_score = (
+                                calculate_fundamental_score(
+                                    fund_data,
+                                    locals().get(
+                                        "latest_rs_daily",
+                                        0
+                                    )
+                                )
+                            )
+
+                            fund_data[
+                                "fundamental_score"
+                            ] = fund_score
+
+                            print(
+                                f"Fundamental Score: {fund_score}"
+                            )
+
+                            # -----------------
+                            # TECHNOFUNDA RANK
+                            # -----------------
+
+                            technofunda_rank = (
+                                calculate_technofunda_rank(
+                                    locals().get(
+                                        "technical_score",
+                                        0
+                                    ),
+                                    fund_score
+                                )
+                            )
+
+                            print(
+                                f"Technofunda Rank: {technofunda_rank}"
+                            )
+
+                            # =====================
+                            # TEMP RANKING SCORES
+                            # =====================
+                            market_score = 0
+                            
+                            sector_rs = 0
+
+                            for s in sector_data:
+
+                                if s["sector"] == sector:
+
+                                    sector_rs = round(
+                                        (s["avg_score"] / 100) * 10,
+                                        2
+                                    )
+
+                                    break
+                            earnings_score = calculate_earnings_score(
+                                fund_data
+                            )
+
+                            
+                            demand_score = 0
+                                        
+                            four_cylinder_score = calculate_four_cylinder_score(
+                                fund_data
+                            )
+
+                            
+                            sector_avg = 0
+
+                            for s in sector_data:
+
+                                if s["sector"] == sector:
+
+                                    sector_avg = s["avg_score"]
+
+                                    break
+
+                            machine_score = calculate_machine_score(
+
+                                fund_data,
+
+                                locals().get("rs_daily", 0),
+
+                                locals().get("volume_ratio", 0),
+
+                                sector_avg
+
+                            )
+                            
+                            valuation_score = calculate_valuation_score(
+                                fund_data
+                            )
+                            
+                            canslim_score = calculate_canslim_score(
+                                fund_data,
+                                locals().get("rs_daily", 0),
+                                locals().get("volume_ratio", 0)
+                            )
+                            
+                            orders_score = 0
+                            
+                            news_score = 0
+                            sentiment_score = 0
+
+                            technical_score = round(
+                                technofunda_rank,
+                                2
+                            )                        
+
+                            fund_display = round(
+                                (fund_score / 100) * 7,
+                                2
+                            )
+
+                            tech_display = round(
+                                (technical_score / 100) * 5,
+                                2
+                            )                        
+
+                            phase6_score = round(
+
+                                (
+                                    technical_score * 0.40
+                                )
+
+                                +
+
+                                (
+                                    fund_score * 0.35
+                                )
+
+                                +
+
+                                four_cylinder_score
+
+                                +
+
+                                canslim_score,
+
+                                2
+                            )
+                            #======================
+                            #Display Total
+                            #=====================
+                            
+                            display_total = round(
+
+                                sector_rs +
+
+                                demand_score +
+
+                                earnings_score +
+
+                                four_cylinder_score +
+
+                                machine_score +
+
+                                canslim_score +
+
+                                orders_score +
+
+                                fund_display +
+
+                                valuation_score +
+
+                                tech_display +
+
+                                news_score +
+
+                                sentiment_score,
+
+                                2
+                            )
+
+                            total_score = phase6_score
+
+                            final_score = round(
+
+                                (sector_rs / 10) * 10 +
+
+                                (demand_score / 12) * 10 +
+
+                                (earnings_score / 12) * 15 +
+
+                                (four_cylinder_score / 12) * 15 +
+
+                                (machine_score / 10) * 10 +
+
+                                (canslim_score / 10) * 10 +
+
+                                (orders_score / 8) * 8 +
+
+                                (fund_display / 7) * 8 +
+
+                                (valuation_score / 5) * 5 +
+
+                                (tech_display / 5) * 5 +
+
+                                (news_score / 3) * 2 +
+
+                                (sentiment_score / 2) * 2,
+
+                                2
+                            )
+                            # ==========================
+                            # RATING
+                            # ==========================
+
+                            if final_score >= 70:
+                                rating = "🏆 Elite"
+
+                            elif final_score >= 60:
+                                rating = "🟢 Strong Buy"
+
+                            elif final_score >= 50:
+                                rating = "👀 Watchlist"
+
+                            elif final_score >= 35:
+                                rating = "⚠️ Accumulate"
+
+                            else:
+                                rating = "❌ Avoid"
+                            
+                            # store in dict
+                            fund_data[
+                                "technofunda_rank"
+                            ] = technofunda_rank
+
+                            save_fundamentals(
+                                symbol_clean,
+                                fund_data
+                            )
+                            
             except Exception as e:
 
                 print(
