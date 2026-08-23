@@ -7,5 +7,5 @@ flask
 ta
 gunicorn
 pytz
-flask-socketio
-eventlet
+beautifulsoup4
+numpy
