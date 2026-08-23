@@ -4257,25 +4257,13 @@ def scan_market():
 
 
     # ====================================
-    # RECHECK AFTER CLEANING
-    # ====================================
+        market_trend = "NEUTRAL"
+        nifty_close = 0
+        
+        print("NIFTY bypass mode ⚠️")
 
-    if df_nifty.empty:
-
-        print("NIFTY dataframe empty after cleaning ❌")
-
-        return
-
-
-    # ====================================
-    # SAFE LATEST ROW
-    # ====================================
-
-    latest_nifty = df_nifty.iloc[-1]
-
-    nifty_close = float(latest_nifty["Close"])
-
-    print(f"NIFTY Close = {nifty_close}")
+        print("REACHED STOCK LOOP 🚀")
+        print(f"Total Stocks = {len(stocks)}")
 
     # ====================================
     # STOCK LOOP
