@@ -3734,7 +3734,9 @@ def calculate_earnings_score(data):
     if data is None:
         return 0
 
-    sales_growth = data.get("sales_growth", 0)
+    sales_growth = data.get(
+        "sales_growth",
+        0
     ) or 0
 
     profit_growth = data.get(
