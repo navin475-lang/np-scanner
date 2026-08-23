@@ -6445,12 +6445,17 @@ def scan_market():
                 f"{stock} Valuation Score={valuation_score}"
             )
             sector_avg = 0
-
+            
             for s in sector_data:
 
                 if s["sector"] == sector:
 
                     sector_avg = s["avg_score"]
+
+                    sector_rs = round(
+                        (sector_avg / 100) * 10,
+                        2
+                    )
 
                     break
 
