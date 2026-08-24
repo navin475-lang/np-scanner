@@ -4970,11 +4970,8 @@ def scan_market():
             latest_weekly = (
                 weekly_clean
                 .iloc[-1]
-            )
-
+            )            
             
-            latest_nifty = df_nifty.iloc[-1]
-
             adx_1h = latest_1h["ADX"]
             adx_daily = latest_daily["ADX"]
             adx_weekly = latest_weekly["ADX"]
