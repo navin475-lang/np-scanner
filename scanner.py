@@ -4192,6 +4192,13 @@ def scan_market():
     
     market_trend = "NEUTRAL"
     nifty_close = 0
+    
+    if df_nifty.empty:
+    
+        print(
+            "NIFTY unavailable - Scanner running without index data ⚠️"
+        )
+    
     df_nifty = pd.DataFrame()
     
     try:
@@ -4212,7 +4219,7 @@ def scan_market():
     
         print(f"NIFTY Download Error ❌ {e}")
     
-        df_nifty = pd.DataFrame()
+        df_nifty = pd.DataFrame()        
     
         # ====================================
         # PROCESS NIFTY DATA
