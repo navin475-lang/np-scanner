@@ -3641,6 +3641,9 @@ def calculate_technofunda_rank(
 
 def calculate_four_cylinder_score(data):
 
+    if not fund_data:
+        return 0
+
     score = 0
 
     sales_growth = data.get(
@@ -3731,6 +3734,9 @@ def calculate_four_cylinder_score(data):
 
 def calculate_earnings_score(data):
 
+    if not data:
+        return 0
+
     if data is None:
         return 0
 
@@ -3800,6 +3806,8 @@ def calculate_machine_score(
     volume_ratio,
     sector_avg
 ):
+    if not fund_data:
+        return 0
 
     score = 0
 
@@ -3884,10 +3892,8 @@ def calculate_valuation_score(fund_data):
     if not fund_data:
         return 0
 
-    score = 0
-
-    pe = fund_data.get("pe_ratio", 0)
-    pb = fund_data.get("pb_ratio", 0)
+    pe = fund_data.get("pe_ratio", 0) or 0
+    pb = fund_data.get("pb_ratio", 0) or 0
 
     growth = max(
         fund_data.get("profit_growth", 0),
@@ -3991,6 +3997,8 @@ def calculate_canslim_score(
     rs_daily,
     volume_ratio
 ):
+    if not fund_data:
+        return 0
 
     score = 0
 
@@ -4973,8 +4981,11 @@ def scan_market():
             latest_weekly = (
                 weekly_clean
                 .iloc[-1]
-            )            
+            )
+
             
+            latest_nifty = df_nifty.iloc[-1]
+
             adx_1h = latest_1h["ADX"]
             adx_daily = latest_daily["ADX"]
             adx_weekly = latest_weekly["ADX"]
@@ -5100,12 +5111,17 @@ def scan_market():
             # DAILY RS vs NIFTY
             # ====================================
 
-            nifty_daily_close = (
+            nifty_daily_close = pd.Series(
                 df_nifty["Close"]
-                .squeeze()
-                .reindex(df_daily.index)
-                .ffill()
-            )
+            ).reindex(
+                df_daily.index
+            ).ffill()
+
+            if isinstance(
+                nifty_daily_close,
+                pd.DataFrame
+            ):
+                nifty_daily_close = nifty_daily_close.iloc[:,0]
 
             stock_return = (
                 df_daily["Close"]
@@ -6399,7 +6415,7 @@ def scan_market():
 
             fund_data = fetch_fundamentals(
                 symbol_clean
-            )
+            ) or {}
 
             if fund_data:
 
@@ -6441,7 +6457,7 @@ def scan_market():
             )            
 
             valuation_score = calculate_valuation_score(
-                fund_data or {}
+                fund_data
             )
             print(
                 f"{stock} | "
