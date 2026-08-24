@@ -176,25 +176,47 @@ def create_signal_table():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS signals (
+
             id INTEGER PRIMARY KEY AUTOINCREMENT,
+
             stock TEXT,
             signal_type TEXT,
             price REAL,
             rsi REAL,
             volume_ratio REAL,
+
+            timeframe TEXT,
+
             signal_time TEXT
+
         )
     """)
 
     conn.commit()
-    
-
     conn.close()
+#=============================
 
-    #print("Signal table ready ✅")
+#=============================
+def add_timeframe_column():
 
-#print("NEW CODE VERSION LOADED 🚀")
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
 
+    try:
+
+        cursor.execute("""
+        ALTER TABLE signals
+        ADD COLUMN timeframe TEXT
+        """)
+
+        print("timeframe column added ✅")
+
+    except Exception:
+
+        print("timeframe already exists")
+
+    conn.commit()
+    conn.close()
 
 # ====================================
 # CREATE TABLE
@@ -8739,6 +8761,8 @@ if __name__ == "__main__":
     create_stock_analysis_table()
 
     start_background_scanner()
+
+    add_timeframe_column()
 
     socket_thread = threading.Thread(
         target=background_signal_updater,
