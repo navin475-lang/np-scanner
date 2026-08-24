@@ -31,6 +31,8 @@ IST = pytz.timezone("Asia/Kolkata")
 
 DATABASE = "fundatech.db"
 
+print(f"USING DATABASE = {DATABASE}")
+
 # ====================================
 # CALCULATE RSI
 # ====================================
@@ -199,7 +201,9 @@ def create_signal_table():
 # ====================================
 def create_active_trades_table():
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(
+        DATABASE
+    )
 
     cursor = conn.cursor()
 
