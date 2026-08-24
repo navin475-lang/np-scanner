@@ -6709,7 +6709,7 @@ def scan_market():
             # ======================
             # SAVE RANKING
             # ======================
-
+            total_score = final_score
             rating = get_rating(
                 final_score
             )
