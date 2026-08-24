@@ -5099,6 +5099,7 @@ def scan_market():
 
             nifty_daily_close = (
                 df_nifty["Close"]
+                .squeeze()
                 .reindex(df_daily.index)
                 .ffill()
             )
