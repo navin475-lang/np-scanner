@@ -4210,27 +4210,24 @@ def scan_market():
     sector_avg_lookup = {}
 
     stock_analysis_data.clear()
+
+    # ====================================
+    # NIFTY DEFAULT VALUES
+    # ====================================
+    
+    df_nifty = pd.DataFrame()
+    
+    market_trend = "NEUTRAL"
+    
+    nifty_close = 0
     
     # ====================================
     # NIFTY DATA DOWNLOAD
     # ====================================
     
-    market_trend = "NEUTRAL"
-    nifty_close = 0
-    
-    if df_nifty is None or df_nifty.empty:
-
-        print(
-            f"DF_NIFTY EXISTS = {type(df_nifty)}"
-        )
-    
-        print(
-            "NIFTY unavailable - Scanner running without index data ⚠️"
-        )
-    
-    df_nifty = pd.DataFrame()
-    
     try:
+    
+        time.sleep(2)
     
         df_nifty = yf.download(
             "^NSEI",
@@ -4241,71 +4238,69 @@ def scan_market():
             threads=False
         )
     
-        if df_nifty is None:
-            df_nifty = pd.DataFrame()
-    
     except Exception as e:
     
         print(f"NIFTY Download Error ❌ {e}")
     
-        df_nifty = pd.DataFrame()        
+        df_nifty = pd.DataFrame()
     
-        # ====================================
-        # PROCESS NIFTY DATA
-        # ====================================
+    # ====================================
+    # PROCESS NIFTY DATA
+    # ====================================
     
-        if df_nifty is None or df_nifty.empty:
+    if df_nifty is None or df_nifty.empty:
     
-            print("NIFTY dataframe empty ⚠️")
+        print(
+            "NIFTY unavailable - Scanner running without index data ⚠️"
+        )
+    
+    else:
+    
+        # MULTIINDEX FIX
+    
+        if isinstance(
+            df_nifty.columns,
+            pd.MultiIndex
+        ):
+    
+            df_nifty.columns = (
+                df_nifty.columns
+                .droplevel(1)
+            )
+    
+        # CLEAN DATA
+    
+        df_nifty = (
+            df_nifty
+            .dropna(subset=["Close"])
+            .ffill()
+        )
+    
+        # FINAL CHECK
+    
+        if not df_nifty.empty:
+    
+            nifty_close = float(
+                df_nifty["Close"].iloc[-1]
+            )
+    
+            print(
+                f"NIFTY Close = {nifty_close}"
+            )
     
         else:
     
-            # MULTIINDEX FIX
-    
-            if isinstance(
-                df_nifty.columns,
-                pd.MultiIndex
-            ):
-    
-                df_nifty.columns = (
-                    df_nifty.columns
-                    .droplevel(1)
-                )
-    
-            # CLEAN DATA
-    
-            df_nifty = (
-                df_nifty
-                .dropna(subset=["Close"])
-                .ffill()
+            print(
+                "NIFTY data became empty after cleaning ⚠️"
             )
     
-            # ====================================
-            # NIFTY FINAL CHECK
-            # ====================================
-
-            if not df_nifty.empty:
-
-                latest_nifty = df_nifty.iloc[-1]
-
-                nifty_close = float(
-                    latest_nifty["Close"]
-                )
-
-                print(
-                    f"NIFTY Close = {nifty_close}"
-                )
-
-            else:
-
-                nifty_close = 0
-
-                print(
-                    "NIFTY unavailable ⚠️"
-                )
-
-            print("REACHED STOCK LOOP 🚀")
-            print(f"Total Stocks = {len(stocks)}")
+    # ====================================
+    # STOCK LOOP START
+    # ====================================
+    
+    print("REACHED STOCK LOOP 🚀")
+    
+    print(f"Total Stocks = {len(stocks)}")
     # ====================================
     # STOCK LOOP
     # ====================================
