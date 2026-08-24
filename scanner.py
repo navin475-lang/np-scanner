@@ -304,6 +304,87 @@ def create_active_trades_table():
     conn.commit()
 
     conn.close()
+
+#===================================
+# 
+# ==================================
+
+def create_stock_analysis_table():
+
+    conn = sqlite3.connect(DATABASE)
+    cursor = conn.cursor()
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS stock_analysis (
+
+        stock TEXT PRIMARY KEY,
+
+        sector TEXT,
+
+        daily_close REAL,
+        rsi REAL,
+        adx REAL,
+
+        rs_daily REAL,
+        rs_weekly REAL,
+
+        volume_ratio REAL,
+
+        ema10 REAL,
+        ema20 REAL,
+        ema50 REAL,
+
+        score REAL,
+
+        fund_score REAL,
+        technofunda_rank REAL,
+
+        final_score REAL,
+        rating TEXT,
+
+        earnings_score REAL,
+        four_cylinder_score REAL,
+        machine_score REAL,
+        canslim_score REAL,
+        valuation_score REAL,
+        demand_score REAL,
+
+        sales_growth REAL,
+        profit_growth REAL,
+        eps_growth REAL,
+
+        roe REAL,
+        roce REAL,
+        debt_equity REAL,
+
+        pe_ratio REAL,
+        pb_ratio REAL,
+
+        status TEXT,
+        signal TEXT,
+
+        ema10_h REAL,
+        ema20_h REAL,
+        ema50_h REAL,
+        atr_h REAL,
+
+        ema10_d REAL,
+        ema20_d REAL,
+        ema50_d REAL,
+        atr_d REAL,
+
+        ema10_w REAL,
+        ema20_w REAL,
+        ema50_w REAL,
+        atr_w REAL,
+
+        updated_at TEXT
+
+    )
+    """)
+
+    conn.commit()
+    conn.close()    
   
 # ====================================
 # SAVE SIGNAL
