@@ -3847,10 +3847,7 @@ def calculate_four_cylinder_score(fund_data):
 def calculate_earnings_score(data):
 
     if not data:
-        return 0
-
-    if data is None:
-        return 0
+        return 0   
 
     sales_growth = data.get(
         "sales_growth",
