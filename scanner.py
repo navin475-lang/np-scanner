@@ -8402,39 +8402,23 @@ def close_trade(
     conn.commit()
     conn.close()   
 #=================================    
-def get_trade_status(
+def get_trade_status(stock, timeframe):
 
-    stock,
-    timeframe
+    print("GET_TRADE_STATUS V2 ✅")
 
-):
 
-    sqlite3.connect(DATABASE)
+    conn = get_db_connection()
 
     cursor = conn.cursor()
 
-    cursor.execute("""
-
-        SELECT
-
-            status,
-            entry_price,
-            last_signal
-
+    cursor.execute(
+        """
+        SELECT status,last_signal
         FROM active_trades
-
         WHERE stock=?
         AND timeframe=?
-
-    """,
-
-    (
-
-        stock,
-        timeframe
-
-    )
-
+        """,
+        (stock, timeframe)
     )
 
     row = cursor.fetchone()
@@ -8442,15 +8426,14 @@ def get_trade_status(
     conn.close()
 
     if row:
-
-        return row
+        return (
+            row["status"],
+            row["last_signal"]
+        )
 
     return (
-
-        None,
         None,
         None
-
     )
 #==============================
 def update_trade_status(
