@@ -3881,6 +3881,9 @@ def calculate_machine_score(
 
 def calculate_valuation_score(fund_data):
 
+    if not fund_data:
+        return 0
+
     score = 0
 
     pe = fund_data.get("pe_ratio", 0)
@@ -6438,7 +6441,7 @@ def scan_market():
             )            
 
             valuation_score = calculate_valuation_score(
-                fund_data
+                fund_data or {}
             )
             print(
                 f"{stock} | "
