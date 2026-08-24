@@ -4153,6 +4153,9 @@ def get_last_signal(stock):
 
 def scan_market():
 
+    print("Inside scan_market() ✅")
+    print(f"Total Stocks = {len(stocks)}")
+
     global sector_data
     
     global momentum_data
@@ -8335,10 +8338,7 @@ def run_scanner():
 
         try:
 
-            print("=" * 60)
-            print("SCANNER CYCLE STARTED 🚀")
-            print(datetime.now())
-            print("=" * 60)
+            print("SCANNER STARTED 🚀")
 
             scan_market()
 
@@ -8350,7 +8350,7 @@ def run_scanner():
 
         print("Next Scan After 1 Hour ⏳")
 
-        time.sleep(300)
+        time.sleep(3600)
 #================================
 
 #===============================
