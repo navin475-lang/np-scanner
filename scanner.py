@@ -8413,7 +8413,10 @@ def get_trade_status(stock, timeframe):
 
     cursor.execute(
         """
-        SELECT status,last_signal
+        SELECT
+            status,
+            entry_price,
+            last_signal
         FROM active_trades
         WHERE stock=?
         AND timeframe=?
@@ -8428,10 +8431,12 @@ def get_trade_status(stock, timeframe):
     if row:
         return (
             row["status"],
+            row["entry_price"],
             row["last_signal"]
         )
 
     return (
+        None,
         None,
         None
     )
