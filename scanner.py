@@ -176,21 +176,29 @@ def create_signal_table():
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS signals (
-
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-
             stock TEXT,
             signal_type TEXT,
             price REAL,
             rsi REAL,
             volume_ratio REAL,
-
             timeframe TEXT,
-
             signal_time TEXT
-
         )
     """)
+
+    try:
+
+        cursor.execute("""
+            ALTER TABLE signals
+            ADD COLUMN timeframe TEXT
+        """)
+
+        print("timeframe column added ✅")
+
+    except Exception:
+
+        print("timeframe already exists ✅")
 
     conn.commit()
     conn.close()
@@ -3743,26 +3751,26 @@ def calculate_technofunda_rank(
 # 4 CYLINDER GROWTH MODEL
 # ====================================
 
-def calculate_four_cylinder_score(data):
+def calculate_four_cylinder_score(fund_data):
 
     if not fund_data:
         return 0
 
     score = 0
 
-    sales_growth = data.get(
+    sales_growth = fund_data.get(
         "sales_growth", 0
     ) or 0
 
-    profit_growth = data.get(
+    profit_growth = fund_data.get(
         "profit_growth", 0
     ) or 0
 
-    opm = data.get(
+    opm = fund_data.get(
         "opm", 0
     ) or 0
 
-    debt_equity = data.get(
+    debt_equity = fund_data.get(
         "debt_equity", 999
     ) or 999
 
@@ -6562,6 +6570,11 @@ def scan_market():
                 symbol_clean
             ) or {}
 
+            print(
+                f"DEBUG FUND DATA {symbol_clean}:",
+                fund_data
+            )
+
             if fund_data:
 
                 four_cylinder_score = (
@@ -6597,13 +6610,25 @@ def scan_market():
                 (technical_score / 100) * 5,
                 2
             )
-            earnings_score = calculate_earnings_score(
-                fund_data
-            )            
+            if fund_data:
 
-            valuation_score = calculate_valuation_score(
-                fund_data
-            )
+                earnings_score = calculate_earnings_score(
+                    fund_data
+                )
+
+            else:
+
+                earnings_score = 0            
+
+            if fund_data:
+
+                valuation_score = calculate_valuation_score(
+                    fund_data
+                )
+
+            else:
+
+                valuation_score = 0
             print(
                 f"{stock} | "
                 f"PE={fund_data.get('pe_ratio')} | "
