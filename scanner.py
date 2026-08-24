@@ -8768,6 +8768,8 @@ def download_trades_csv():
 
 if __name__ == "__main__":
 
+    print("VERSION 24-AUG-2026")
+
     import os
 
     print(
