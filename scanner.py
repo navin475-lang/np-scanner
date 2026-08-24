@@ -4247,12 +4247,8 @@ def scan_market():
             # ====================================
 
             if not df_nifty.empty:
-            
+
                 latest_nifty = df_nifty.iloc[-1]
-            
-            else:
-            
-                nifty_close = 0
 
                 nifty_close = float(
                     latest_nifty["Close"]
@@ -4272,7 +4268,6 @@ def scan_market():
 
             print("REACHED STOCK LOOP 🚀")
             print(f"Total Stocks = {len(stocks)}")
-    
     # ====================================
     # STOCK LOOP
     # ====================================
