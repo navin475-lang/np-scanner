@@ -4218,7 +4218,11 @@ def scan_market():
     market_trend = "NEUTRAL"
     nifty_close = 0
     
-    if df_nifty.empty:
+    if df_nifty is None or df_nifty.empty:
+
+        print(
+            f"DF_NIFTY EXISTS = {type(df_nifty)}"
+        )
     
         print(
             "NIFTY unavailable - Scanner running without index data ⚠️"
