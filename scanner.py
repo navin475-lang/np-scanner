@@ -8736,7 +8736,7 @@ if __name__ == "__main__":
 
     create_active_trades_table()
 
-    # clear_old_signals()   # RUN ONCE
+    create_stock_analysis_table()
 
     start_background_scanner()
 
@@ -8757,3 +8757,4 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
