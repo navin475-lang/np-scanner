@@ -29,7 +29,7 @@ IST = pytz.timezone("Asia/Kolkata")
 # DATABASE
 # ====================================
 
-DATABASE = "signals.db"
+DATABASE = "fundatech.db"
 
 # ====================================
 # CALCULATE RSI
@@ -67,7 +67,7 @@ socketio = SocketIO(app)
 def get_db_connection():
 
     conn = sqlite3.connect(
-        "signals.db",
+        DATABASE,
         timeout=30
     )
 
@@ -80,7 +80,7 @@ def get_db_connection():
 
 def create_fundamental_table():
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -120,7 +120,7 @@ def create_fundamental_table():
     # ADD TECHNOFUNDA RANK COLUMN (RUN ONCE)
     # ====================================
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     try:
@@ -147,7 +147,7 @@ def create_fundamental_table():
     # ADD FUNDAMENTAL SCORE COLUMN (RUN ONCE)
     # ====================================
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     try:
@@ -168,7 +168,7 @@ def create_fundamental_table():
 
 def create_signal_table():
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -199,9 +199,7 @@ def create_signal_table():
 # ====================================
 def create_active_trades_table():
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -346,7 +344,7 @@ def save_signal(
     ):
 
     conn = sqlite3.connect(
-        "signals.db",
+        DATABASE,
         timeout=30
     )
 
@@ -642,7 +640,7 @@ def save_stock_analysis(
 ):
 
     conn = sqlite3.connect(
-        "signals.db",
+        DATABASE,
         timeout=30
     )
 
@@ -861,7 +859,7 @@ def get_dashboard_counts():
 #=======================================
 def get_buy_signals():
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -884,7 +882,7 @@ def get_buy_signals():
 #======================================
 def get_active_trades():
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -1415,9 +1413,7 @@ def company_analysis():
         ""
     ).upper()
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -1505,9 +1501,7 @@ def sector_ranking():
 )
 def toggle_watchlist(stock):
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -1561,9 +1555,7 @@ def toggle_watchlist(stock):
 @app.route("/watchlist")
 def watchlist():
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -1606,9 +1598,7 @@ def watchlist():
 @app.route("/my-trades")
 def my_trades():
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
     company_filter = request.args.get(
         "company",
         ""
@@ -2233,9 +2223,7 @@ def my_trades():
 @app.route("/ranking")
 def ranking():
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -2331,9 +2319,7 @@ def add_my_trade():
         ""
     )
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2435,9 +2421,7 @@ def partial_sell(trade_id):
         ]
     )
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -2575,9 +2559,7 @@ def add_position(trade_id):
         ]
     )
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
     cursor = conn.cursor()
@@ -2750,9 +2732,7 @@ def update_tsl(trade_id):
         request.form["new_tsl"]
     )
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2809,9 +2789,7 @@ def update_trade_date(trade_id):
         "new_date"
     ]
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2847,9 +2825,7 @@ def update_target(trade_id):
         request.form["new_target"]
     )
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2899,9 +2875,7 @@ def update_target(trade_id):
 )
 def close_trade(trade_id):
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2944,9 +2918,7 @@ def company_analysis_v2():
         ""
     ).upper()
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -3470,7 +3442,7 @@ def save_fundamentals(symbol, data):
     if data is None:
         return
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -3529,7 +3501,7 @@ def save_fundamentals(symbol, data):
 
 def fundamental_needs_update(symbol):
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -4153,7 +4125,7 @@ def calculate_final_score(
 
 def get_last_signal(stock):
 
-    conn = sqlite3.connect("signals.db")
+    conn = sqlite3.connect(DATABASE)
     cursor = conn.cursor()
 
     cursor.execute("""
@@ -4321,7 +4293,7 @@ def scan_market():
 
                 def load_fundamental_scores(symbol):
 
-                        conn = sqlite3.connect("signals.db")
+                        conn = sqlite3.connect(DATABASE)
                         cursor = conn.cursor()
 
                         cursor.execute("""
@@ -6715,9 +6687,7 @@ def scan_market():
             )
             try:
                                                 
-                rank_conn = sqlite3.connect(
-                    "signals.db"
-                )
+                sqlite3.connect(DATABASE)
 
                 rank_cursor = rank_conn.cursor()
                 print(
@@ -8155,9 +8125,7 @@ def scan_market():
     # MY TRADES LIVE ALERTS
     # ===================================
 
-        conn = sqlite3.connect(    
-        "signals.db"
-        )
+        sqlite3.connect(DATABASE)
 
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
@@ -8405,9 +8373,7 @@ def close_trade(
 
 ):
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8439,9 +8405,7 @@ def get_trade_status(
 
 ):
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8495,9 +8459,7 @@ def update_trade_status(
 
 ):
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8547,9 +8509,7 @@ def update_trade_status(
 
 def clear_old_signals():
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8608,9 +8568,7 @@ def download_trades_csv():
 
     from flask import Response
 
-    conn = sqlite3.connect(
-        "signals.db"
-    )
+    sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -8687,6 +8645,10 @@ def download_trades_csv():
 if __name__ == "__main__":
 
     import os
+
+    print(
+        f"USING DATABASE = {DATABASE}"
+    )
 
     create_fundamental_table()
 
