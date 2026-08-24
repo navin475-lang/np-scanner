@@ -8369,11 +8369,13 @@ def scan_market():
 
 def run_scanner():
 
+    print("RUN_SCANNER STARTED 🚀")
+
     while True:
 
         try:
 
-            print("SCANNER STARTED 🚀")
+            print("CALLING scan_market() 🚀")
 
             scan_market()
 
@@ -8382,6 +8384,9 @@ def run_scanner():
         except Exception as e:
 
             print(f"SCANNER ERROR: {e}")
+
+            import traceback
+            traceback.print_exc()
 
         print("Next Scan After 1 Hour ⏳")
 
