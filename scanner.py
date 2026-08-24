@@ -3806,7 +3806,7 @@ def calculate_machine_score(
     volume_ratio,
     sector_avg
 ):
-    if not fund_data:
+    if data is None:
         return 0
 
     score = 0
@@ -3891,6 +3891,8 @@ def calculate_valuation_score(fund_data):
 
     if not fund_data:
         return 0
+
+    score = 0
 
     pe = fund_data.get("pe_ratio", 0) or 0
     pb = fund_data.get("pb_ratio", 0) or 0
@@ -4245,8 +4247,12 @@ def scan_market():
             # ====================================
 
             if not df_nifty.empty:
-
+            
                 latest_nifty = df_nifty.iloc[-1]
+            
+            else:
+            
+                nifty_close = 0
 
                 nifty_close = float(
                     latest_nifty["Close"]
