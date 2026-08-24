@@ -6689,20 +6689,22 @@ def scan_market():
             rating = get_rating(
                 final_score
             )
+            rank_conn = None
+
             try:
-                                                
-                sqlite3.connect(DATABASE)
+
+                rank_conn = sqlite3.connect(DATABASE)
 
                 rank_cursor = rank_conn.cursor()
+
                 print(
                     f"SAVING {symbol_clean}: |"
                     f"earn={earnings_score} |"
                     f"4cyl={four_cylinder_score} | "
                     f"canslim={canslim_score} |"
-                    f"machine={machine_score} | "
-                    f"earn={earnings_score}"
+                    f"machine={machine_score}"
                 )
-               
+
                 rank_cursor.execute(
                     """
                     INSERT OR REPLACE INTO company_ranking
@@ -6733,7 +6735,7 @@ def scan_market():
                     )
                     """,
                     (
-                        symbol_clean,    #                            
+                        symbol_clean,
                         sector_rs,
                         demand_score,
                         earnings_score,
@@ -6741,7 +6743,7 @@ def scan_market():
                         machine_score,
                         canslim_score,
                         orders_score,
-                        fund_score,  #
+                        fund_score,
                         fund_display,
                         valuation_score,
                         technical_score,
@@ -6759,9 +6761,14 @@ def scan_market():
 
                 rank_conn.commit()
 
+            except Exception as e:
+
+                print(f"Ranking Save Error ❌ {e}")
+
             finally:
 
-                rank_conn.close()
+                if rank_conn:
+                    rank_conn.close()
 
             # ====================================
             # GRADE SYSTEM
