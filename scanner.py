@@ -1258,6 +1258,31 @@ def dashboard():
 
     )
 
+@app.route("/scanner")
+def scanner_data():
+
+    return jsonify(
+        stock_analysis_data
+    )
+
+@app.route("/api/data")
+def api_data():
+
+    return jsonify({
+        "stocks": stock_analysis_data,
+        "last_scan": scanner_status["last_scan"],
+        "total": len(stock_analysis_data)
+    })
+
+@app.route("/api/stocks")
+def api_stocks():
+
+    return jsonify(
+        stock_analysis_data
+    )
+
+
+
 @app.route("/active-trades")
 def active_trades():
 
