@@ -4237,22 +4237,32 @@ def scan_market():
                 .ffill()
             )
     
+            # ====================================
+            # NIFTY FINAL CHECK
+            # ====================================
+
             if not df_nifty.empty:
-    
+
                 latest_nifty = df_nifty.iloc[-1]
-    
+
                 nifty_close = float(
                     latest_nifty["Close"]
                 )
-    
+
                 print(
                     f"NIFTY Close = {nifty_close}"
                 )
-    
-        print("REACHED STOCK LOOP 🚀")
-        print(f"Total Stocks = {len(stocks)}")   
-          
-    
+
+            else:
+
+                nifty_close = 0
+
+                print(
+                    "NIFTY unavailable ⚠️"
+                )
+
+            print("REACHED STOCK LOOP 🚀")
+            print(f"Total Stocks = {len(stocks)}")
     
     # ====================================
     # STOCK LOOP
@@ -4984,12 +4994,15 @@ def scan_market():
             )
 
             
-            latest_nifty = df_nifty.iloc[-1]
-
+            # ====================================
+            # SAFE NIFTY CHECK
+            # ====================================           
+            
+            
             adx_1h = latest_1h["ADX"]
             adx_daily = latest_daily["ADX"]
             adx_weekly = latest_weekly["ADX"]
-            
+                        
             hourly_status = get_trade_status(
 
                 stock,
