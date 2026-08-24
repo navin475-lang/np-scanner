@@ -8581,17 +8581,16 @@ def clear_old_signals():
 
 def start_background_scanner():
 
+    print("STARTING SCANNER THREAD 🚀")
+
     scanner_thread = threading.Thread(
-
         target=run_scanner,
-
         daemon=True
-
     )
 
     scanner_thread.start()
 
-    #print("SCANNER THREAD STARTED 🚀")
+    print("SCANNER THREAD STARTED ✅")
 #====================================
 @app.route(
     "/download-trades-csv"
