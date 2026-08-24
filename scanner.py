@@ -5170,43 +5170,48 @@ def scan_market():
                 rs_daily = 0
                 rs_weekly = 0
             
-                continue
-            
-            nifty_daily_close = (
-                df_nifty["Close"]
-                .reindex(df_daily.index)
-                .ffill()
-            )
-
-            if isinstance(
-                nifty_daily_close,
-                pd.DataFrame
-            ):
-                nifty_daily_close = nifty_daily_close.iloc[:,0]
-
-            stock_return = (
-                df_daily["Close"]
-                /
-                df_daily["Close"].shift(55)
-            )
-
-            nifty_return = (
-                nifty_daily_close
-                /
-                nifty_daily_close.shift(55)
-            )
-
-            df_daily["RS"] = (
-                stock_return
-                /
-                nifty_return
-            ) - 1
-
-            df_daily["RS_MA"] = (
-                df_daily["RS"]
-                .rolling(10)
-                .mean()
-            )
+                df_daily["RS"] = 0
+                df_daily["RS_MA"] = 0
+                
+                df_weekly["RS_W"] = 0
+                df_weekly["RS_W_MA"] = 0
+            else:
+                
+                nifty_daily_close = (
+                    df_nifty["Close"]
+                    .reindex(df_daily.index)
+                    .ffill()
+                )
+    
+                if isinstance(
+                    nifty_daily_close,
+                    pd.DataFrame
+                ):
+                    nifty_daily_close = nifty_daily_close.iloc[:,0]
+    
+                stock_return = (
+                    df_daily["Close"]
+                    /
+                    df_daily["Close"].shift(55)
+                )
+    
+                nifty_return = (
+                    nifty_daily_close
+                    /
+                    nifty_daily_close.shift(55)
+                )
+    
+                df_daily["RS"] = (
+                    stock_return
+                    /
+                    nifty_return
+                ) - 1
+    
+                df_daily["RS_MA"] = (
+                    df_daily["RS"]
+                    .rolling(10)
+                    .mean()
+                )
 
             # ====================================
             # WEEKLY RS
