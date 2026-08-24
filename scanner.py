@@ -4194,9 +4194,8 @@ def scan_market():
     nifty_close = 0
     df_nifty = pd.DataFrame()
     
-    try:    
-        time.sleep(2)
-
+    try:
+    
         df_nifty = yf.download(
             "^NSEI",
             period="6mo",
@@ -4206,12 +4205,15 @@ def scan_market():
             threads=False
         )
     
+        if df_nifty is None:
+            df_nifty = pd.DataFrame()
+    
     except Exception as e:
-
-        print(f"NIFTY Download Error ❌ : {e}")
-
+    
+        print(f"NIFTY Download Error ❌ {e}")
+    
         df_nifty = pd.DataFrame()
-
+    
         # ====================================
         # PROCESS NIFTY DATA
         # ====================================
