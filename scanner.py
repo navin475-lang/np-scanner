@@ -5121,14 +5121,25 @@ def scan_market():
                 .ffill()
             )
             # ====================================
-            # DAILY RS vs NIFTY
+            # SAFE NIFTY DAILY CLOSE
             # ====================================
-
-            nifty_daily_close = pd.Series(
+            
+            if df_nifty.empty:
+            
+                print(
+                    f"NIFTY unavailable - skipping RS for {stock} ⚠️"
+                )
+            
+                rs_daily = 0
+                rs_weekly = 0
+            
+                continue
+            
+            nifty_daily_close = (
                 df_nifty["Close"]
-            ).reindex(
-                df_daily.index
-            ).ffill()
+                .reindex(df_daily.index)
+                .ffill()
+            )
 
             if isinstance(
                 nifty_daily_close,
