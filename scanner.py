@@ -4170,33 +4170,32 @@ def scan_market():
 
     stock_analysis_data.clear()
     
-        # ====================================
-        # NIFTY DATA DOWNLOAD
-        # ====================================
+    # ====================================
+    # NIFTY DATA DOWNLOAD
+    # ====================================
     
-        market_trend = "NEUTRAL"
-        nifty_close = 0
+    market_trend = "NEUTRAL"
+    nifty_close = 0
+    df_nifty = pd.DataFrame()
+    
+    try:    
+        time.sleep(2)
+
+        df_nifty = yf.download(
+            "^NSEI",
+            period="6mo",
+            interval="1d",
+            progress=False,
+            auto_adjust=True,
+            threads=False
+        )
+    
+    except Exception as e:
+
+        print(f"NIFTY Download Error ❌ : {e}")
+
         df_nifty = pd.DataFrame()
-    
-        try:
-    
-            time.sleep(2)
-    
-            df_nifty = yf.download(
-                "^NSEI",
-                period="6mo",
-                interval="1d",
-                progress=False,
-                auto_adjust=True,
-                threads=False
-            )
-    
-        except Exception as e:
-    
-            print(f"NIFTY Download Error ❌ : {e}")
-    
-            df_nifty = pd.DataFrame()
-    
+
         # ====================================
         # PROCESS NIFTY DATA
         # ====================================
