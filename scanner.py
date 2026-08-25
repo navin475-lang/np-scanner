@@ -4319,9 +4319,9 @@ def scan_market():
     # ====================================
     
     try:
-    
+
         time.sleep(2)
-    
+
         df_nifty = yf.download(
             "^NSEI",
             period="6mo",
@@ -4330,14 +4330,18 @@ def scan_market():
             auto_adjust=True,
             threads=False
         )
-    
+
     except Exception as e:
 
         print(f"NIFTY Download Error ❌ {e}")
 
         df_nifty = pd.DataFrame()
 
-    print("AFTER NIFTY DOWNLOAD 🚀")
+    if df_nifty is None or df_nifty.empty:
+
+        print("NIFTY unavailable - Scanner running without index data ⚠️")
+
+        market_trend = "NEUTRAL"
     
     # ====================================
     # PROCESS NIFTY DATA
