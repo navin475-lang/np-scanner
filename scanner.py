@@ -12,6 +12,7 @@ import numpy as np
 from bs4 import BeautifulSoup
 from nifty500 import stocks
 
+
 from flask import Flask, render_template, request, jsonify, redirect
 from datetime import datetime, timedelta
 
@@ -418,6 +419,80 @@ def create_stock_analysis_table():
 
     )
     """)
+
+    # ====================================
+    # COMPANY RANKING TABLE
+    # ====================================
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS company_ranking (
+
+        stock TEXT PRIMARY KEY,
+
+        market_score REAL,
+
+        sector_rs INTEGER,
+
+        demand_score INTEGER,
+
+        earnings_score INTEGER,
+
+        four_cylinder_score INTEGER,
+
+        machine_score INTEGER,
+
+        canslim_score INTEGER,
+
+        orders_score INTEGER,
+
+        fund_score INTEGER,
+
+        fund_display REAL,
+
+        valuation_score INTEGER,
+
+        technical_score INTEGER,
+
+        tech_display REAL,
+
+        news_score INTEGER,
+
+        sentiment_score INTEGER,
+
+        total_score INTEGER,
+
+        final_score REAL,
+
+        rating TEXT,
+
+        updated_at TEXT
+
+    )
+    """)
+
+    try:
+        cursor.execute("""
+            ALTER TABLE company_ranking
+            ADD COLUMN fund_display REAL
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+            ALTER TABLE company_ranking
+            ADD COLUMN tech_display REAL
+        """)
+    except:
+        pass
+
+    try:
+        cursor.execute("""
+            ALTER TABLE company_ranking
+            ADD COLUMN final_score REAL
+        """)
+    except:
+        pass
 
     conn.commit()
     conn.close()    
@@ -3208,7 +3283,7 @@ def background_signal_updater():
 # ====================================
 # TELEGRAM SETTINGS
 # ====================================
-DATABASE = "signals.db"
+DATABASE = "fundatech.db"
 
 BOT_TOKEN = "8657217148:AAGUftF7a8zQNeb1AnJsx2CVBFehJ-Oi1Ko"
 CHAT_ID = "1190014186"
@@ -3856,7 +3931,9 @@ def calculate_four_cylinder_score(fund_data):
 def calculate_earnings_score(data):
 
     if not data:
-        return 0   
+        return 0
+
+    score = 0
 
     sales_growth = data.get(
         "sales_growth",
@@ -3864,11 +3941,13 @@ def calculate_earnings_score(data):
     ) or 0
 
     profit_growth = data.get(
-        "profit_growth", 0
+        "profit_growth",
+        0
     ) or 0
 
     eps_growth = data.get(
-        "eps_growth", 0
+        "eps_growth",
+        0
     ) or 0
 
     # SALES
@@ -4342,6 +4421,10 @@ def scan_market():
         print("NIFTY unavailable - Scanner running without index data ⚠️")
 
         market_trend = "NEUTRAL"
+
+    else:
+
+        print(f"NIFTY Close = {df_nifty['Close'].iloc[-1]}")
     
     # ====================================
     # PROCESS NIFTY DATA
@@ -4400,6 +4483,37 @@ def scan_market():
     print("REACHED STOCK LOOP 🚀")
     
     print(f"Total Stocks = {len(stocks)}")
+
+    # =========================
+    # SECTOR RS SCORE
+    # =========================
+
+    sector_rs_lookup = {}
+
+    for rank, sector in enumerate(
+        sector_data,
+        start=1
+    ):
+
+        if rank <= 5:
+            score = 20
+
+        elif rank <= 10:
+            score = 18
+
+        elif rank <= 15:
+            score = 15
+
+        elif rank <= 20:
+            score = 10
+
+        else:
+            score = 5
+
+        sector_rs_lookup[
+            sector["sector"]
+        ] = score
+            
     # ====================================
     # STOCK LOOP
     # ====================================
@@ -5259,6 +5373,8 @@ def scan_market():
                 df_nifty_weekly.empty
             ):
 
+                print("Weekly NIFTY unavailable ⚠️")
+
                 nifty_weekly_close = pd.Series(
                     index=df_weekly.index,
                     dtype=float
@@ -5278,22 +5394,7 @@ def scan_market():
                     df_nifty_weekly["Close"]
                     .reindex(df_weekly.index)
                     .ffill()
-                )    
-
-            if isinstance(
-                df_nifty_weekly.columns,
-                pd.MultiIndex
-            ):
-                df_nifty_weekly.columns = (
-                    df_nifty_weekly.columns
-                    .droplevel(1)
                 )
-
-            nifty_weekly_close = (
-                df_nifty_weekly["Close"]
-                .reindex(df_weekly.index)
-                .ffill()
-            )
             # ====================================
             # SAFE NIFTY DAILY CLOSE
             # ====================================
@@ -6688,20 +6789,31 @@ def scan_market():
             print(
                 f"{stock} Valuation Score={valuation_score}"
             )
+
+            sector_rs = sector_rs_lookup.get(
+                sector,
+                5
+            )
+
+            print(
+                f"{stock} | sector={sector} | "
+                f"sector_rs={sector_rs_lookup.get(sector,0)}"
+            )
+
             sector_avg = 0
-            
+
             for s in sector_data:
 
                 if s["sector"] == sector:
 
                     sector_avg = s["avg_score"]
 
-                    sector_rs = round(
-                        (sector_avg / 100) * 10,
-                        2
-                    )
-
                     break
+
+            sector_rs = sector_rs_lookup.get(
+                sector,
+                5
+            )
 
             machine_score = calculate_machine_score(
 
@@ -6952,19 +7064,19 @@ def scan_market():
             # GRADE SYSTEM
             # ====================================
 
-            if momentum_score >= 90:
+            if final_score >= 80:
                 grade = "A+"
 
-            elif momentum_score >= 80:
+            elif final_score >= 70:
                 grade = "A"
 
-            elif momentum_score >= 70:
+            elif final_score >= 60:
                 grade = "B+"
 
-            elif momentum_score >= 60:
+            elif final_score >= 50:
                 grade = "B"
 
-            elif momentum_score >= 50:
+            elif final_score >= 40:
                 grade = "C"
 
             else:
@@ -6974,57 +7086,41 @@ def scan_market():
             # WATCHLIST CATEGORY
             # ====================================
 
-            if momentum_score >= 85:
-
+            if final_score >= 75:
                 watch_category = "🚀 ELITE"
 
-            elif momentum_score >= 70:
-
+            elif final_score >= 60:
                 watch_category = "📈 SWING"
 
-            elif momentum_score >= 55:
-
+            elif final_score >= 45:
                 watch_category = "👀 WATCH"
 
             else:
-
-                watch_category = "❌ AVOID"       
+                watch_category = "❌ AVOID"      
 
             # ====================================
             # MOMENTUM STATUS
             # ====================================
 
-            if momentum_score >= 80:
+            if final_score >= 75:
 
-                momentum_status = (
-                    "🚀 Strong Trend"
-                )
+                momentum_status = "🚀 Strong Trend"
 
-            elif momentum_score >= 65:
+            elif final_score >= 60:
 
-                momentum_status = (
-                    "📈 Strong Swing Candidate"
-                )
+                momentum_status = "📈 Strong Swing Candidate"
 
-            elif momentum_score >= 50:
+            elif final_score >= 45:
 
-                momentum_status = (
-                    "👀 Watchlist"
-                )
+                momentum_status = "👀 Watchlist"
 
-            elif momentum_score >= 35:
+            elif final_score >= 30:
 
-                momentum_status = (
-                    "⚠️ Weak"
-                )
+                momentum_status = "⚠️ Weak"
 
             else:
 
-                momentum_status = (
-                    "❌ Avoid"
-                )
-
-            print(f"Scanning {stock} 🚀")
+                momentum_status = "❌ Avoid"
 
             # ===================================
             # SAFE DEFAULT VALUES
@@ -8483,35 +8579,6 @@ def scan_market():
 
             reverse=True
         )
-        # =========================
-        # SECTOR RS SCORE
-        # =========================
-
-        sector_rs_lookup = {}
-
-        for rank, sector in enumerate(
-            sector_data,
-            start=1
-        ):
-
-            if rank <= 5:
-                score = 20
-
-            elif rank <= 10:
-                score = 18
-
-            elif rank <= 15:
-                score = 15
-
-            elif rank <= 20:
-                score = 10
-
-            else:
-                score = 5
-
-            sector_rs_lookup[
-                sector["sector"]
-            ] = score
         
         # ====================================
         # GLOBAL MOMENTUM DATA
