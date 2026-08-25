@@ -24,7 +24,8 @@ socketio = SocketIO(
 
 
 IST = pytz.timezone("Asia/Kolkata")
-print("🚀 NP SCANNER BUILD 24-AUG-2026 V99")
+print("🚀 NP SCANNER BUILD V101")
+print("FILE =", __file__)
 # ====================================
 # DATABASE
 # ====================================
