@@ -4282,19 +4282,19 @@ def scan_market():
     
     global stock_analysis_data
 
-    #print("Inside scan_market() ✅")
+    print("Inside scan_market() ✅")
 
-    #print(f"Total Stocks: {len(stocks)}")
+    print(f"Total Stocks: {len(stocks)}")
 
-    #print("Checking market hours...")
+    print("Checking market hours...")
 
-    #print("Scanner Time Started ✅")
+    print("Scanner Time Started ✅")
 
     scanner_status["last_scan"] = datetime.now(IST).strftime("%d-%m-%Y %I:%M:%S %p")
 
     scanner_status["stocks_scanned"] = len(stocks)
 
-    #print("Market Timing Disabled ✅")
+    print("Market Timing Disabled ✅")
 
     momentum_rankings = []
 
@@ -4332,10 +4332,12 @@ def scan_market():
         )
     
     except Exception as e:
-    
+
         print(f"NIFTY Download Error ❌ {e}")
-    
+
         df_nifty = pd.DataFrame()
+
+    print("AFTER NIFTY DOWNLOAD 🚀")
     
     # ====================================
     # PROCESS NIFTY DATA
