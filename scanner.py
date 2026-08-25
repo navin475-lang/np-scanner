@@ -17,6 +17,10 @@ from datetime import datetime, timedelta
 
 app = Flask(__name__)
 
+print("=" * 60, flush=True)
+print("🚀 NP SCANNER BUILD V101", flush=True)
+print("=" * 60, flush=True)
+
 socketio = SocketIO(
     app,
     cors_allowed_origins="*"
