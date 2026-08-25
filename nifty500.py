@@ -1,4 +1,4 @@
-STOCKS = [
+stocks = [
     "HDFCAMC.NS",
     "HDFCBANK.NS",
     "HDFCLIFE.NS",
