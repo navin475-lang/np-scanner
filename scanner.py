@@ -698,7 +698,7 @@ def save_signal(
 
     #print(f"{signal_type} saved for {stock} ✅")
 # ====================================
-# SAVE STOCK ANALYSIS (ALL STOCKS)
+# SAVE STOCK ANALYSIS (ALL stocks)
 # ====================================
 
 def save_stock_analysis(
@@ -8236,7 +8236,7 @@ def scan_market():
             # ====================================
 
             ranking_message = (
-                "🔥 TOP TECHNOFUNDA STOCKS 🔥\n\n"
+                "🔥 TOP TECHNOFUNDA stocks 🔥\n\n"
             )
             
             # ====================================
@@ -8523,7 +8523,7 @@ def scan_market():
 # ====================================
 
 print("🚀 STARTING MARKET SCAN")
-print(f"Total Stocks = {len(STOCKS)}")
+print(f"Total Stocks = {len(stocks)}")
 
 def run_scanner():
 
