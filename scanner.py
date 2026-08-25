@@ -4310,7 +4310,7 @@ def scan_market():
     
     df_nifty = pd.DataFrame()
     
-    market_trend = "NEUTRAL"
+    market_trend = "BULLISH"
     
     nifty_close = 0
     
