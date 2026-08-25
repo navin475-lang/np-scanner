@@ -10,7 +10,7 @@ import time
 import pytz
 import numpy as np
 from bs4 import BeautifulSoup
-from nifty500 import STOCKS
+from nifty500 import stocks
 
 from flask import Flask, render_template, request, jsonify, redirect
 from datetime import datetime, timedelta
