@@ -1,4 +1,3 @@
-print("🚀 GITHUB BUILD TEST V999")
 import socket
 socket.setdefaulttimeout(20)
 from flask_socketio import SocketIO
@@ -11,6 +10,7 @@ import time
 import pytz
 import numpy as np
 from bs4 import BeautifulSoup
+from nifty500 import STOCKS
 
 from flask import Flask, render_template, request, jsonify, redirect
 from datetime import datetime, timedelta
@@ -21,6 +21,7 @@ print("=" * 60, flush=True)
 print("🚀 NP SCANNER BUILD V101", flush=True)
 print("=" * 60, flush=True)
 
+
 socketio = SocketIO(
     app,
     cors_allowed_origins="*"
@@ -29,8 +30,7 @@ socketio = SocketIO(
 
 
 IST = pytz.timezone("Asia/Kolkata")
-print("🚀 NP SCANNER BUILD V101")
-print("FILE =", __file__)
+
 # ====================================
 # DATABASE
 # ====================================
@@ -5228,13 +5228,51 @@ def scan_market():
             # WEEKLY NIFTY
             # ====================================
 
-            df_nifty_weekly = yf.download(
-                "^NSEI",
-                period="2y",
-                interval="1wk",
-                progress=False
+            try:
 
-            )
+                df_nifty_weekly = yf.download(
+                    "^NSEI",
+                    period="2y",
+                    interval="1wk",
+                    progress=False,
+                    auto_adjust=True,
+                    threads=False
+                )
+
+            except Exception as e:
+
+                print(
+                    f"NIFTY Weekly Error ❌ {e}"
+                )
+
+                df_nifty_weekly = pd.DataFrame()
+
+            if (
+                df_nifty_weekly is None
+                or
+                df_nifty_weekly.empty
+            ):
+
+                nifty_weekly_close = pd.Series(
+                    index=df_weekly.index,
+                    dtype=float
+                )
+
+            else:
+
+                if isinstance(
+                    df_nifty_weekly.columns,
+                    pd.MultiIndex
+                ):
+                    df_nifty_weekly.columns = (
+                        df_nifty_weekly.columns.droplevel(1)
+                    )
+
+                nifty_weekly_close = (
+                    df_nifty_weekly["Close"]
+                    .reindex(df_weekly.index)
+                    .ffill()
+                )    
 
             if isinstance(
                 df_nifty_weekly.columns,
@@ -8484,6 +8522,9 @@ def scan_market():
 # RUN SCANNER LOOP
 # ====================================
 
+print("🚀 STARTING MARKET SCAN")
+print(f"Total Stocks = {len(STOCKS)}")
+
 def run_scanner():
 
     print("RUN_SCANNER STARTED 🚀")
@@ -8812,5 +8853,4 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
-
 
