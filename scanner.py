@@ -1528,7 +1528,7 @@ def company_analysis():
         ""
     ).upper()
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -1616,7 +1616,7 @@ def sector_ranking():
 )
 def toggle_watchlist(stock):
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -1670,9 +1670,10 @@ def toggle_watchlist(stock):
 @app.route("/watchlist")
 def watchlist():
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
+
     cursor = conn.cursor()
 
     cursor.execute(
@@ -1713,7 +1714,7 @@ def watchlist():
 @app.route("/my-trades")
 def my_trades():
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
     company_filter = request.args.get(
         "company",
         ""
@@ -2338,7 +2339,7 @@ def my_trades():
 @app.route("/ranking")
 def ranking():
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -2434,7 +2435,7 @@ def add_my_trade():
         ""
     )
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2536,9 +2537,10 @@ def partial_sell(trade_id):
         ]
     )
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
+
     cursor = conn.cursor()
 
     # GET TRADE
@@ -2674,9 +2676,10 @@ def add_position(trade_id):
         ]
     )
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
+
     cursor = conn.cursor()
 
     cursor.execute(
@@ -2847,7 +2850,7 @@ def update_tsl(trade_id):
         request.form["new_tsl"]
     )
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2904,7 +2907,7 @@ def update_trade_date(trade_id):
         "new_date"
     ]
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2940,7 +2943,7 @@ def update_target(trade_id):
         request.form["new_target"]
     )
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -2990,7 +2993,7 @@ def update_target(trade_id):
 )
 def close_trade(trade_id):
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -3033,7 +3036,7 @@ def company_analysis_v2():
         ""
     ).upper()
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -8261,7 +8264,7 @@ def scan_market():
     # MY TRADES LIVE ALERTS
     # ===================================
 
-        sqlite3.connect(DATABASE)
+        conn = sqlite3.connect(DATABASE)
 
         conn.row_factory = sqlite3.Row
         cursor = conn.cursor()
@@ -8509,7 +8512,7 @@ def close_trade(
 
 ):
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8583,7 +8586,7 @@ def update_trade_status(
 
 ):
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8633,7 +8636,7 @@ def update_trade_status(
 
 def clear_old_signals():
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     cursor = conn.cursor()
 
@@ -8692,7 +8695,7 @@ def download_trades_csv():
 
     from flask import Response
 
-    sqlite3.connect(DATABASE)
+    conn = sqlite3.connect(DATABASE)
 
     conn.row_factory = sqlite3.Row
 
@@ -8768,8 +8771,6 @@ def download_trades_csv():
 
 if __name__ == "__main__":
 
-    print("VERSION 24-AUG-2026")
-
     import os
 
     print(
@@ -8805,4 +8806,5 @@ if __name__ == "__main__":
         port=port,
         debug=False
     )
+
 
